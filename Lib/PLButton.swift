@@ -250,6 +250,7 @@ class PLButton: UIControl {
         
         return size
     }
+    
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return self.bounds.inset(by: self.pointBoundsInset).contains(point)
     }

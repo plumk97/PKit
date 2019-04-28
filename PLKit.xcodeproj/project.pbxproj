@@ -14,6 +14,7 @@
 		812FBF3C226EAE8A00CA1831 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 812FBF3A226EAE8A00CA1831 /* LaunchScreen.storyboard */; };
 		812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF44226EAF0000CA1831 /* PLRippleAnimate.swift */; };
 		812FBF47226EB77400CA1831 /* PLKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF46226EB77400CA1831 /* PLKit.swift */; };
+		815F4FD722757F93003BA591 /* PLRefreshNormalFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */; };
 		81786D912272B095005B232D /* ButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D902272B095005B232D /* ButtonViewController.swift */; };
 		81786D932272B13B005B232D /* PLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D922272B13B005B232D /* PLButton.swift */; };
 		81786D962272B9AE005B232D /* arrow_bottom_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81786D942272B9AE005B232D /* arrow_bottom_small@2x.png */; };
@@ -33,6 +34,7 @@
 		812FBF3D226EAE8A00CA1831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		812FBF44226EAF0000CA1831 /* PLRippleAnimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRippleAnimate.swift; sourceTree = "<group>"; };
 		812FBF46226EB77400CA1831 /* PLKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLKit.swift; sourceTree = "<group>"; };
+		815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalFooter.swift; sourceTree = "<group>"; };
 		81786D902272B095005B232D /* ButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewController.swift; sourceTree = "<group>"; };
 		81786D922272B13B005B232D /* PLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLButton.swift; sourceTree = "<group>"; };
 		81786D942272B9AE005B232D /* arrow_bottom_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@2x.png"; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				812FBF44226EAF0000CA1831 /* PLRippleAnimate.swift */,
 				81786D9A227302B6005B232D /* PLRefresh.swift */,
 				81786DA022731154005B232D /* PLRefreshNormalHeader.swift */,
+				815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -181,6 +184,7 @@
 				81786D912272B095005B232D /* ButtonViewController.swift in Sources */,
 				812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */,
 				81786D932272B13B005B232D /* PLButton.swift in Sources */,
+				815F4FD722757F93003BA591 /* PLRefreshNormalFooter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

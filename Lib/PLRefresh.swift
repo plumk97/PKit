@@ -12,6 +12,9 @@ typealias PLRefreshHandleCallback = ()->Void
 
 protocol PLRefreshWidgetable: UIView {
     
+    /// 逐渐透明
+    var gradualAlpa: Bool { get set }
+    
     /// 刷新回调
     var handleCallback: PLRefreshHandleCallback? { get set }
     
@@ -27,15 +30,29 @@ protocol PLRefreshWidgetable: UIView {
     func endRefreshing()
 }
 
+fileprivate enum PLRefreshStatus: Int {
+    case normal
+    case willBeginRefreshing
+    case refreshing
+    case willEndRefreshing
+}
+
+infix operator < : ComparisonPrecedence
+fileprivate func <(left: PLRefreshStatus, right: PLRefreshStatus) -> Bool {
+    return left.rawValue < right.rawValue
+}
+
+infix operator >= : ComparisonPrecedence
+fileprivate func >=(left: PLRefreshStatus, right: PLRefreshStatus) -> Bool {
+    return left.rawValue >= right.rawValue
+}
+
 class PLRefresh: NSObject {
     
     weak var scrollView: UIScrollView?
     
-    /// 是否排斥其它刷新 当其中一个正在刷新时 其他刷新不生效
-    var isExclusiveRefresh: Bool = true
-    
     /// 是否自动控制safe area
-    var isEnableSafeArea: Bool = true
+    var isAdjustSafeArea: Bool = true
     
     /// 刷新高度
     var refreshHeight: CGFloat = 64
@@ -44,19 +61,43 @@ class PLRefresh: NSObject {
     var top: PLRefreshWidgetable? {
         didSet {
             oldValue?.removeFromSuperview()
-            if let untop = top {
-                self.scrollView?.addSubview(untop)
+            if let unview = top {
+                self.scrollView?.addSubview(unview)
+            }
+            self.relayout()
+        }
+    }
+    /// 上拉加载 底部控件
+    var bottom: PLRefreshWidgetable? {
+        didSet {
+            oldValue?.removeFromSuperview()
+            if let unview = bottom {
+                self.scrollView?.addSubview(unview)
             }
             self.relayout()
         }
     }
     
+    /// top刷新高度 增加safeArea
+    private var safeAreaTopRefreshHeight: CGFloat {
+        if self.isAdjustSafeArea {
+            return self.refreshHeight + self.safeArea.top
+        }
+        return self.refreshHeight
+    }
+    
+    /// bottom刷新高度 增加safeArea
+    private var safeAreaBottomRefreshHeight: CGFloat {
+        if self.isAdjustSafeArea {
+            return self.refreshHeight + self.safeArea.bottom
+        }
+        return self.refreshHeight
+    }
+    
+    /// scrollView safeAreaInsets
     private var safeArea: UIEdgeInsets {
         if #available(iOS 11.0, *) {
-            guard let window = UIApplication.shared.delegate?.window else {
-                return .zero
-            }
-            return window?.safeAreaInsets ?? .zero
+            return self.scrollView?.safeAreaInsets ?? .zero
         }
         return .zero
     }
@@ -67,25 +108,78 @@ class PLRefresh: NSObject {
     private var preBounds: CGRect = .zero
     /// scrollView 上一次ContentInset
     private var preContentInset: UIEdgeInsets = .zero
-    
+    /// scrollView 上一次Offset.y
+    private var preOffsetY: CGFloat = 0
     /// 增加的 ContentInset
-    private var appendContentInset: UIEdgeInsets = .zero
+    private var appendContentInset: UIEdgeInsets = .zero {
+        didSet {
+            self.reloadAppendContentInsets(oldValue: oldValue)
+        }
+    }
     
     /// 真实的 ContentInset 去掉 appendContentInset
-    private var scrollViewRealContentInset: UIEdgeInsets {
+    private var realContentInset: UIEdgeInsets {
         var contentInset = self.scrollView?.contentInset ?? .zero
         contentInset.left -= appendContentInset.left
-        contentInset.top -= appendContentInset.top
+        if self.topRefreshStatus >= .refreshing {
+            contentInset.top -= appendContentInset.top
+        }
         contentInset.right -= appendContentInset.right
-        contentInset.bottom -= appendContentInset.bottom
+        if self.bottomRefreshStatus >= .refreshing {
+            contentInset.bottom -= appendContentInset.bottom
+        }
         return contentInset
     }
+    
+    
+    /// 增加 inset.top safe.top的offset
+    private var offsetMinY: CGFloat {
+        var contentOffset = self.scrollView?.contentOffset ?? .zero
+        
+        let contentInset = self.realContentInset
+        contentOffset.y += contentInset.top
+        contentOffset.y += self.safeArea.top
+        
+        return contentOffset.y
+    }
+    
+    /// scrollView 当前bottom
+    private var currentBottom: CGFloat {
+        var contentSizeHeight = self.scrollView?.contentSize.height ?? 0
+        
+        let contentInset = self.realContentInset
+        contentSizeHeight += contentInset.top
+        contentSizeHeight += self.safeArea.top
+        
+        contentSizeHeight += contentInset.bottom
+        contentSizeHeight += self.safeArea.bottom
+        return contentSizeHeight
+    }
+    
+    /// scrollView 最大bottom
+    private var maximumBottom: CGFloat {
+        let boundsHeight = self.scrollView?.bounds.height ?? 0
+        return max(boundsHeight, self.currentBottom)
+    }
+    
+    /// 记录顶部刷新进度
+    private var recordTopProgress: CGFloat = 0
+    /// 顶部是否正在刷新
+    private var topRefreshStatus: PLRefreshStatus = .normal
+    
+    /// 记录底部刷新进度
+    private var recordBottomProgress: CGFloat = 0
+    /// 底部是否正在刷新
+    private var bottomRefreshStatus: PLRefreshStatus = .normal
+    
+    /// --
+    private var mainRunLoopObserver: CFRunLoopObserver!
     
     init(scrollView: UIScrollView) {
         super.init()
         self.scrollView = scrollView
         
-        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) { (observer, activity) in
+        self.mainRunLoopObserver = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) {[unowned self] (observer, activity) in
             if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
                 guard let scrollView = self.scrollView else {
                     return
@@ -99,23 +193,28 @@ class PLRefresh: NSObject {
                     relayout = true
                 }
                 
-                if !self.preBounds.equalTo(scrollView.bounds) {
+                if !self.preBounds.size.equalTo(scrollView.bounds.size) {
                     self.preBounds = scrollView.bounds
                     relayout = true
                 }
                 
-                if !self.preContentInset.equalTo(self.scrollViewRealContentInset) {
-                    self.preContentInset = self.scrollViewRealContentInset
+                if !self.preContentInset.equalTo(self.realContentInset) {
+                    self.preContentInset = self.realContentInset
                     relayout = true
                 }
                 
                 if relayout {
                     self.relayout()
                 }
-                
             }
         }
-        CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
+        CFRunLoopAddObserver(CFRunLoopGetMain(), self.mainRunLoopObserver, CFRunLoopMode.commonModes)
+    }
+    
+    deinit {
+        CFRunLoopObserverInvalidate(self.mainRunLoopObserver)
+        CFRunLoopRemoveObserver(CFRunLoopGetMain(), self.mainRunLoopObserver, CFRunLoopMode.commonModes)
+        self.mainRunLoopObserver = nil
     }
 
     
@@ -124,22 +223,174 @@ class PLRefresh: NSObject {
         guard let scrollView = self.scrollView else {
             return
         }
-        
+
         if let top = self.top {
             top.frame.size = .init(width: scrollView.frame.width, height: top.frame.height)
-            top.frame.origin = .init(x: 0, y: -top.frame.height)
+            top.frame.origin = .init(x: 0, y: -top.frame.height - self.realContentInset.top - self.safeArea.top)
+        }
+        
+        if let bottom = self.bottom {
+            bottom.frame.size = .init(width: scrollView.frame.width, height: bottom.frame.height)
+            
+            var y = self.maximumBottom
+            y -= self.realContentInset.top
+            y -= self.safeArea.top
+            
+            bottom.frame.origin = .init(x: 0, y: y)
         }
     }
     
-    // -- KVO
+    fileprivate func reloadAppendContentInsets(oldValue: UIEdgeInsets) {
+        
+        /// 进入此方法前 appendContentInset 已经改变
+        UIView.animate(withDuration: 0.25, animations: {
+            var contentInset = self.realContentInset
+            
+            // - top
+            if self.topRefreshStatus == .willBeginRefreshing {
+                contentInset.top += self.appendContentInset.top
+                self.topRefreshStatus = .refreshing
+                self.top?.beginRefreshing()
+            }
+            
+            if self.topRefreshStatus == .willEndRefreshing {
+                contentInset.top -= oldValue.top
+                self.topRefreshStatus = .normal
+                self.top?.endRefreshing()
+            }
+            
+            // - bottom
+            if self.bottomRefreshStatus == .willBeginRefreshing {
+                contentInset.bottom += self.appendContentInset.bottom
+                self.bottomRefreshStatus = .refreshing
+                self.bottom?.beginRefreshing()
+                
+            }
+            
+            if self.bottomRefreshStatus == .willEndRefreshing {
+                contentInset.bottom -= oldValue.bottom
+                self.bottomRefreshStatus = .normal
+                self.bottom?.endRefreshing()
+            }
+            
+            self.scrollView?.contentInset = contentInset
+        }) { _ in
+            
+            if self.topRefreshStatus == .refreshing {
+                self.top?.handleCallback?()
+            }
+            
+            if self.bottomRefreshStatus == .refreshing {
+                self.bottom?.handleCallback?()
+            }
+        }
+    }
+    
+    
+    /// 更新Offset 判断是否能进入刷新
     fileprivate func updateOffset() {
-        let contentOffset = self.scrollView?.contentOffset ?? .zero
-        let isTouching = self.scrollView?.isDragging ?? false
-        guard isTouching else {
+        
+        // 保证只有一个正在刷新
+        guard self.topRefreshStatus == .normal && self.bottomRefreshStatus == .normal else {
             return
         }
-        print(contentOffset.y)
+        
+        guard self.preOffsetY != self.offsetMinY else {
+            return
+        }
+        self.preOffsetY = self.offsetMinY
+        
+        let isDragging = self.scrollView?.isDragging ?? false
+        
+        // - topProgress
+        let topProgress = self.offsetMinY / -self.safeAreaTopRefreshHeight
+        
+        // - bottomProgress
+        let maximumBottom = self.maximumBottom
+        let currentBottom = (self.scrollView?.bounds.height ?? 0) + self.offsetMinY
+        let bottomProgress = (currentBottom - maximumBottom) / self.safeAreaBottomRefreshHeight
+        
+        // - update
+        if self.top != nil && self.topRefreshStatus < .willBeginRefreshing {
+            self.top?.refreshProgress(topProgress)
+        }
+        
+        if self.bottom != nil && self.bottomRefreshStatus < .willBeginRefreshing {
+            self.bottom?.refreshProgress(bottomProgress)
+        }
+        
+        guard isDragging else {
+            /// 判断是否能进入刷新
+            
+            if self.recordTopProgress >= 1 && self.topRefreshStatus < .willBeginRefreshing {
+                self.recordTopProgress = 0
+                self.beginTopRefreshing()
+            }
+            
+            if self.recordBottomProgress >= 1 && self.bottomRefreshStatus < .willBeginRefreshing {
+                self.recordBottomProgress = 0
+                self.beginBottomRefreshing()
+            }
+            return
+        }
+        
+        // - reocrd
+        if self.topRefreshStatus < .willBeginRefreshing {
+            self.recordTopProgress = topProgress
+        }
+        
+        if self.bottomRefreshStatus < .willBeginRefreshing {
+            self.recordBottomProgress = bottomProgress
+        }
     }
+    
+    
+    /// - top
+    func beginTopRefreshing() {
+        guard self.topRefreshStatus < .willBeginRefreshing else {
+            return
+        }
+        self.topRefreshStatus = .willBeginRefreshing
+        self.appendContentInset.top = self.safeAreaTopRefreshHeight
+    }
+    
+    func endTopRefresing() {
+        guard self.topRefreshStatus == .refreshing else {
+            return
+        }
+        self.topRefreshStatus = .willEndRefreshing
+        self.appendContentInset.top = 0
+    }
+    
+    /// - bottom
+    func beginBottomRefreshing() {
+        guard self.bottomRefreshStatus < .willBeginRefreshing else {
+            return
+        }
+        self.bottomRefreshStatus = .willBeginRefreshing
+        
+        let boundsHeight = self.scrollView?.bounds.height ?? 0
+        
+        var appendBottom: CGFloat = 0
+        if self.maximumBottom <= boundsHeight {
+            appendBottom = boundsHeight - self.currentBottom + self.safeAreaBottomRefreshHeight
+        } else {
+            appendBottom = self.safeAreaBottomRefreshHeight
+        }
+        self.appendContentInset.bottom = appendBottom
+    }
+    
+    func endBottomRefresing() {
+        guard self.bottomRefreshStatus == .refreshing else {
+            return
+        }
+        self.bottomRefreshStatus = .willEndRefreshing
+        // 等待其他操作完成在更新 比如 reloadData 之后更新不会出现下滑动情况
+        DispatchQueue.main.async {
+            self.appendContentInset.bottom = 0
+        }
+    }
+
 }
 
 extension UIEdgeInsets {

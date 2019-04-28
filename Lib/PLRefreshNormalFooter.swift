@@ -1,15 +1,15 @@
 //
-//  PLRefreshNormalHeader.swift
+//  PLRefreshNormalFooter.swift
 //  PLKit
 //
-//  Created by iOS on 2019/4/26.
+//  Created by iOS on 2019/4/28.
 //  Copyright © 2019 iOS. All rights reserved.
 //
 
 import UIKit
 
-class PLRefreshNormalHeader: UIView, PLRefreshWidgetable {
-    
+class PLRefreshNormalFooter: UIView {
+
     var gradualAlpa = false {
         didSet {
             if gradualAlpa {
@@ -48,4 +48,5 @@ class PLRefreshNormalHeader: UIView, PLRefreshWidgetable {
             }
         })
     }
+
 }

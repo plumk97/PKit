@@ -15,14 +15,44 @@ class RefreshViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+//        self.extendedLayoutIncludesOpaqueBars = true
+//        self.automaticallyAdjustsScrollViewInsets = false
+//        self.edgesForExtendedLayout = UIRectEdge.all
+        
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
         // Do any additional setup after loading the view.
-        self.tableView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {
-            print("x")
+//        self.tableView.isHidden = true
+//        self.tableView.contentInsetAdjustmentBehavior = .never
+        self.tableView.contentInset.top = 40
+        self.tableView.contentInset.bottom = 50
+        self.tableView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {[weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                self?.tableView.pl.refresh.endTopRefresing()
+                self?.page = 1
+                self?.tableView.reloadData()
+                
+            })
         })
-        print(self.tableView.pl.refresh.scrollView)
+//        self.tableView.pl.refresh.top?.gradualAlpa = true
+        
+        self.tableView.pl.refresh.bottom = PLRefreshNormalHeader.init(callback: {[weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                self?.tableView.pl.refresh.endBottomRefresing()
+                self?.page += 1
+                self?.tableView.reloadData()
+                
+            })
+        })
+//        self.tableView.pl.refresh.bottom?.gradualAlpa = true
+        
+        print(self.tableView.safeAreaInsets)
     }
-    
+    override func viewDidLayoutSubviews() {
+        print(self.tableView.safeAreaInsets)
+    }
+    deinit {
+        print("deinit")
+    }
 }
 
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PLRefreshNormalFooter: UIView {
+class PLRefreshNormalFooter: UIView, PLRefreshWidgetable {
 
     var gradualAlpa = false {
         didSet {

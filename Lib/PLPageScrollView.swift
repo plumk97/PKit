@@ -28,6 +28,7 @@ class PLPageScrollView: UIScrollView {
             
             contentScrollViews?.forEach({
                 $0.isScrollEnabled = false
+                $0.contentInset = self.contentInset
                 self.pageScrollView.addSubview($0)
             })
             
@@ -90,6 +91,7 @@ class PLPageScrollView: UIScrollView {
         }
         
         var contentSize = scrollView.contentSize
+        contentSize.height += scrollView.contentInset.top + scrollView.contentInset.bottom
         contentSize.height += self.headerViewBottom
         if !self.contentSize.equalTo(contentSize) {
             self.contentSize = contentSize

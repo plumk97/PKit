@@ -15,16 +15,7 @@ class RefreshViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        self.extendedLayoutIncludesOpaqueBars = true
-//        self.automaticallyAdjustsScrollViewInsets = false
-//        self.edgesForExtendedLayout = UIRectEdge.all
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        // Do any additional setup after loading the view.
-//        self.tableView.isHidden = true
-//        self.tableView.contentInsetAdjustmentBehavior = .never
-        self.tableView.contentInset.top = 40
-        self.tableView.contentInset.bottom = 50
+
         self.tableView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {[weak self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 self?.tableView.pl.refresh.endTopRefresing()

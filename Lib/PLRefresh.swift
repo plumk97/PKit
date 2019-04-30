@@ -97,6 +97,7 @@ class PLRefresh: NSObject {
     /// scrollView safeAreaInsets
     private var safeArea: UIEdgeInsets {
         if #available(iOS 11.0, *) {
+            
             return self.scrollView?.safeAreaInsets ?? .zero
         }
         return .zero
@@ -153,6 +154,7 @@ class PLRefresh: NSObject {
         
         contentSizeHeight += contentInset.bottom
         contentSizeHeight += self.safeArea.bottom
+        
         return contentSizeHeight
     }
     
@@ -316,6 +318,7 @@ class PLRefresh: NSObject {
         }
         
         if self.bottom != nil && self.bottomRefreshStatus < .willBeginRefreshing {
+            print(bottomProgress)
             self.bottom?.refreshProgress(bottomProgress)
         }
         
@@ -335,11 +338,11 @@ class PLRefresh: NSObject {
         }
         
         // - reocrd
-        if self.topRefreshStatus < .willBeginRefreshing {
+        if self.topRefreshStatus < .willBeginRefreshing && self.top != nil {
             self.recordTopProgress = topProgress
         }
         
-        if self.bottomRefreshStatus < .willBeginRefreshing {
+        if self.bottomRefreshStatus < .willBeginRefreshing && self.bottom != nil {
             self.recordBottomProgress = bottomProgress
         }
     }

@@ -27,10 +27,30 @@ class PageScrollViewController: UIViewController {
         tableView2.tag = 2
         tableView2.dataSource = self
         
+        let tableView3 = UITableView.init(frame: .zero)
+        tableView3.tag = 3
+        tableView3.dataSource = self
+        
         self.pageScrollView = PLPageScrollView.init(frame: self.view.bounds)
+        self.pageScrollView.contentInsetAdjustmentBehavior = .never
         self.pageScrollView.headerView = headerView
-        self.pageScrollView.contentScrollViews = [tableView1, tableView2]
+        self.pageScrollView.contentScrollViews = [tableView1, tableView2, tableView3]
         self.view.addSubview(self.pageScrollView)
+
+        self.pageScrollView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                self.pageScrollView.pl.refresh.endTopRefresing()
+            })
+        })
+        self.pageScrollView.pl.refresh.top?.gradualAlpa = true
+        
+        tableView1.pl.refresh.bottom = PLRefreshNormalFooter.init(callback: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                tableView1.pl.refresh.endBottomRefresing()
+            })
+        })
+        tableView1.pl.refresh.bottom?.gradualAlpa = true
+        
     }
 }
 

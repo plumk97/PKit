@@ -38,7 +38,12 @@ class PLButton: UIControl {
             self.setup()
         }
     }
-    var spaceingEdge: UIEdgeInsets = .zero
+    var spaceingEdge: UIEdgeInsets = .zero {
+        didSet {
+            self.invalidateIntrinsicContentSize()
+            self.setNeedsLayout()
+        }
+    }
     
     var borderColor: UIColor = .clear{
         didSet {
@@ -234,8 +239,8 @@ class PLButton: UIControl {
         
         var rect = self.contentView.frame
         
-        rect.origin.x += self.spaceingEdge.left
-        rect.origin.y += self.spaceingEdge.top
+        rect.origin.x = self.spaceingEdge.left
+        rect.origin.y = self.spaceingEdge.top
         self.contentView.frame = rect
     }
     
@@ -250,7 +255,6 @@ class PLButton: UIControl {
         
         return size
     }
-    
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         return self.bounds.inset(by: self.pointBoundsInset).contains(point)
     }

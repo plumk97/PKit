@@ -22,6 +22,8 @@
 		81786D9B227302B6005B232D /* PLRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D9A227302B6005B232D /* PLRefresh.swift */; };
 		81786D9D22730695005B232D /* RefreshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D9C22730695005B232D /* RefreshViewController.swift */; };
 		81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786DA022731154005B232D /* PLRefreshNormalHeader.swift */; };
+		81948F562278236000868B88 /* PLPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F552278236000868B88 /* PLPageScrollView.swift */; };
+		81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F572278237A00868B88 /* PageScrollViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,8 @@
 		81786D9A227302B6005B232D /* PLRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefresh.swift; sourceTree = "<group>"; };
 		81786D9C22730695005B232D /* RefreshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshViewController.swift; sourceTree = "<group>"; };
 		81786DA022731154005B232D /* PLRefreshNormalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalHeader.swift; sourceTree = "<group>"; };
+		81948F552278236000868B88 /* PLPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPageScrollView.swift; sourceTree = "<group>"; };
+		81948F572278237A00868B88 /* PageScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageScrollViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,7 @@
 				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
 				81786D902272B095005B232D /* ButtonViewController.swift */,
 				81786D9C22730695005B232D /* RefreshViewController.swift */,
+				81948F572278237A00868B88 /* PageScrollViewController.swift */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
 				812FBF3A226EAE8A00CA1831 /* LaunchScreen.storyboard */,
@@ -98,6 +103,7 @@
 				81786D9A227302B6005B232D /* PLRefresh.swift */,
 				81786DA022731154005B232D /* PLRefreshNormalHeader.swift */,
 				815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */,
+				81948F552278236000868B88 /* PLPageScrollView.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -175,9 +181,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				81786D9B227302B6005B232D /* PLRefresh.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
+				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
 				81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */,
 				81786D9D22730695005B232D /* RefreshViewController.swift in Sources */,

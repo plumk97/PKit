@@ -61,7 +61,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="G12-7V-q4K" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4223" y="230"/>
+            <point key="canvasLocation" x="-4290" y="230"/>
         </scene>
         <!--Refresh View Controller-->
         <scene sceneID="Ke6-36-iN5">
@@ -119,7 +119,26 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ZD-86-eJX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3526.0869565217395" y="229.6875"/>
+            <point key="canvasLocation" x="-3609" y="230"/>
+        </scene>
+        <!--Page Scroll View Controller-->
+        <scene sceneID="vzd-tO-wpb">
+            <objects>
+                <viewController id="kGY-Uq-EYU" customClass="PageScrollViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="WCy-V9-w8V"/>
+                        <viewControllerLayoutGuide type="bottom" id="eoa-Uu-xKq"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kHV-xl-FLi">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="sdE-Aq-iBp"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hcd-5A-T6A" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2916" y="230"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="VQr-qO-hfd">
@@ -192,13 +211,25 @@
                                             <segue destination="d2Z-zt-1cX" kind="push" id="WeF-MO-PbP"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="h4s-97-Yi2">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="lhd-6p-O06" style="IBUITableViewCellStyleDefault" id="h4s-97-Yi2">
                                         <rect key="frame" x="0.0" y="160" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="h4s-97-Yi2" id="HDz-B3-X0v">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="376" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="PageScrollView" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="lhd-6p-O06">
+                                                    <rect key="frame" x="20" y="0.0" width="356" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="kGY-Uq-EYU" kind="push" id="NES-9l-esf"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Plx-Ar-tvr">
                                         <rect key="frame" x="0.0" y="204" width="414" height="44"/>

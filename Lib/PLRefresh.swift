@@ -13,7 +13,7 @@ typealias PLRefreshHandleCallback = ()->Void
 protocol PLRefreshWidgetable: UIView {
     
     /// 逐渐透明
-    var gradualAlpa: Bool { get set }
+    var gradualAlpha: Bool { get set }
     
     /// 刷新回调
     var handleCallback: PLRefreshHandleCallback? { get set }
@@ -51,9 +51,6 @@ class PLRefresh: NSObject {
     
     weak var scrollView: UIScrollView?
     
-    /// 是否自动控制safe area
-    var isAdjustSafeArea: Bool = true
-    
     /// 刷新高度
     var refreshHeight: CGFloat = 64
     
@@ -76,22 +73,6 @@ class PLRefresh: NSObject {
             }
             self.relayout()
         }
-    }
-    
-    /// top刷新高度 增加safeArea
-    private var safeAreaTopRefreshHeight: CGFloat {
-        if self.isAdjustSafeArea {
-            return self.refreshHeight + self.safeArea.top
-        }
-        return self.refreshHeight
-    }
-    
-    /// bottom刷新高度 增加safeArea
-    private var safeAreaBottomRefreshHeight: CGFloat {
-        if self.isAdjustSafeArea {
-            return self.refreshHeight + self.safeArea.bottom
-        }
-        return self.refreshHeight
     }
     
     /// scrollView safeAreaInsets
@@ -150,17 +131,15 @@ class PLRefresh: NSObject {
         
         let contentInset = self.realContentInset
         contentSizeHeight += contentInset.top
-        contentSizeHeight += self.safeArea.top
-        
         contentSizeHeight += contentInset.bottom
-        contentSizeHeight += self.safeArea.bottom
         
         return contentSizeHeight
     }
     
     /// scrollView 最大bottom
     private var maximumBottom: CGFloat {
-        let boundsHeight = self.scrollView?.bounds.height ?? 0
+        
+        let boundsHeight = (self.scrollView?.bounds.height ?? 0) - self.safeArea.bottom - self.safeArea.top
         return max(boundsHeight, self.currentBottom)
     }
     
@@ -228,15 +207,14 @@ class PLRefresh: NSObject {
 
         if let top = self.top {
             top.frame.size = .init(width: scrollView.frame.width, height: top.frame.height)
-            top.frame.origin = .init(x: 0, y: -top.frame.height - self.realContentInset.top - self.safeArea.top)
+            top.frame.origin = .init(x: 0, y: -top.frame.height - self.realContentInset.top)
         }
         
         if let bottom = self.bottom {
             bottom.frame.size = .init(width: scrollView.frame.width, height: bottom.frame.height)
             
             var y = self.maximumBottom
-            y -= self.realContentInset.top
-            y -= self.safeArea.top
+//            y -= self.realContentInset.top
             
             bottom.frame.origin = .init(x: 0, y: y)
         }
@@ -305,12 +283,12 @@ class PLRefresh: NSObject {
         let isDragging = self.scrollView?.isDragging ?? false
         
         // - topProgress
-        let topProgress = self.offsetMinY / -self.safeAreaTopRefreshHeight
+        let topProgress = self.offsetMinY / -self.refreshHeight
         
         // - bottomProgress
         let maximumBottom = self.maximumBottom
-        let currentBottom = (self.scrollView?.bounds.height ?? 0) + self.offsetMinY
-        let bottomProgress = (currentBottom - maximumBottom) / self.safeAreaBottomRefreshHeight
+        let currentBottom = (self.scrollView?.bounds.height ?? 0) - self.safeArea.bottom + self.offsetMinY
+        let bottomProgress = (currentBottom - maximumBottom) / self.refreshHeight
         
         // - update
         if self.top != nil && self.topRefreshStatus < .willBeginRefreshing {
@@ -318,10 +296,10 @@ class PLRefresh: NSObject {
         }
         
         if self.bottom != nil && self.bottomRefreshStatus < .willBeginRefreshing {
-            print(bottomProgress)
             self.bottom?.refreshProgress(bottomProgress)
         }
         
+        print("y", self.offsetMinY, "t", topProgress, "b", bottomProgress)
         guard isDragging else {
             /// 判断是否能进入刷新
             
@@ -354,7 +332,7 @@ class PLRefresh: NSObject {
             return
         }
         self.topRefreshStatus = .willBeginRefreshing
-        self.appendContentInset.top = self.safeAreaTopRefreshHeight
+        self.appendContentInset.top = self.refreshHeight
     }
     
     func endTopRefresing() {
@@ -372,13 +350,13 @@ class PLRefresh: NSObject {
         }
         self.bottomRefreshStatus = .willBeginRefreshing
         
-        let boundsHeight = self.scrollView?.bounds.height ?? 0
+        let boundsHeight = (self.scrollView?.bounds.height ?? 0) - self.safeArea.bottom - self.safeArea.top
         
         var appendBottom: CGFloat = 0
         if self.maximumBottom <= boundsHeight {
-            appendBottom = boundsHeight - self.currentBottom + self.safeAreaBottomRefreshHeight
+            appendBottom = boundsHeight - self.currentBottom + self.refreshHeight
         } else {
-            appendBottom = self.safeAreaBottomRefreshHeight
+            appendBottom = self.refreshHeight
         }
         self.appendContentInset.bottom = appendBottom
     }

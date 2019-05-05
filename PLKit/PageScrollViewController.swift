@@ -42,14 +42,14 @@ class PageScrollViewController: UIViewController {
                 self.pageScrollView.pl.refresh.endTopRefresing()
             })
         })
-        self.pageScrollView.pl.refresh.top?.gradualAlpa = true
+        self.pageScrollView.pl.refresh.top?.gradualAlpha = true
         
         tableView1.pl.refresh.bottom = PLRefreshNormalFooter.init(callback: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 tableView1.pl.refresh.endBottomRefresing()
             })
         })
-        tableView1.pl.refresh.bottom?.gradualAlpa = true
+        tableView1.pl.refresh.bottom?.gradualAlpha = true
         
     }
 }

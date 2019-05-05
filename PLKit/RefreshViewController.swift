@@ -15,29 +15,28 @@ class RefreshViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.tableView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {[weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
                 self?.tableView.pl.refresh.endTopRefresing()
                 self?.page = 1
                 self?.tableView.reloadData()
                 
             })
         })
-//        self.tableView.pl.refresh.top?.gradualAlpa = true
+        self.tableView.pl.refresh.top?.gradualAlpha = true
         
-        self.tableView.pl.refresh.bottom = PLRefreshNormalHeader.init(callback: {[weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+        self.tableView.pl.refresh.bottom = PLRefreshNormalFooter.init(callback: {[weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
                 self?.tableView.pl.refresh.endBottomRefresing()
                 self?.page += 1
                 self?.tableView.reloadData()
                 
             })
         })
-//        self.tableView.pl.refresh.bottom?.gradualAlpa = true
-        
-        print(self.tableView.safeAreaInsets)
+
+        self.tableView.pl.refresh.bottom?.gradualAlpha = true
     }
+    
     override func viewDidLayoutSubviews() {
         print(self.tableView.safeAreaInsets)
     }

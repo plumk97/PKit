@@ -10,9 +10,9 @@ import UIKit
 
 class PLRefreshNormalFooter: UIView, PLRefreshWidgetable {
 
-    var gradualAlpa = false {
+    var gradualAlpha = false {
         didSet {
-            if gradualAlpa {
+            if gradualAlpha {
                 self.alpha = 0
             }
         }
@@ -30,20 +30,20 @@ class PLRefreshNormalFooter: UIView, PLRefreshWidgetable {
     }
     
     func refreshProgress(_ progress: CGFloat) {
-        if self.gradualAlpa {
+        if self.gradualAlpha {
             self.alpha = progress
         }
     }
     
     func beginRefreshing() {
-        if self.gradualAlpa {
+        if self.gradualAlpha {
             self.alpha = 1
         }
     }
     
     func endRefreshing() {
         UIView.animate(withDuration: 0.25, animations: {
-            if self.gradualAlpa {
+            if self.gradualAlpha {
                 self.alpha = 0
             }
         })

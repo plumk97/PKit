@@ -50,6 +50,7 @@ fileprivate func >=(left: PLRefreshStatus, right: PLRefreshStatus) -> Bool {
 class PLRefresh: NSObject {
     
     weak var scrollView: UIScrollView?
+    weak var pageScrollView: PLPageScrollView?
     
     /// 刷新高度
     var refreshHeight: CGFloat = 64
@@ -212,11 +213,7 @@ class PLRefresh: NSObject {
         
         if let bottom = self.bottom {
             bottom.frame.size = .init(width: scrollView.frame.width, height: bottom.frame.height)
-            
-            var y = self.maximumBottom
-//            y -= self.realContentInset.top
-            
-            bottom.frame.origin = .init(x: 0, y: y)
+            bottom.frame.origin = .init(x: 0, y: self.maximumBottom)
         }
     }
     
@@ -280,7 +277,12 @@ class PLRefresh: NSObject {
         }
         self.preOffsetY = self.offsetMinY
         
-        let isDragging = self.scrollView?.isDragging ?? false
+        var isDragging = false
+        if self.pageScrollView != nil {
+            isDragging = self.pageScrollView?.isDragging ?? false
+        } else {
+            isDragging = self.scrollView?.isDragging ?? false
+        }
         
         // - topProgress
         let topProgress = self.offsetMinY / -self.refreshHeight
@@ -299,7 +301,6 @@ class PLRefresh: NSObject {
             self.bottom?.refreshProgress(bottomProgress)
         }
         
-        print("y", self.offsetMinY, "t", topProgress, "b", bottomProgress)
         guard isDragging else {
             /// 判断是否能进入刷新
             

@@ -31,11 +31,14 @@ class PageScrollViewController: UIViewController {
         tableView3.tag = 3
         tableView3.dataSource = self
         
-        self.pageScrollView = PLPageScrollView.init(frame: self.view.bounds)
+        let bottom = self.navigationController?.navigationBar.frame.maxY ?? 0
+        
+        self.pageScrollView = PLPageScrollView.init(frame: .init(x: 0, y: bottom, width: self.view.bounds.width, height: self.view.bounds.height - bottom))
         self.pageScrollView.contentInsetAdjustmentBehavior = .never
         self.pageScrollView.headerView = headerView
         self.pageScrollView.contentScrollViews = [tableView1, tableView2, tableView3]
         self.view.addSubview(self.pageScrollView)
+        tableView1.pl.refresh.pageScrollView = self.pageScrollView
 
         self.pageScrollView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
@@ -56,7 +59,7 @@ class PageScrollViewController: UIViewController {
 
 extension PageScrollViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 100
+        return 50
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

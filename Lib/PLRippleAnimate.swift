@@ -11,15 +11,21 @@ import UIKit
 class PLRippleAnimate: NSObject {
     
     private(set) var animateNumber: Int!
-    private(set) var animateDuration: TimeInterval!
     private(set) var animateLayers = [CALayer]()
+    
+    var animateDuration: TimeInterval! {
+        didSet {
+            self.restartAnimation()
+        }
+    }
+    
     var color: UIColor = .blue {
         didSet {
             self.updateLayers()
         }
     }
     
-    var scale: CGFloat = 2 {
+    var scale: CGFloat = 1.4 {
         didSet {
             self.restartAnimation()
         }

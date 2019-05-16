@@ -139,6 +139,35 @@
             </objects>
             <point key="canvasLocation" x="-2916" y="230"/>
         </scene>
+        <!--Photo Browser View Controller-->
+        <scene sceneID="1Jf-Id-ozt">
+            <objects>
+                <viewController id="aes-cx-FT8" customClass="PhotoBrowserViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="44q-Dc-j2v"/>
+                        <viewControllerLayoutGuide type="bottom" id="usb-hn-fVG"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="SQA-it-ocJ">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HDt-5z-zxj">
+                                <rect key="frame" x="118" y="248" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="btnClick:" destination="aes-cx-FT8" eventType="touchUpInside" id="ugU-Xu-AkO"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="mce-gx-hH8"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8Pz-Ny-soe" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2234.7826086956525" y="223.66071428571428"/>
+        </scene>
         <!--Root View Controller-->
         <scene sceneID="VQr-qO-hfd">
             <objects>
@@ -230,13 +259,25 @@
                                             <segue destination="kGY-Uq-EYU" kind="push" id="NES-9l-esf"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Plx-Ar-tvr">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="hEB-oT-Tbt" style="IBUITableViewCellStyleDefault" id="Plx-Ar-tvr">
                                         <rect key="frame" x="0.0" y="204" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Plx-Ar-tvr" id="1Ws-AR-vAM">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="376" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="PhotoBrowser" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hEB-oT-Tbt">
+                                                    <rect key="frame" x="20" y="0.0" width="356" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="aes-cx-FT8" kind="push" id="9XH-Pm-KSd"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Yx4-vM-XMZ">
                                         <rect key="frame" x="0.0" y="248" width="414" height="44"/>

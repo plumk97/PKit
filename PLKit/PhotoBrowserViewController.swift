@@ -10,21 +10,33 @@ import UIKit
 
 class PhotoBrowserViewController: UIViewController {
 
+    var imageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
-
         
+        imageView = UIImageView.init(frame: .init(x: 20, y: 100, width: 300, height: 199))
+        self.view.addSubview(self.imageView)
+        
+        let data = try? Data.init(contentsOf: URL.init(string: "https://ss1.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=92afee66fd36afc3110c39658318eb85/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg")!)
+        if data != nil {
+            let image = UIImage.init(data: data!)
+            imageView.image = image
+        }
     }
     
-    @IBAction func btnClick(_ sender: Any) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let plainText = try! String.init(contentsOfFile: Bundle.main.path(forResource: "imagesrc", ofType: "text")!)
         
-        let urls = [
-            "https://www.baidu.com/img/bd_logo1.png",
-            "http://b.hiphotos.baidu.com/image/h%3D300/sign=77d1cd475d43fbf2da2ca023807fca1e/9825bc315c6034a8ef5250cec5134954082376c9.jpg",
-        "http://e.hiphotos.baidu.com/image/h%3D300/sign=0734f78af2039245beb5e70fb795a4a8/b8014a90f603738d6d8d0d65bd1bb051f919ecb6.jpg",
-        "http://b.hiphotos.baidu.com/image/h%3D300/sign=ad628627aacc7cd9e52d32d909032104/32fa828ba61ea8d3fcd2e9ce9e0a304e241f5803.jpg",
-        "http://e.hiphotos.baidu.com/image/h%3D300/sign=a9e671b9a551f3dedcb2bf64a4eff0ec/4610b912c8fcc3cef70d70409845d688d53f20f7.jpg"]
-        let browser = PLPhotoBrowser(photos: urls)
+        let urls = plainText.components(separatedBy: "\n") as [PLPhotoDatasource]
+        let photos = urls.map({ (el) -> PLPhoto in
+            let photo = PLPhoto.init(data: el, thumbnail: nil)
+            return photo
+        })
+        
+        let browser = PLPhotoBrowser(photos: photos, initIndex: 8, fromView: self.imageView, fromOriginSize: self.imageView.image?.size ?? .zero)
+//        browser.setDownloadImageCallback { (url, complete) in
+//            
+//        }
         self.present(browser, animated: true, completion: nil)
     }
 }

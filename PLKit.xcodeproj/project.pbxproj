@@ -16,7 +16,7 @@
 		812FBF47226EB77400CA1831 /* PLKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF46226EB77400CA1831 /* PLKit.swift */; };
 		814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */; };
 		814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */; };
-		814972FE228D6EF100F63C96 /* PLPhotoBrowserScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972FD228D6EF100F63C96 /* PLPhotoBrowserScrollView.swift */; };
+		814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */; };
 		815F4FD722757F93003BA591 /* PLRefreshNormalFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */; };
 		81786D912272B095005B232D /* ButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D902272B095005B232D /* ButtonViewController.swift */; };
 		81786D932272B13B005B232D /* PLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D922272B13B005B232D /* PLButton.swift */; };
@@ -27,6 +27,7 @@
 		81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786DA022731154005B232D /* PLRefreshNormalHeader.swift */; };
 		81948F562278236000868B88 /* PLPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F552278236000868B88 /* PLPageScrollView.swift */; };
 		81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F572278237A00868B88 /* PageScrollViewController.swift */; };
+		81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */ = {isa = PBXBuildFile; fileRef = 81D5BA40228E964F00C9BF51 /* imagesrc.text */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +42,7 @@
 		812FBF46226EB77400CA1831 /* PLKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLKit.swift; sourceTree = "<group>"; };
 		814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPhotoBrowser.swift; sourceTree = "<group>"; };
 		814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoBrowserViewController.swift; sourceTree = "<group>"; };
-		814972FD228D6EF100F63C96 /* PLPhotoBrowserScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPhotoBrowserScrollView.swift; sourceTree = "<group>"; };
+		814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPhotoBrowserPage.swift; sourceTree = "<group>"; };
 		815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalFooter.swift; sourceTree = "<group>"; };
 		81786D902272B095005B232D /* ButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewController.swift; sourceTree = "<group>"; };
 		81786D922272B13B005B232D /* PLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLButton.swift; sourceTree = "<group>"; };
@@ -52,6 +53,7 @@
 		81786DA022731154005B232D /* PLRefreshNormalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalHeader.swift; sourceTree = "<group>"; };
 		81948F552278236000868B88 /* PLPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPageScrollView.swift; sourceTree = "<group>"; };
 		81948F572278237A00868B88 /* PageScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageScrollViewController.swift; sourceTree = "<group>"; };
+		81D5BA40228E964F00C9BF51 /* imagesrc.text */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = imagesrc.text; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				81786D9C22730695005B232D /* RefreshViewController.swift */,
 				81948F572278237A00868B88 /* PageScrollViewController.swift */,
 				814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */,
+				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
 				812FBF3A226EAE8A00CA1831 /* LaunchScreen.storyboard */,
@@ -112,7 +115,7 @@
 				815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */,
 				81948F552278236000868B88 /* PLPageScrollView.swift */,
 				814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */,
-				814972FD228D6EF100F63C96 /* PLPhotoBrowserScrollView.swift */,
+				814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -176,6 +179,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				812FBF3C226EAE8A00CA1831 /* LaunchScreen.storyboard in Resources */,
+				81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */,
 				81786D962272B9AE005B232D /* arrow_bottom_small@2x.png in Resources */,
 				812FBF39226EAE8A00CA1831 /* Assets.xcassets in Resources */,
 				81786D972272B9AE005B232D /* arrow_bottom_small@3x.png in Resources */,
@@ -193,7 +197,7 @@
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
-				814972FE228D6EF100F63C96 /* PLPhotoBrowserScrollView.swift in Sources */,
+				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,
 				81786D9B227302B6005B232D /* PLRefresh.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,

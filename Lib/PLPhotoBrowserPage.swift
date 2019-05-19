@@ -13,14 +13,12 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     
     private var beginPoint = CGPoint.zero
     var isRunning = false
-//    var isChecked = false
     override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         self.state = .began
-//        self.isChecked = false
         self.isRunning = false
         beginPoint = touches.first?.location(in: self.view) ?? .zero
     }
@@ -33,15 +31,6 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
             self.state = .changed
             self.isRunning = true
         }
-        
-
-//        if point.y <= beginPoint.y && !self.isChecked {
-//            self.reset()
-//            self.state = .failed
-//        } else {
-//
-//        }
-//        self.isChecked = true
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {

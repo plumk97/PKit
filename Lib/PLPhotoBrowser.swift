@@ -16,9 +16,10 @@ extension Data: PLPhotoDatasource {}
 extension String: PLPhotoDatasource {}
 
 class PLPhoto: NSObject {
+    // 缩略图大小 不设置默认取缩略图大小
+    var thumbnailSize: CGSize = .zero
     var thumbnail: PLPhotoDatasource?
     var data: PLPhotoDatasource?
-    
     convenience init(data: PLPhotoDatasource?, thumbnail: PLPhotoDatasource?) {
         self.init()
         self.data = data
@@ -37,7 +38,7 @@ typealias PLPhotoBrowserDidChangePageCallback = (PLPhotoBrowser, Int)->Void
 
 class PLPhotoBrowser: UIViewController {
     
-    convenience init(photos: [PLPhoto], initIndex: Int = 0, fromView: UIImageView? = nil, fromOriginSize: CGSize = .zero) {
+    convenience init(photos: [PLPhoto], initIndex: Int = 0, fromView: UIView? = nil, fromOriginSize: CGSize = .zero) {
         self.init()
         self.fromOriginSize = fromOriginSize
         self.fromView = fromView
@@ -77,12 +78,12 @@ class PLPhotoBrowser: UIViewController {
         }
         
     }
-
+    
     var itemSpacing: CGFloat = 10
     var enableSingleTapClose: Bool = true
     var didChangePageCallback: PLPhotoBrowserDidChangePageCallback?
     
-    weak var fromView: UIImageView?
+    weak var fromView: UIView?
     var fromOriginSize: CGSize = .zero
     
     private(set) var photos: [PLPhoto]? {
@@ -206,11 +207,11 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
         didSet {
             
             if let thumbnail = photo?.thumbnail {
-                self.loadPhoto(thumbnail)
+                self.loadPhoto(thumbnail, forceSize: photo?.thumbnailSize)
             }
             
             if let datasource = photo?.data {
-                self.loadPhoto(datasource)
+                self.loadPhoto(datasource, forceSize: nil)
             }
         }
     }
@@ -226,7 +227,7 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
         }
         
         self.page.longPressCallback = {[unowned self] _ in
-            guard let image = self.page.image else {
+            guard let image = self.page.dataSource?.image else {
                 return
             }
             let activity = UIActivityViewController.init(activityItems: [image], applicationActivities: nil)
@@ -263,45 +264,45 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
         self.waitIndicator.center = .init(x: bounds.width / 2, y: bounds.height / 2)
     }
     
-    func loadPhoto(_ datasource: PLPhotoDatasource) {
+    func loadPhoto(_ dataSource: PLPhotoDatasource, forceSize: CGSize?) {
         
-        if let image = datasource as? UIImage {
-            self.page.image = image
+        if let image = dataSource as? UIImage {
+            self.page.dataSource = .init(image: image, forceSize: forceSize)
             return
         }
         
-        if let data = datasource as? Data {
+        if let data = dataSource as? Data {
             let image = UIImage.init(data: data)
-            self.page.image = image
+            self.page.dataSource = .init(image: image, forceSize: forceSize)
             return
         }
         
-        if let str = datasource as? String, let url = URL.init(string: str) {
-            self.parseURL(url)
+        if let str = dataSource as? String, let url = URL.init(string: str) {
+            self.parseURL(url, forceSize: forceSize)
             return
         }
         
-        if let url = datasource as? URL {
-            self.parseURL(url)
+        if let url = dataSource as? URL {
+            self.parseURL(url, forceSize: forceSize)
             return
         }
         
-        self.page.image = nil
+        self.page.dataSource = nil
     }
     
-    func parseURL(_ url: URL) {
+    func parseURL(_ url: URL, forceSize: CGSize?) {
         if url.isFileURL {
             guard let data = try? Data.init(contentsOf: url) else {
                 return
             }
             
             let image = UIImage.init(data: data)
-            self.page.image = image
+            self.page.dataSource = .init(image: image, forceSize: forceSize)
         } else {
             self.waitIndicator.startAnimating()
             self.browser?.downloadCallback?(url, {[weak self] image in
                 self?.waitIndicator.stopAnimating()
-                self?.page.image = image
+                self?.page.dataSource = .init(image: image, forceSize: forceSize)
             })
         }
     }
@@ -371,7 +372,10 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             }
             // init snapshotView
             let snapshotView = browser?.fromView?.snapshotView(afterScreenUpdates: true)
-            let fromOriginSize = browser?.fromOriginSize ?? .zero
+            var fromOriginSize = browser?.fromOriginSize ?? .zero
+            if fromOriginSize.equalTo(.zero) {
+                fromOriginSize = browser?.fromView?.frame.size ?? .zero
+            }
             
             if let snapshotView = snapshotView {
                 let fromView = browser!.fromView!
@@ -380,7 +384,7 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
                 containerView.addSubview(snapshotView)
                 browser?.collectionView.isHidden = true
             }
-
+            
             // -
             browserView?.alpha = 0
             let animations: () -> Void = {
@@ -410,21 +414,21 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             
             
             UIView.animate(withDuration: self.transitionDuration(using: nil), animations: animations) { (_) in
-//                another?.view.removeFromSuperview()
+                //                another?.view.removeFromSuperview()
                 snapshotView?.removeFromSuperview()
                 browser?.collectionView.isHidden = false
                 transitionContext.completeTransition(true)
             }
             
         } else {
-
+            
             // init snapshotView
             
-            let imageView: UIImageView? = browser?.fromView != nil ? browser?.currentBrowserPage().imageView : nil
-            let snapshotView = imageView?.snapshotView(afterScreenUpdates: true)
+            let fromView: UIView? = browser?.fromView != nil ? browser?.currentBrowserPage().imageView : nil
+            let snapshotView = fromView?.snapshotView(afterScreenUpdates: true)
             
             if let snapshotView = snapshotView {
-                snapshotView.frame = imageView!.frame
+                snapshotView.frame = fromView!.frame
                 containerView.addSubview(snapshotView)
                 browser?.collectionView.isHidden = true
             }

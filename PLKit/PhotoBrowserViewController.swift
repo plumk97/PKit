@@ -17,7 +17,11 @@ class PhotoBrowserViewController: UIViewController {
         imageView = UIImageView.init(frame: .init(x: 20, y: 100, width: 300, height: 199))
         self.view.addSubview(self.imageView)
         
-        let data = try? Data.init(contentsOf: URL.init(string: "https://ss1.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=92afee66fd36afc3110c39658318eb85/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg")!)
+        self.loadImage(url: "https://ss1.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=92afee66fd36afc3110c39658318eb85/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg")
+    }
+    
+    func loadImage(url: String) {
+        let data = try? Data.init(contentsOf: URL.init(string: url)!)
         if data != nil {
             let image = UIImage.init(data: data!)
             imageView.image = image
@@ -34,9 +38,10 @@ class PhotoBrowserViewController: UIViewController {
         })
         
         let browser = PLPhotoBrowser(photos: photos, initIndex: 8, fromView: self.imageView, fromOriginSize: self.imageView.image?.size ?? .zero)
-//        browser.setDownloadImageCallback { (url, complete) in
-//            
-//        }
+        browser.didChangePageCallback = { _, index in
+            self.loadImage(url: urls[index] as! String)
+            print(index)
+        }
         self.present(browser, animated: true, completion: nil)
     }
 }

@@ -38,7 +38,11 @@ class RefreshViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        print(self.tableView.safeAreaInsets)
+        if #available(iOS 11.0, *) {
+            print(self.tableView.safeAreaInsets)
+        } else {
+            // Fallback on earlier versions
+        }
     }
     deinit {
         print("deinit")

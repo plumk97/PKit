@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import YYImage
 
 protocol PLPhotoDatasource {}
 extension UIImage: PLPhotoDatasource {}
@@ -30,6 +31,9 @@ typealias PLPhotoBrowserDownloadCompletionCallback = (UIImage?)->Void
 
 /// 下载Callback
 typealias PLPhotoBrowserDownloadCallback = (URL, @escaping PLPhotoBrowserDownloadCompletionCallback)->Void
+
+/// 界面改变Callback
+typealias PLPhotoBrowserDidChangePageCallback = (PLPhotoBrowser, Int)->Void
 
 class PLPhotoBrowser: UIViewController {
     
@@ -67,7 +71,7 @@ class PLPhotoBrowser: UIViewController {
                     return
                 }
                 
-                image = UIImage.init(data: data)
+                image = YYImage.init(data: data)
                 
             }).resume()
         }
@@ -76,19 +80,23 @@ class PLPhotoBrowser: UIViewController {
 
     var itemSpacing: CGFloat = 10
     var enableSingleTapClose: Bool = true
+    var didChangePageCallback: PLPhotoBrowserDidChangePageCallback?
     
-    private(set) weak var fromView: UIImageView?
-    private(set) var fromOriginSize: CGSize = .zero
+    weak var fromView: UIImageView?
+    var fromOriginSize: CGSize = .zero
     
     private(set) var photos: [PLPhoto]? {
         didSet {
-            
             self.updatePageTips()
         }
     }
+    
     private(set) var currentPageIndex: Int = 0 {
         didSet {
             self.updatePageTips()
+            if oldValue != currentPageIndex {
+                self.didChangePageCallback?(self, currentPageIndex)
+            }
         }
     }
     
@@ -140,7 +148,11 @@ class PLPhotoBrowser: UIViewController {
         
         self.collectionView.frame = frame
         
-        self.pageTipsLabel.frame = .init(x: 0, y: self.view.bounds.height - self.view.safeAreaInsets.bottom - self.pageTipsLabel.font.lineHeight - 30, width: self.view.bounds.width, height: self.pageTipsLabel.font.lineHeight)
+        if #available(iOS 11.0, *) {
+            self.pageTipsLabel.frame = .init(x: 0, y: self.view.bounds.height - self.view.safeAreaInsets.bottom - self.pageTipsLabel.font.lineHeight - 30, width: self.view.bounds.width, height: self.pageTipsLabel.font.lineHeight)
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     /// 设置下载图片方法
@@ -218,6 +230,8 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
                 return
             }
             let activity = UIActivityViewController.init(activityItems: [image], applicationActivities: nil)
+            activity.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
+            }
             self.browser?.present(activity, animated: true, completion: nil)
         }
         
@@ -269,7 +283,10 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
         
         if let url = datasource as? URL {
             self.parseURL(url)
+            return
         }
+        
+        self.page.image = nil
     }
     
     func parseURL(_ url: URL) {

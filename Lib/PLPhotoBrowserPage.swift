@@ -8,6 +8,7 @@
 
 import UIKit
 import UIKit.UIGestureRecognizerSubclass
+import YYImage
 
 fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     
@@ -18,7 +19,7 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        self.state = .began
+        
         self.isRunning = false
         beginPoint = touches.first?.location(in: self.view) ?? .zero
     }
@@ -27,18 +28,26 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
 
         let point = touches.first?.location(in: self.view) ?? .zero
         
-        if point.y - beginPoint.y > 10 {
+        if point.y - beginPoint.y > 5 ||  point.y - beginPoint.y < -5 {
+            self.state = .began
             self.state = .changed
             self.isRunning = true
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        self.state = .ended
+        if self.state != .possible {
+            self.state = .ended
+            self.reset()
+        }
+        
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        self.state = .cancelled
+        if self.state != .possible {
+            self.state = .cancelled
+            self.reset()
+        }
     }
 }
 
@@ -48,7 +57,7 @@ class PLPhotoBrowserPage: UIScrollView {
     typealias PanCloseCallback = (PLPhotoBrowserPage, CGFloat) -> Void
     typealias ClosedCallback = (PLPhotoBrowserPage) -> Void
     
-    var imageView: UIImageView!
+    var imageView: YYAnimatedImageView!
     var image: UIImage? {
         didSet {
             self.imageView.image = image
@@ -67,7 +76,7 @@ class PLPhotoBrowserPage: UIScrollView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.imageView = UIImageView.init(frame: .zero)
+        self.imageView = YYAnimatedImageView.init(frame: .zero)
         self.addSubview(self.imageView)
         
         self.delegate = self
@@ -110,7 +119,7 @@ class PLPhotoBrowserPage: UIScrollView {
         guard let image = self.imageView.image else {
             return
         }
-        
+  
         var imageSize = image.size
         
         let ratio = min(1, min(self.bounds.width / imageSize.width, self.bounds.height / imageSize.height))
@@ -199,20 +208,11 @@ extension PLPhotoBrowserPage: UIScrollViewDelegate {
 extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-
+        
         if gestureRecognizer == self.panGesture {
 
             if otherGestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer != self.panGestureRecognizer {
-                if self.panGesture.isRunning {
-                    return false
-                }
-                
-                if otherGestureRecognizer.state == .began {
-                    self.panGesture.reset()
-                    self.panGesture.state = .failed
-                }
-                
-                return true
+                return !self.panGesture.isRunning
             }
         }
         return false
@@ -226,6 +226,6 @@ extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
             }
             return floor(self.contentSize.height) <= self.bounds.height && floor(self.contentSize.width) <= self.bounds.width
         }
-        return true
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
 }

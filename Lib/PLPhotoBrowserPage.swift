@@ -13,41 +13,70 @@ import YYImage
 fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     
     private var beginPoint = CGPoint.zero
+    private var point = CGPoint.zero
+    private weak var firstTouch: UITouch?
     var isRunning = false
-    override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
+    
+    
+    override func reset() {
+        super.reset()
+        self.firstTouch = nil
+    }
+    
+    override func location(in view: UIView?) -> CGPoint {
+        return self.point
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        
+        guard self.firstTouch == nil else {
+            return
+        }
+        self.firstTouch = touches.first
         self.isRunning = false
-        beginPoint = touches.first?.location(in: self.view) ?? .zero
+        beginPoint = self.firstTouch?.location(in: self.view) ?? .zero
+        point = beginPoint
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard self.firstTouch!.phase == .moved else {
+            return
+        }
         
-        let point = touches.first?.location(in: self.view) ?? .zero
-        
-        if point.y - beginPoint.y > 5 ||  point.y - beginPoint.y < -5 {
-            self.state = .began
-            self.state = .changed
-            self.isRunning = true
+        point = self.firstTouch?.location(in: self.view) ?? .zero
+        if point.y - beginPoint.y > 20 ||  point.y - beginPoint.y < -20 {
+            if self.state != .began {
+                self.state = .began
+                self.isRunning = true
+            } else {
+                self.state = .changed
+            }
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard self.firstTouch!.phase == .ended else {
+            return
+        }
+        point = self.firstTouch?.location(in: self.view) ?? .zero
         if self.state != .possible {
             self.state = .ended
-            self.reset()
         }
         
+        self.reset()
     }
     
+    
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+        guard self.firstTouch!.phase == .cancelled else {
+            return
+        }
+        
+        point = self.firstTouch?.location(in: self.view) ?? .zero
         if self.state != .possible {
             self.state = .cancelled
-            self.reset()
         }
+        
+        self.reset()
     }
 }
 
@@ -99,11 +128,11 @@ class PLPhotoBrowserPage: UIScrollView {
         let doubleTap = UITapGestureRecognizer.init(target: self, action: #selector(doubleTapGestureHandle(_ :)))
         doubleTap.numberOfTapsRequired = 2
         self.addGestureRecognizer(doubleTap)
-        
+
         let singleTap = UITapGestureRecognizer.init(target: self, action: #selector(singleTapGestureHandle(_ :)))
         self.addGestureRecognizer(singleTap)
         singleTap.require(toFail: doubleTap)
-        
+
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressGestureHandle(_ :)))
         self.addGestureRecognizer(longPress)
         
@@ -245,10 +274,7 @@ extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
         if gestureRecognizer == self.panGesture {
-            
-            if otherGestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer != self.panGestureRecognizer {
-                return !self.panGesture.isRunning
-            }
+            return !self.panGesture.isRunning
         }
         return false
     }
@@ -260,6 +286,8 @@ extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
                 return false
             }
             return floor(self.contentSize.height) <= self.bounds.height && floor(self.contentSize.width) <= self.bounds.width
+        } else if self.panGesture.isRunning {
+            return false
         }
         return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }

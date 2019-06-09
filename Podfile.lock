@@ -1,15 +1,22 @@
 PODS:
+<<<<<<< HEAD
   - MJRefresh (3.2.0)
+=======
+>>>>>>> 5b6d4cb925dd6464fdc0bf20638fc565fcf43fc9
   - YYImage/Core (1.0.4)
   - YYImage/WebP (1.0.4):
     - YYImage/Core
 
 DEPENDENCIES:
+<<<<<<< HEAD
   - MJRefresh (~> 3.2.0)
+=======
+>>>>>>> 5b6d4cb925dd6464fdc0bf20638fc565fcf43fc9
   - YYImage/WebP (~> 1.0.4)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+<<<<<<< HEAD
     - MJRefresh
     - YYImage
 
@@ -20,3 +27,13 @@ SPEC CHECKSUMS:
 PODFILE CHECKSUM: 09e763bfeeb5fb8c229f012aa42adf0a0bb8a761
 
 COCOAPODS: 1.7.0.rc.2
+=======
+    - YYImage
+
+SPEC CHECKSUMS:
+  YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
+
+PODFILE CHECKSUM: 362efac4ed2498f2a27d8dd5ab0b9b9e3fd26298
+
+COCOAPODS: 1.7.0.beta.3
+>>>>>>> 5b6d4cb925dd6464fdc0bf20638fc565fcf43fc9

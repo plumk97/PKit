@@ -39,7 +39,11 @@ class PageScrollViewController: UIViewController {
         let bottom = self.navigationController?.navigationBar.frame.maxY ?? 0
         
         self.pageScrollView = PLPageScrollView.init(frame: .init(x: 0, y: bottom, width: self.view.bounds.width, height: self.view.bounds.height - bottom))
-        self.pageScrollView.contentInsetAdjustmentBehavior = .never
+        if #available(iOS 11.0, *) {
+            self.pageScrollView.contentInsetAdjustmentBehavior = .never
+        } else {
+            // Fallback on earlier versions
+        }
         self.pageScrollView.headerView = headerView
         self.pageScrollView.contentScrollViews = [tableView1, tableView2, tableView3]
         self.view.addSubview(self.pageScrollView)

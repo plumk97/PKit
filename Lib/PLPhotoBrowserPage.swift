@@ -128,11 +128,11 @@ class PLPhotoBrowserPage: UIScrollView {
         let doubleTap = UITapGestureRecognizer.init(target: self, action: #selector(doubleTapGestureHandle(_ :)))
         doubleTap.numberOfTapsRequired = 2
         self.addGestureRecognizer(doubleTap)
-        
+
         let singleTap = UITapGestureRecognizer.init(target: self, action: #selector(singleTapGestureHandle(_ :)))
         self.addGestureRecognizer(singleTap)
         singleTap.require(toFail: doubleTap)
-        
+
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressGestureHandle(_ :)))
         self.addGestureRecognizer(longPress)
         

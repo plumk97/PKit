@@ -236,11 +236,14 @@ class PLButton: UIControl {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        var bounds = self.bounds
+        bounds.size.width -= self.spaceingEdge.left + self.spaceingEdge.right
+        bounds.size.height -= self.spaceingEdge.top + self.spaceingEdge.bottom
         
         var rect = self.contentView.frame
+        rect.origin.x = self.spaceingEdge.left + (bounds.width - rect.width) / 2
+        rect.origin.y = self.spaceingEdge.top + (bounds.height - rect.height) / 2
         
-        rect.origin.x = self.spaceingEdge.left
-        rect.origin.y = self.spaceingEdge.top
         self.contentView.frame = rect
     }
     

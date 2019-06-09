@@ -7,7 +7,11 @@
 //
 
 import UIKit
+import MJRefresh
 
+class PLTable: UITableView {
+ 
+}
 class PageScrollViewController: UIViewController {
 
     var pageScrollView: PLPageScrollView!
@@ -19,9 +23,10 @@ class PageScrollViewController: UIViewController {
         let headerView = UIView.init(frame: .init(x: 0, y: 0, width: self.view.frame.width, height: 200))
         headerView.backgroundColor = .blue
         
-        let tableView1 = UITableView.init(frame: .zero)
+        let tableView1 = PLTable.init(frame: .zero)
         tableView1.tag = 1
         tableView1.dataSource = self
+        tableView1.delegate = self
         
         let tableView2 = UITableView.init(frame: .zero)
         tableView2.tag = 2
@@ -38,26 +43,23 @@ class PageScrollViewController: UIViewController {
         self.pageScrollView.headerView = headerView
         self.pageScrollView.contentScrollViews = [tableView1, tableView2, tableView3]
         self.view.addSubview(self.pageScrollView)
-        tableView1.pl.refresh.pageScrollView = self.pageScrollView
 
-        self.pageScrollView.pl.refresh.top = PLRefreshNormalHeader.init(callback: {
+        self.pageScrollView.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {[unowned self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                self.pageScrollView.pl.refresh.endTopRefresing()
+                self.pageScrollView.mj_header.endRefreshing()
             })
         })
-        self.pageScrollView.pl.refresh.top?.gradualAlpha = true
         
-        tableView1.pl.refresh.bottom = PLRefreshNormalFooter.init(callback: {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                tableView1.pl.refresh.endBottomRefresing()
+        tableView1.mj_footer = MJRefreshBackNormalFooter.init(refreshingBlock: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                tableView1.mj_footer.endRefreshing()
             })
         })
-        tableView1.pl.refresh.bottom?.gradualAlpha = true
         
     }
 }
 
-extension PageScrollViewController: UITableViewDataSource {
+extension PageScrollViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 50
     }
@@ -70,5 +72,9 @@ extension PageScrollViewController: UITableViewDataSource {
         cell?.textLabel?.text = "\(tableView.tag)--\(indexPath.row)"
         
         return cell!
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(tableView.pl_pageScrollView)
     }
 }

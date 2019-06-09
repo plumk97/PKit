@@ -8,48 +8,75 @@
 
 import UIKit
 import UIKit.UIGestureRecognizerSubclass
+import YYImage
 
 fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     
     private var beginPoint = CGPoint.zero
+    private var point = CGPoint.zero
+    private weak var firstTouch: UITouch?
     var isRunning = false
-//    var isChecked = false
-    override func shouldRequireFailure(of otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false
+    
+    
+    override func reset() {
+        super.reset()
+        self.firstTouch = nil
+    }
+    
+    override func location(in view: UIView?) -> CGPoint {
+        return self.point
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-        self.state = .began
-//        self.isChecked = false
+        guard self.firstTouch == nil else {
+            return
+        }
+        self.firstTouch = touches.first
         self.isRunning = false
-        beginPoint = touches.first?.location(in: self.view) ?? .zero
+        beginPoint = self.firstTouch?.location(in: self.view) ?? .zero
+        point = beginPoint
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-
-        let point = touches.first?.location(in: self.view) ?? .zero
-        
-        if point.y - beginPoint.y > 10 {
-            self.state = .changed
-            self.isRunning = true
+        guard self.firstTouch?.phase == .moved else {
+            return
         }
         
-
-//        if point.y <= beginPoint.y && !self.isChecked {
-//            self.reset()
-//            self.state = .failed
-//        } else {
-//
-//        }
-//        self.isChecked = true
+        point = self.firstTouch?.location(in: self.view) ?? .zero
+        if point.y - beginPoint.y > 20 ||  point.y - beginPoint.y < -20 {
+            if self.state != .began {
+                self.state = .began
+                self.isRunning = true
+            } else {
+                self.state = .changed
+            }
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        self.state = .ended
+        guard self.firstTouch?.phase == .ended else {
+            return
+        }
+        point = self.firstTouch?.location(in: self.view) ?? .zero
+        if self.state != .possible {
+            self.state = .ended
+        }
+        
+        self.reset()
     }
     
+    
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        self.state = .cancelled
+        guard self.firstTouch?.phase == .cancelled else {
+            return
+        }
+        
+        point = self.firstTouch?.location(in: self.view) ?? .zero
+        if self.state != .possible {
+            self.state = .cancelled
+        }
+        
+        self.reset()
     }
 }
 
@@ -59,11 +86,23 @@ class PLPhotoBrowserPage: UIScrollView {
     typealias PanCloseCallback = (PLPhotoBrowserPage, CGFloat) -> Void
     typealias ClosedCallback = (PLPhotoBrowserPage) -> Void
     
-    var imageView: UIImageView!
-    var image: UIImage? {
+    class DataSource: NSObject {
+        var image: UIImage?
+        var forceSize: CGSize?
+        
+        convenience init(image: UIImage?, forceSize: CGSize?) {
+            self.init()
+            self.image = image
+            self.forceSize = forceSize
+        }
+    }
+    
+    var imageView: YYAnimatedImageView!
+    var dataSource: DataSource? {
         didSet {
-            self.imageView.image = image
-            self.reset()
+            self.imageView.image = dataSource?.image
+            self.needReset = true
+            self.setNeedsLayout()
         }
     }
     
@@ -75,15 +114,16 @@ class PLPhotoBrowserPage: UIScrollView {
     fileprivate var panGesture: PLPhotoClosePanGestureRecognizer!
     private var panLastPoint: CGPoint = .zero
     private var panBeginY: CGFloat = 0
+    private var needReset = false
+    private var disableLayout = false
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.imageView = UIImageView.init(frame: .zero)
+        self.imageView = YYAnimatedImageView.init(frame: .zero)
         self.addSubview(self.imageView)
         
         self.delegate = self
-        self.minimumZoomScale = 1
-        self.maximumZoomScale = 3
         
         let doubleTap = UITapGestureRecognizer.init(target: self, action: #selector(doubleTapGestureHandle(_ :)))
         doubleTap.numberOfTapsRequired = 2
@@ -100,6 +140,7 @@ class PLPhotoBrowserPage: UIScrollView {
         panGesture = PLPhotoClosePanGestureRecognizer.init(target: self, action: #selector(panGestureHandle(_ :)))
         panGesture.delegate = self
         self.addGestureRecognizer(panGesture)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -108,11 +149,29 @@ class PLPhotoBrowserPage: UIScrollView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.update()
+        
+        if self.disableLayout == false {
+            if self.needReset {
+                self.reset()
+            } else {
+                self.update()
+            }
+        }
     }
     
     func reset() {
+        
+        self.minimumZoomScale = 1
+        
+        let imageSize = self.imageView.image?.size ?? .zero
+        if imageSize.equalTo(.zero) {
+            self.maximumZoomScale = 1
+        } else {
+            let ratio = min(imageSize.width / self.bounds.width, imageSize.height / self.bounds.height)
+            self.maximumZoomScale = 1 / ratio + 2
+        }
         self.zoomScale = self.minimumZoomScale
+        self.needReset = false
         self.update()
     }
     
@@ -123,6 +182,10 @@ class PLPhotoBrowserPage: UIScrollView {
         }
         
         var imageSize = image.size
+        if self.dataSource?.forceSize != nil && !(self.dataSource!.forceSize!.equalTo(.zero)) {
+            imageSize = self.dataSource!.forceSize!
+        }
+        
         
         let ratio = min(1, min(self.bounds.width / imageSize.width, self.bounds.height / imageSize.height))
         
@@ -136,7 +199,7 @@ class PLPhotoBrowserPage: UIScrollView {
         
         let width = max(self.bounds.width, self.contentSize.width)
         let height = max(self.bounds.height, self.contentSize.height)
-     
+        
         self.imageView.frame.origin = .init(x: (width - imageSize.width) / 2, y: (height - imageSize.height) / 2)
     }
     
@@ -167,30 +230,30 @@ class PLPhotoBrowserPage: UIScrollView {
         let point = sender.location(in: self)
         var progress: CGFloat = 0
         if sender.state == .began {
-            self.panBeginY = self.imageView.frame.maxY
+            
+            self.panBeginY = point.y
+            self.disableLayout = true
         } else if sender.state == .changed {
             
-            let appendX = point.x - self.panLastPoint.x
-            let appendY = point.y - self.panLastPoint.y
-            
-            var center = self.imageView.center
-            center.x += appendX
-            center.y += appendY
-            self.imageView.center = center
-            progress = (self.imageView.frame.maxY - self.panBeginY) / (self.bounds.height - self.panBeginY)
+            progress = (point.y - self.panBeginY) / 200
+            self.imageView.transform = CGAffineTransform.identity.translatedBy(x: 0, y: point.y - self.panBeginY).scaledBy(x: min(1, max(0.6, 1 - progress)), y: min(1, max(0.6, 1 - progress)))
             self.panCloseCallback?(self, progress)
         } else {
-            progress = (self.imageView.frame.maxY - self.panBeginY) / (self.bounds.height - self.panBeginY)
-            if progress >= 0.8 {
+            
+            progress = (point.y - self.panBeginY) / 200
+            if progress >= 0.6 {
                 self.closedCallback?(self)
+                self.disableLayout = false
             } else {
                 self.panCloseCallback?(self, 0)
-                UIView.animate(withDuration: 0.25) {
-                    self.imageView.center = .init(x: self.bounds.width / 2, y: self.bounds.height / 2)
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.imageView.transform = .identity
+                }) { (_) in
+                    self.disableLayout = false
                 }
             }
-            
         }
+        
         self.panLastPoint = point
     }
 }
@@ -210,21 +273,9 @@ extension PLPhotoBrowserPage: UIScrollViewDelegate {
 extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-
+        
         if gestureRecognizer == self.panGesture {
-
-            if otherGestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer != self.panGestureRecognizer {
-                if self.panGesture.isRunning {
-                    return false
-                }
-                
-                if otherGestureRecognizer.state == .began {
-                    self.panGesture.reset()
-                    self.panGesture.state = .failed
-                }
-                
-                return true
-            }
+            return !self.panGesture.isRunning
         }
         return false
     }
@@ -232,11 +283,13 @@ extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == self.panGesture {
             
-            if self.image == nil {
+            if self.dataSource?.image == nil {
                 return false
             }
             return floor(self.contentSize.height) <= self.bounds.height && floor(self.contentSize.width) <= self.bounds.width
+        } else if self.panGesture.isRunning {
+            return false
         }
-        return true
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
 }

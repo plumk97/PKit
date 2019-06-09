@@ -23,6 +23,9 @@ class RippleAnimateViewController: UIViewController {
         self.view.addSubview(rippleView)
         
         rippleView.pl.rippleAnimate.startAnimation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            rippleView.pl.rippleAnimate.animateNumber = 2
+        }
     }
 }
 

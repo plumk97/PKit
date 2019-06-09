@@ -158,6 +158,25 @@
             </objects>
             <point key="canvasLocation" x="-2234.7826086956525" y="223.66071428571428"/>
         </scene>
+        <!--Badge View View Controller-->
+        <scene sceneID="dfF-fb-KTp">
+            <objects>
+                <viewController id="sYx-g9-xuE" customClass="BadgeViewViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="wEE-5v-90i"/>
+                        <viewControllerLayoutGuide type="bottom" id="YRf-Yf-vfx"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QcD-Ts-qhj">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="zQp-BR-XtM"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WFj-fh-Ics" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1561" y="230"/>
+        </scene>
         <!--Root View Controller-->
         <scene sceneID="VQr-qO-hfd">
             <objects>
@@ -269,13 +288,25 @@
                                             <segue destination="aes-cx-FT8" kind="push" id="9XH-Pm-KSd"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Yx4-vM-XMZ">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="3DZ-dx-Yz7" style="IBUITableViewCellStyleDefault" id="Yx4-vM-XMZ">
                                         <rect key="frame" x="0.0" y="248" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Yx4-vM-XMZ" id="6aY-8U-pxk">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="376" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="BadgeView" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3DZ-dx-Yz7">
+                                                    <rect key="frame" x="20" y="0.0" width="356" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="sYx-g9-xuE" kind="push" id="Ycx-Zu-2IJ"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="MHl-uV-YoF">
                                         <rect key="frame" x="0.0" y="292" width="414" height="44"/>

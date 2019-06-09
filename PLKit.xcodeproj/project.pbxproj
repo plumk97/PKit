@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF222ACEBF80021641A /* PLBadgeView.swift */; };
+		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
 		812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF31226EAE8800CA1831 /* AppDelegate.swift */; };
 		812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */; };
 		812FBF37226EAE8800CA1831 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 812FBF35226EAE8800CA1831 /* Main.storyboard */; };
@@ -34,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		51014EF222ACEBF80021641A /* PLBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBadgeView.swift; sourceTree = "<group>"; };
+		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
 		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
 		812FBF2E226EAE8800CA1831 /* PLKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PLKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		812FBF31226EAE8800CA1831 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				81786D9C22730695005B232D /* RefreshViewController.swift */,
 				81948F572278237A00868B88 /* PageScrollViewController.swift */,
 				814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */,
+				51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -266,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
+				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
 				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,

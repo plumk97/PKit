@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2988B648EBB007AD26EE8219 /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */; };
+		51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF222ACEBF80021641A /* PLBadgeView.swift */; };
+		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
 		812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF31226EAE8800CA1831 /* AppDelegate.swift */; };
 		812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */; };
 		812FBF37226EAE8800CA1831 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 812FBF35226EAE8800CA1831 /* Main.storyboard */; };
@@ -32,13 +35,14 @@
 		81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */ = {isa = PBXBuildFile; fileRef = 81D5BA40228E964F00C9BF51 /* imagesrc.text */; };
 		81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */; };
 		81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */; };
-		ADD2C622B0D6BB73374D8D0B /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7358FC693D6262A0E1254C72 /* Pods_PLKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4FB4F59FF24C04250696DFDC /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
-		61166BAE6521A48F76622A2B /* Pods-PLKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.release.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.release.xcconfig"; sourceTree = "<group>"; };
-		7358FC693D6262A0E1254C72 /* Pods_PLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D02F1EC418F44D92D64D09B /* Pods-PLKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.release.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.release.xcconfig"; sourceTree = "<group>"; };
+		51014EF222ACEBF80021641A /* PLBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBadgeView.swift; sourceTree = "<group>"; };
+		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
+		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
 		812FBF2E226EAE8800CA1831 /* PLKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PLKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		812FBF31226EAE8800CA1831 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RippleAnimateViewController.swift; sourceTree = "<group>"; };
@@ -73,17 +77,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ADD2C622B0D6BB73374D8D0B /* Pods_PLKit.framework in Frameworks */,
+				2988B648EBB007AD26EE8219 /* Pods_PLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		306EC0D44ED243620CE41487 /* Frameworks */ = {
+		2381AEE8F6D6C2349A54193C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7358FC693D6262A0E1254C72 /* Pods_PLKit.framework */,
+				140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -94,8 +98,8 @@
 				812FBF43226EAED200CA1831 /* Lib */,
 				812FBF30226EAE8800CA1831 /* PLKit */,
 				812FBF2F226EAE8800CA1831 /* Products */,
-				C541C9A46C921BB8A99BBC89 /* Pods */,
-				306EC0D44ED243620CE41487 /* Frameworks */,
+				BB60711E7180A22597594446 /* Pods */,
+				2381AEE8F6D6C2349A54193C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -121,6 +125,7 @@
 				81948F572278237A00868B88 /* PageScrollViewController.swift */,
 				814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */,
 				81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */,
+				51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -143,15 +148,16 @@
 				814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */,
 				814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */,
 				81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */,
+				51014EF222ACEBF80021641A /* PLBadgeView.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
 		};
-		C541C9A46C921BB8A99BBC89 /* Pods */ = {
+		BB60711E7180A22597594446 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				4FB4F59FF24C04250696DFDC /* Pods-PLKit.debug.xcconfig */,
-				61166BAE6521A48F76622A2B /* Pods-PLKit.release.xcconfig */,
+				729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */,
+				1D02F1EC418F44D92D64D09B /* Pods-PLKit.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -163,11 +169,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 812FBF40226EAE8A00CA1831 /* Build configuration list for PBXNativeTarget "PLKit" */;
 			buildPhases = (
-				B583FD2C86599EF65503AA85 /* [CP] Check Pods Manifest.lock */,
+				98A73CE24B6D196E29433D65 /* [CP] Check Pods Manifest.lock */,
 				812FBF2A226EAE8800CA1831 /* Sources */,
 				812FBF2B226EAE8800CA1831 /* Frameworks */,
 				812FBF2C226EAE8800CA1831 /* Resources */,
-				4F0B36CEAEEF8C561D7CF127 /* [CP] Embed Pods Frameworks */,
+				2FCEA1D31732C0FA9FF3653D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -230,7 +236,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4F0B36CEAEEF8C561D7CF127 /* [CP] Embed Pods Frameworks */ = {
+		2FCEA1D31732C0FA9FF3653D /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -247,7 +253,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B583FD2C86599EF65503AA85 /* [CP] Check Pods Manifest.lock */ = {
+		98A73CE24B6D196E29433D65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -278,12 +284,14 @@
 			files = (
 				81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */,
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
+				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
 				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,
 				81786D9B227302B6005B232D /* PLRefresh.swift in Sources */,
 				81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
+				51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
 				81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */,
@@ -436,7 +444,7 @@
 		};
 		812FBF41226EAE8A00CA1831 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4FB4F59FF24C04250696DFDC /* Pods-PLKit.debug.xcconfig */;
+			baseConfigurationReference = 729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -456,7 +464,7 @@
 		};
 		812FBF42226EAE8A00CA1831 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 61166BAE6521A48F76622A2B /* Pods-PLKit.release.xcconfig */;
+			baseConfigurationReference = 1D02F1EC418F44D92D64D09B /* Pods-PLKit.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

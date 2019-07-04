@@ -38,7 +38,7 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-        guard self.firstTouch!.phase == .moved else {
+        guard self.firstTouch?.phase == .moved else {
             return
         }
         
@@ -54,7 +54,7 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-        guard self.firstTouch!.phase == .ended else {
+        guard self.firstTouch?.phase == .ended else {
             return
         }
         point = self.firstTouch?.location(in: self.view) ?? .zero
@@ -67,7 +67,7 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-        guard self.firstTouch!.phase == .cancelled else {
+        guard self.firstTouch?.phase == .cancelled else {
             return
         }
         
@@ -140,6 +140,7 @@ class PLPhotoBrowserPage: UIScrollView {
         panGesture = PLPhotoClosePanGestureRecognizer.init(target: self, action: #selector(panGestureHandle(_ :)))
         panGesture.delegate = self
         self.addGestureRecognizer(panGesture)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

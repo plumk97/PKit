@@ -6,5 +6,7 @@ target 'PLKit' do
   use_frameworks!
 
   # Pods for PLKit
+pod 'MJRefresh', '~> 3.2.0'
 pod 'YYImage/WebP', '~> 1.0.4'
+
 end

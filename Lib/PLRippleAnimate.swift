@@ -9,9 +9,19 @@
 import UIKit
 
 class PLRippleAnimate: NSObject {
+    enum Style {
+        case fill
+        case stroke
+    }
     
-    private(set) var animateNumber: Int!
-    private(set) var animateLayers = [CALayer]()
+    var animateNumber: Int! {
+        didSet {
+            self.makeLayers()
+            self.updateLayers()
+            self.restartAnimation()
+        }
+    }
+    private(set) var animateLayers = [CAShapeLayer]()
     
     var animateDuration: TimeInterval! {
         didSet {
@@ -49,6 +59,12 @@ class PLRippleAnimate: NSObject {
         }
     }
     
+    var style: Style = .fill {
+        didSet {
+            self.updateLayers()
+        }
+    }
+    
     private(set) var isRunning: Bool = false
     
     private var preViewFrame: CGRect = .zero
@@ -60,13 +76,7 @@ class PLRippleAnimate: NSObject {
         self.animateDuration = duration
         
         self.view = view
-        
-        for _ in 0 ..< number {
-            let layer = CALayer()
-            layer.isHidden = true
-            view.superview?.layer.insertSublayer(layer, below: self.view?.layer)
-            self.animateLayers.append(layer)
-        }
+        self.makeLayers()
         self.preViewFrame = self.view!.frame
         self.updateLayers()
         
@@ -94,20 +104,45 @@ class PLRippleAnimate: NSObject {
             layer.removeAllAnimations()
             layer.removeFromSuperlayer()
         }
+        self.animateLayers.removeAll()
     }
     
+    private func makeLayers() {
+        self.releaseLayers()
+        
+        for _ in 0 ..< self.animateNumber {
+            let layer = CAShapeLayer()
+            layer.isHidden = true
+            layer.lineWidth = 1
+            
+            self.view?.superview?.layer.insertSublayer(layer, below: self.view?.layer)
+            self.animateLayers.append(layer)
+        }
+    }
     
     private func updateLayers() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         self.animateLayers.forEach { (layer) in
             layer.frame = self.view!.frame
+            
+            var path: UIBezierPath!
             if self.cornerRadius <= 0 {
-                layer.cornerRadius = self.view!.layer.cornerRadius
+                path = UIBezierPath.init(roundedRect: self.view!.bounds, cornerRadius: self.view!.layer.cornerRadius)
             } else {
-                layer.cornerRadius = self.cornerRadius
+                path = UIBezierPath.init(roundedRect: self.view!.bounds, cornerRadius: self.cornerRadius)
             }
-            layer.backgroundColor = self.color.cgColor
+            
+            if self.style == .fill {
+                layer.fillColor = self.color.cgColor
+                layer.strokeColor = UIColor.clear.cgColor
+            } else {
+                layer.fillColor = UIColor.clear.cgColor
+                layer.strokeColor = self.color.cgColor
+            }
+            
+            layer.path = path.cgPath
+            
         }
         CATransaction.commit()
     }
@@ -133,7 +168,8 @@ class PLRippleAnimate: NSObject {
             group.animations = [scaleAnim, alphaAnim]
             group.duration = self.animateDuration
             
-            group.beginTime = CACurrentMediaTime() + CFTimeInterval(idx) * (self.animateDuration * 0.25)
+            
+            group.beginTime = CACurrentMediaTime() + CFTimeInterval(idx) * (self.animateDuration / CFTimeInterval(self.animateNumber))
             group.repeatCount = Float.greatestFiniteMagnitude
             group.isRemovedOnCompletion = false
             layer.add(group, forKey: nil)

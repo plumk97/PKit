@@ -187,6 +187,25 @@
             </objects>
             <point key="canvasLocation" x="-865" y="224"/>
         </scene>
+        <!--Stack Card View Controller-->
+        <scene sceneID="JP0-Z4-rmY">
+            <objects>
+                <viewController id="ZAL-xV-y4G" customClass="StackCardViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Oz5-DJ-VsJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="Dzb-Xn-qq6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8ro-0H-lJ5">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="f5k-9f-fnh"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0vH-hF-aFa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-135" y="230"/>
+        </scene>
         <!--Badge View View Controller-->
         <scene sceneID="dfF-fb-KTp">
             <objects>
@@ -357,13 +376,25 @@
                                             <segue destination="YgE-Wr-bf3" kind="push" id="hux-SG-JCG"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="dYu-R0-hGx">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="1Wl-Fu-fse" style="IBUITableViewCellStyleDefault" id="dYu-R0-hGx">
                                         <rect key="frame" x="0.0" y="336" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dYu-R0-hGx" id="Dxw-mC-cVu">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="376" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="StackCard" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1Wl-Fu-fse">
+                                                    <rect key="frame" x="20" y="0.0" width="356" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="ZAL-xV-y4G" kind="push" id="XqW-SI-xdR"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="TuZ-Ss-52t">
                                         <rect key="frame" x="0.0" y="380" width="414" height="44"/>

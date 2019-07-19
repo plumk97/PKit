@@ -8,7 +8,14 @@
 
 import UIKit
 
+@objc protocol PLStackCardViewDelegate {
+    @objc optional func stackCardView(_ cardView: PLStackCardView, didDismiss view: UIView)
+    @objc optional func stackCardView(_ cardView: PLStackCardView, didAppear view: UIView)
+}
+
 class PLStackCardView: UIView {
+    
+    weak var delegate: PLStackCardViewDelegate?
     
     private(set) var contentSize: CGSize = .zero
     private(set) var scale: CGFloat = 0
@@ -47,6 +54,10 @@ class PLStackCardView: UIView {
             }
             self.addSubview(view)
         }
+        
+        if let first = self.cardViews?.first {
+            self.delegate?.stackCardView?(self, didAppear: first)
+        }
     }
     
     
@@ -74,8 +85,8 @@ class PLStackCardView: UIView {
             view.center.y += y * 1.5
             
         } else {
-            
-            if abs(progress) > 0.5 {
+            let vel = sender.velocity(in: self)
+            if abs(progress) > 0.5 || abs(vel.x) >= 500 {
                 
                 let point = self.linePoint(point1: self.panBeginPoint, point2: point, distance: 1000)
                 self.cardViews?.removeFirst()
@@ -84,6 +95,11 @@ class PLStackCardView: UIView {
                     self.cardViews?.first?.transform = .identity
                 }) { (_) in
                     view.removeFromSuperview()
+                    self.delegate?.stackCardView?(self, didDismiss: view)
+                    
+                    if let first = self.cardViews?.first {
+                        self.delegate?.stackCardView?(self, didAppear: first)
+                    }
                 }
                 
             } else {

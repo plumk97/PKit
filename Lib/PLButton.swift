@@ -73,6 +73,8 @@ class PLButton: UIControl {
     private(set) var rightImageView: UIImageView!
     private(set) var bottomImageView: UIImageView!
     
+    private(set) var backgroundImageView: UIImageView!
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.clipsToBounds = true
@@ -81,6 +83,9 @@ class PLButton: UIControl {
         self.topIcon = Icon.init(button: self)
         self.rightIcon = Icon.init(button: self)
         self.bottomIcon = Icon.init(button: self)
+        
+        self.backgroundImageView = UIImageView()
+        self.addSubview(self.backgroundImageView)
         
         self.contentView = UIView()
         self.contentView.isUserInteractionEnabled = false
@@ -236,6 +241,8 @@ class PLButton: UIControl {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        self.backgroundImageView.frame = self.bounds
+        
         var bounds = self.bounds
         bounds.size.width -= self.spaceingEdge.left + self.spaceingEdge.right
         bounds.size.height -= self.spaceingEdge.top + self.spaceingEdge.bottom

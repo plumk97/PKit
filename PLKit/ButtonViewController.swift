@@ -29,6 +29,13 @@ class ButtonViewController: UIViewController {
         btn.cornerRadius = 10
         self.view.addSubview(btn)
         
+        
+        let pdata = try! Data.init(contentsOf: URL.init(string: "http://e.hiphotos.baidu.com/image/pic/item/4610b912c8fcc3cef70d70409845d688d53f20f7.jpg")!)
+        if let image = UIImage.init(data: pdata) {
+            btn.backgroundImageView.image = image
+        }
+        
+        
         btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
     }
     

@@ -119,3 +119,10 @@ extension PLTabBarController: PLTabBarDelegate {
         self.delegate?.tabBarController?(self, didDoubleTap: index)
     }
 }
+
+
+extension PL where Base: UIViewController {
+    var tabBarController: PLTabBarController? {
+        return self.base.parent as? PLTabBarController
+    }
+}

@@ -47,7 +47,7 @@ extension TabBarViewController {
     class TestViewController: UIViewController {
         override func viewDidLoad() {
             super.viewDidLoad()
-            print("view", self)
+            print("view", self.pl.tabBarController)
             view.backgroundColor = .init(red: CGFloat(arc4random_uniform(255)) / 255.0, green: CGFloat(arc4random_uniform(255)) / 255.0, blue: CGFloat(arc4random_uniform(255)) / 255.0, alpha: 1)
         }
     }

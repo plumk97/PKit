@@ -22,3 +22,10 @@ extension NSObjectProtocol where Self: UIView {
         return PL(self)
     }
 }
+
+extension NSObjectProtocol where Self: UIViewController {
+    
+    var pl: PL<Self> {
+        return PL(self)
+    }
+}

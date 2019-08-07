@@ -10,6 +10,32 @@
 		2988B648EBB007AD26EE8219 /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */; };
 		51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF222ACEBF80021641A /* PLBadgeView.swift */; };
 		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
+		810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77722FAAE5F002EB244 /* PLTabBarController.swift */; };
+		810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77922FAAFE3002EB244 /* TabBarViewController.swift */; };
+		810FD77C22FAB373002EB244 /* PLTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77B22FAB373002EB244 /* PLTabBar.swift */; };
+		810FD77E22FAB964002EB244 /* PLTabBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77D22FAB964002EB244 /* PLTabBarItem.swift */; };
+		810FD79322FAC11D002EB244 /* tabbar_home@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD77F22FAC119002EB244 /* tabbar_home@2x.png */; };
+		810FD79422FAC11D002EB244 /* tabbar_message@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78022FAC119002EB244 /* tabbar_message@3x.png */; };
+		810FD79522FAC11D002EB244 /* tabbar_space_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78122FAC11A002EB244 /* tabbar_space_selected@3x.png */; };
+		810FD79622FAC11D002EB244 /* tabbar_message@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78222FAC11A002EB244 /* tabbar_message@2x.png */; };
+		810FD79722FAC11D002EB244 /* tabbar_space@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78322FAC11A002EB244 /* tabbar_space@2x.png */; };
+		810FD79822FAC11D002EB244 /* tabbar_mine@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78422FAC11A002EB244 /* tabbar_mine@2x.png */; };
+		810FD79922FAC11D002EB244 /* tabbar_guanxuan@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78522FAC11A002EB244 /* tabbar_guanxuan@2x.png */; };
+		810FD79A22FAC11D002EB244 /* tabbar_space@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78622FAC11A002EB244 /* tabbar_space@3x.png */; };
+		810FD79B22FAC11D002EB244 /* tabbar_guanxuan_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78722FAC11B002EB244 /* tabbar_guanxuan_selected@2x.png */; };
+		810FD79C22FAC11D002EB244 /* tabbar_home_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78822FAC11B002EB244 /* tabbar_home_selected@3x.png */; };
+		810FD79D22FAC11D002EB244 /* tabbar_guanxuan_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78922FAC11B002EB244 /* tabbar_guanxuan_selected@3x.png */; };
+		810FD79E22FAC11D002EB244 /* tabbar_space_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78A22FAC11B002EB244 /* tabbar_space_selected@2x.png */; };
+		810FD79F22FAC11D002EB244 /* tabbar_guanxuan@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78B22FAC11C002EB244 /* tabbar_guanxuan@3x.png */; };
+		810FD7A022FAC11D002EB244 /* tabbar_message_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78C22FAC11C002EB244 /* tabbar_message_selected@2x.png */; };
+		810FD7A122FAC11D002EB244 /* tabbar_message_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78D22FAC11C002EB244 /* tabbar_message_selected@3x.png */; };
+		810FD7A222FAC11D002EB244 /* tabbar_home_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78E22FAC11C002EB244 /* tabbar_home_selected@2x.png */; };
+		810FD7A322FAC11D002EB244 /* tabbar_home@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD78F22FAC11C002EB244 /* tabbar_home@3x.png */; };
+		810FD7A422FAC11D002EB244 /* tabbar_mine_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD79022FAC11D002EB244 /* tabbar_mine_selected@2x.png */; };
+		810FD7A522FAC11D002EB244 /* tabbar_mine_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD79122FAC11D002EB244 /* tabbar_mine_selected@3x.png */; };
+		810FD7A622FAC11D002EB244 /* tabbar_mine@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD79222FAC11D002EB244 /* tabbar_mine@3x.png */; };
+		810FD7AA22FAC13C002EB244 /* arrow_bottom_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */; };
+		810FD7AB22FAC13C002EB244 /* arrow_bottom_small@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */; };
 		812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF31226EAE8800CA1831 /* AppDelegate.swift */; };
 		812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */; };
 		812FBF37226EAE8800CA1831 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 812FBF35226EAE8800CA1831 /* Main.storyboard */; };
@@ -25,8 +51,6 @@
 		815F4FD722757F93003BA591 /* PLRefreshNormalFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */; };
 		81786D912272B095005B232D /* ButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D902272B095005B232D /* ButtonViewController.swift */; };
 		81786D932272B13B005B232D /* PLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D922272B13B005B232D /* PLButton.swift */; };
-		81786D962272B9AE005B232D /* arrow_bottom_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81786D942272B9AE005B232D /* arrow_bottom_small@2x.png */; };
-		81786D972272B9AE005B232D /* arrow_bottom_small@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81786D952272B9AE005B232D /* arrow_bottom_small@3x.png */; };
 		81786D9B227302B6005B232D /* PLRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D9A227302B6005B232D /* PLRefresh.swift */; };
 		81786D9D22730695005B232D /* RefreshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D9C22730695005B232D /* RefreshViewController.swift */; };
 		81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786DA022731154005B232D /* PLRefreshNormalHeader.swift */; };
@@ -45,6 +69,32 @@
 		51014EF222ACEBF80021641A /* PLBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBadgeView.swift; sourceTree = "<group>"; };
 		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
 		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
+		810FD77722FAAE5F002EB244 /* PLTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLTabBarController.swift; sourceTree = "<group>"; };
+		810FD77922FAAFE3002EB244 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		810FD77B22FAB373002EB244 /* PLTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLTabBar.swift; sourceTree = "<group>"; };
+		810FD77D22FAB964002EB244 /* PLTabBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLTabBarItem.swift; sourceTree = "<group>"; };
+		810FD77F22FAC119002EB244 /* tabbar_home@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_home@2x.png"; sourceTree = "<group>"; };
+		810FD78022FAC119002EB244 /* tabbar_message@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_message@3x.png"; sourceTree = "<group>"; };
+		810FD78122FAC11A002EB244 /* tabbar_space_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_space_selected@3x.png"; sourceTree = "<group>"; };
+		810FD78222FAC11A002EB244 /* tabbar_message@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_message@2x.png"; sourceTree = "<group>"; };
+		810FD78322FAC11A002EB244 /* tabbar_space@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_space@2x.png"; sourceTree = "<group>"; };
+		810FD78422FAC11A002EB244 /* tabbar_mine@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_mine@2x.png"; sourceTree = "<group>"; };
+		810FD78522FAC11A002EB244 /* tabbar_guanxuan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_guanxuan@2x.png"; sourceTree = "<group>"; };
+		810FD78622FAC11A002EB244 /* tabbar_space@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_space@3x.png"; sourceTree = "<group>"; };
+		810FD78722FAC11B002EB244 /* tabbar_guanxuan_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_guanxuan_selected@2x.png"; sourceTree = "<group>"; };
+		810FD78822FAC11B002EB244 /* tabbar_home_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_home_selected@3x.png"; sourceTree = "<group>"; };
+		810FD78922FAC11B002EB244 /* tabbar_guanxuan_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_guanxuan_selected@3x.png"; sourceTree = "<group>"; };
+		810FD78A22FAC11B002EB244 /* tabbar_space_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_space_selected@2x.png"; sourceTree = "<group>"; };
+		810FD78B22FAC11C002EB244 /* tabbar_guanxuan@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_guanxuan@3x.png"; sourceTree = "<group>"; };
+		810FD78C22FAC11C002EB244 /* tabbar_message_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_message_selected@2x.png"; sourceTree = "<group>"; };
+		810FD78D22FAC11C002EB244 /* tabbar_message_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_message_selected@3x.png"; sourceTree = "<group>"; };
+		810FD78E22FAC11C002EB244 /* tabbar_home_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_home_selected@2x.png"; sourceTree = "<group>"; };
+		810FD78F22FAC11C002EB244 /* tabbar_home@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_home@3x.png"; sourceTree = "<group>"; };
+		810FD79022FAC11D002EB244 /* tabbar_mine_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_mine_selected@2x.png"; sourceTree = "<group>"; };
+		810FD79122FAC11D002EB244 /* tabbar_mine_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_mine_selected@3x.png"; sourceTree = "<group>"; };
+		810FD79222FAC11D002EB244 /* tabbar_mine@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_mine@3x.png"; sourceTree = "<group>"; };
+		810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@2x.png"; sourceTree = "<group>"; };
+		810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@3x.png"; sourceTree = "<group>"; };
 		812FBF2E226EAE8800CA1831 /* PLKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PLKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		812FBF31226EAE8800CA1831 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RippleAnimateViewController.swift; sourceTree = "<group>"; };
@@ -62,8 +112,6 @@
 		815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalFooter.swift; sourceTree = "<group>"; };
 		81786D902272B095005B232D /* ButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewController.swift; sourceTree = "<group>"; };
 		81786D922272B13B005B232D /* PLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLButton.swift; sourceTree = "<group>"; };
-		81786D942272B9AE005B232D /* arrow_bottom_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@2x.png"; sourceTree = "<group>"; };
-		81786D952272B9AE005B232D /* arrow_bottom_small@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@3x.png"; sourceTree = "<group>"; };
 		81786D9A227302B6005B232D /* PLRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefresh.swift; sourceTree = "<group>"; };
 		81786D9C22730695005B232D /* RefreshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshViewController.swift; sourceTree = "<group>"; };
 		81786DA022731154005B232D /* PLRefreshNormalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalHeader.swift; sourceTree = "<group>"; };
@@ -96,6 +144,37 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		810FD7A722FAC13C002EB244 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */,
+				810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */,
+				8153641F22CDFF090025EDF4 /* icon_close@2x.png */,
+				8153641E22CDFF090025EDF4 /* icon_close@3x.png */,
+				810FD78722FAC11B002EB244 /* tabbar_guanxuan_selected@2x.png */,
+				810FD78922FAC11B002EB244 /* tabbar_guanxuan_selected@3x.png */,
+				810FD78522FAC11A002EB244 /* tabbar_guanxuan@2x.png */,
+				810FD78B22FAC11C002EB244 /* tabbar_guanxuan@3x.png */,
+				810FD78E22FAC11C002EB244 /* tabbar_home_selected@2x.png */,
+				810FD78822FAC11B002EB244 /* tabbar_home_selected@3x.png */,
+				810FD77F22FAC119002EB244 /* tabbar_home@2x.png */,
+				810FD78F22FAC11C002EB244 /* tabbar_home@3x.png */,
+				810FD78C22FAC11C002EB244 /* tabbar_message_selected@2x.png */,
+				810FD78D22FAC11C002EB244 /* tabbar_message_selected@3x.png */,
+				810FD78222FAC11A002EB244 /* tabbar_message@2x.png */,
+				810FD78022FAC119002EB244 /* tabbar_message@3x.png */,
+				810FD79022FAC11D002EB244 /* tabbar_mine_selected@2x.png */,
+				810FD79122FAC11D002EB244 /* tabbar_mine_selected@3x.png */,
+				810FD78422FAC11A002EB244 /* tabbar_mine@2x.png */,
+				810FD79222FAC11D002EB244 /* tabbar_mine@3x.png */,
+				810FD78A22FAC11B002EB244 /* tabbar_space_selected@2x.png */,
+				810FD78122FAC11A002EB244 /* tabbar_space_selected@3x.png */,
+				810FD78322FAC11A002EB244 /* tabbar_space@2x.png */,
+				810FD78622FAC11A002EB244 /* tabbar_space@3x.png */,
+			);
+			path = images;
+			sourceTree = "<group>";
+		};
 		812FBF25226EAE8800CA1831 = {
 			isa = PBXGroup;
 			children = (
@@ -118,10 +197,7 @@
 		812FBF30226EAE8800CA1831 /* PLKit */ = {
 			isa = PBXGroup;
 			children = (
-				81786D942272B9AE005B232D /* arrow_bottom_small@2x.png */,
-				81786D952272B9AE005B232D /* arrow_bottom_small@3x.png */,
-				8153641F22CDFF090025EDF4 /* icon_close@2x.png */,
-				8153641E22CDFF090025EDF4 /* icon_close@3x.png */,
+				810FD7A722FAC13C002EB244 /* images */,
 				812FBF31226EAE8800CA1831 /* AppDelegate.swift */,
 				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
 				81786D902272B095005B232D /* ButtonViewController.swift */,
@@ -131,6 +207,7 @@
 				81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */,
 				51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */,
 				818997A622DC5D4E0042A93F /* StackCardViewController.swift */,
+				810FD77922FAAFE3002EB244 /* TabBarViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -155,6 +232,9 @@
 				81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */,
 				51014EF222ACEBF80021641A /* PLBadgeView.swift */,
 				818997A822DC5D910042A93F /* PLStackCardView.swift */,
+				810FD77722FAAE5F002EB244 /* PLTabBarController.swift */,
+				810FD77B22FAB373002EB244 /* PLTabBar.swift */,
+				810FD77D22FAB964002EB244 /* PLTabBarItem.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -229,12 +309,32 @@
 			buildActionMask = 2147483647;
 			files = (
 				812FBF3C226EAE8A00CA1831 /* LaunchScreen.storyboard in Resources */,
+				810FD79B22FAC11D002EB244 /* tabbar_guanxuan_selected@2x.png in Resources */,
+				810FD79522FAC11D002EB244 /* tabbar_space_selected@3x.png in Resources */,
+				810FD7A522FAC11D002EB244 /* tabbar_mine_selected@3x.png in Resources */,
 				8153642022CDFF0A0025EDF4 /* icon_close@3x.png in Resources */,
+				810FD7A222FAC11D002EB244 /* tabbar_home_selected@2x.png in Resources */,
+				810FD7AA22FAC13C002EB244 /* arrow_bottom_small@2x.png in Resources */,
 				81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */,
-				81786D962272B9AE005B232D /* arrow_bottom_small@2x.png in Resources */,
+				810FD7A022FAC11D002EB244 /* tabbar_message_selected@2x.png in Resources */,
+				810FD79322FAC11D002EB244 /* tabbar_home@2x.png in Resources */,
 				8153642122CDFF0A0025EDF4 /* icon_close@2x.png in Resources */,
+				810FD7A122FAC11D002EB244 /* tabbar_message_selected@3x.png in Resources */,
+				810FD79822FAC11D002EB244 /* tabbar_mine@2x.png in Resources */,
+				810FD79A22FAC11D002EB244 /* tabbar_space@3x.png in Resources */,
+				810FD79D22FAC11D002EB244 /* tabbar_guanxuan_selected@3x.png in Resources */,
 				812FBF39226EAE8A00CA1831 /* Assets.xcassets in Resources */,
-				81786D972272B9AE005B232D /* arrow_bottom_small@3x.png in Resources */,
+				810FD79E22FAC11D002EB244 /* tabbar_space_selected@2x.png in Resources */,
+				810FD7A422FAC11D002EB244 /* tabbar_mine_selected@2x.png in Resources */,
+				810FD7AB22FAC13C002EB244 /* arrow_bottom_small@3x.png in Resources */,
+				810FD79F22FAC11D002EB244 /* tabbar_guanxuan@3x.png in Resources */,
+				810FD79C22FAC11D002EB244 /* tabbar_home_selected@3x.png in Resources */,
+				810FD7A622FAC11D002EB244 /* tabbar_mine@3x.png in Resources */,
+				810FD79422FAC11D002EB244 /* tabbar_message@3x.png in Resources */,
+				810FD7A322FAC11D002EB244 /* tabbar_home@3x.png in Resources */,
+				810FD79622FAC11D002EB244 /* tabbar_message@2x.png in Resources */,
+				810FD79722FAC11D002EB244 /* tabbar_space@2x.png in Resources */,
+				810FD79922FAC11D002EB244 /* tabbar_guanxuan@2x.png in Resources */,
 				812FBF37226EAE8800CA1831 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,17 +391,21 @@
 				81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */,
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
+				810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */,
 				818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
 				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,
+				810FD77E22FAB964002EB244 /* PLTabBarItem.swift in Sources */,
 				818997A922DC5D910042A93F /* PLStackCardView.swift in Sources */,
+				810FD77C22FAB373002EB244 /* PLTabBar.swift in Sources */,
 				81786D9B227302B6005B232D /* PLRefresh.swift in Sources */,
 				81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
 				51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
+				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,
 				81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */,
 				814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */,
 				81786D9D22730695005B232D /* RefreshViewController.swift in Sources */,

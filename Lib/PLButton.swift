@@ -57,6 +57,12 @@ class PLButton: UIControl {
         }
     }
     
+    var alwayHalfRadius: Bool = false {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
     var cornerRadius: CGFloat = 0 {
         didSet {
             self.setupLayer()
@@ -242,6 +248,9 @@ class PLButton: UIControl {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.backgroundImageView.frame = self.bounds
+        if self.alwayHalfRadius {
+            self.cornerRadius = self.bounds.height / 2
+        }
         
         var bounds = self.bounds
         bounds.size.width -= self.spaceingEdge.left + self.spaceingEdge.right

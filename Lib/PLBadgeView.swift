@@ -26,7 +26,11 @@ class PLBadgeView: UIImageView {
         self.backgroundColor = .init(red: 1, green: 0.231373, blue: 0.188235, alpha: 1)
         
         self.label = UILabel()
-        self.label.font = UIFont.init(name: ".SFUIText", size: 13)
+        if #available(iOS 13.0, *) {
+            self.label.font = UIFont.systemFont(ofSize: 13)
+        } else {
+            self.label.font = UIFont.init(name: ".SFUIText", size: 13)
+        }
         self.label.textAlignment = .center
         self.label.textColor = .white
         self.addSubview(self.label)

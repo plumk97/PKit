@@ -11,6 +11,7 @@ import UIKit
 @objc protocol PLTabBarDelegate: NSObjectProtocol {
     @objc optional func tabBar(_ tabBar: PLTabBar, willSelect index: Int) -> Bool
     @objc optional func tabBar(_ tabBar: PLTabBar, didSelect index: Int)
+    @objc optional func tabBar(_ tabBar: PLTabBar, didDoubleTap index: Int)
 }
 
 class PLTabBar: UIView {
@@ -49,6 +50,7 @@ class PLTabBar: UIView {
     /// 使用set方法更改
     private(set) var selectedIndex = -1
     
+    private(set) var spacingline: UIView!
     ///
     private var contentView: UIView!
     
@@ -67,10 +69,21 @@ class PLTabBar: UIView {
         
         self.contentView = UIView()
         self.addSubview(contentView)
+        
+        self.spacingline = UIView()
+        self.spacingline.backgroundColor = .init(red: 0.898, green: 0.898, blue: 0.898, alpha: 1)
+        self.addSubview(self.spacingline)
+        
+        let doubleTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(doubleTapGestureHandle(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        doubleTapGesture.delaysTouchesBegan = false
+        doubleTapGesture.delaysTouchesEnded = false
+        self.contentView.addGestureRecognizer(doubleTapGesture)
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        self.spacingline.frame = .init(x: 0, y: 0, width: bounds.width, height: 0.5)
         renewContentLayout()
     }
     
@@ -91,16 +104,23 @@ class PLTabBar: UIView {
     
     /// 设置选中index
     /// - Parameter index:
-    @discardableResult
-    func setSelectedIndex(_ index: Int) -> Bool {
-        guard self.selectedIndex != index else {
-            return false
-        }
-        
+    func setSelectedIndex(_ index: Int) {
         self.selectedItem?.isSelected = false
         self.selectedIndex = index
         self.selectedItem?.isSelected = true
-        return true
+    }
+    
+    @objc func doubleTapGestureHandle(_ sender: UITapGestureRecognizer) {
+        
+        let count = self.items?.count ?? 0
+        guard count > 0 else {
+            return
+        }
+        
+        let point = sender.location(in: self)
+        let width = contentView.frame.width / CGFloat(count)
+        let idx = Int(point.x / width)
+        self.delegate?.tabBar?(self, didDoubleTap: idx)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -115,11 +135,8 @@ class PLTabBar: UIView {
             let width = contentView.frame.width / CGFloat(items.count)
             if contentView.frame.contains(point) {
                 let idx = Int(point.x / width)
-                guard idx != self.selectedIndex else {
-                    return
-                }
-                
-                if (self.delegate?.tabBar?(self, willSelect: idx) ?? true) && self.setSelectedIndex(idx) {
+                if (self.delegate?.tabBar?(self, willSelect: idx) ?? true) {
+                    self.setSelectedIndex(idx)
                     self.delegate?.tabBar?(self, didSelect: idx)
                 }
             }

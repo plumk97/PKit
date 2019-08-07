@@ -12,6 +12,7 @@ import UIKit
 @objc protocol PLTabBarControllerDelegate: NSObjectProtocol {
     @objc optional func tabBarController(_ tabBarController: PLTabBarController, shouldSelect index: Int) -> Bool
     @objc optional func tabBarController(_ tabBarController: PLTabBarController, didSelect index: Int)
+    @objc optional func tabBarController(_ tabBarController: PLTabBarController, didDoubleTap index: Int)
 }
 
 // MARK: - PLTabBarController
@@ -95,10 +96,6 @@ class PLTabBarController: UIViewController {
     
     
     func setSelectedIndex(_ index: Int) {
-        guard index != self.selectedIndex else {
-            return
-        }
-        
         self.selectedViewController?.view.removeFromSuperview()
         self.selectedIndex = index
         if let view = self.selectedViewController?.view {
@@ -109,12 +106,16 @@ class PLTabBarController: UIViewController {
 
 extension PLTabBarController: PLTabBarDelegate {
     
-    func tabBar(_ tabBar: PLTabBar, willSelect index: Int) -> Bool {
+    internal func tabBar(_ tabBar: PLTabBar, willSelect index: Int) -> Bool {
         return self.delegate?.tabBarController?(self, shouldSelect: index) ?? true
     }
     
-    func tabBar(_ tabBar: PLTabBar, didSelect index: Int) {
+    internal func tabBar(_ tabBar: PLTabBar, didSelect index: Int) {
         self.setSelectedIndex(index)
         self.delegate?.tabBarController?(self, didSelect: index)
+    }
+    
+    internal func tabBar(_ tabBar: PLTabBar, didDoubleTap index: Int) {
+        self.delegate?.tabBarController?(self, didDoubleTap: index)
     }
 }

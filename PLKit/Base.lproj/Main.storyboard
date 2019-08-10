@@ -223,6 +223,35 @@
             </objects>
             <point key="canvasLocation" x="572" y="230"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="3rk-7B-KQa">
+            <objects>
+                <viewController id="GiE-qQ-jSa" customClass="HUDViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="epA-Wl-H7F"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fR-SX-n0O"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="BLl-fO-FcW">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TUH-6f-ePM">
+                                <rect key="frame" x="121" y="311" width="46" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="btnClick:" destination="GiE-qQ-jSa" eventType="touchUpInside" id="JiM-AB-hTJ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="lf0-XU-6uh"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jfh-mx-tac" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1271" y="230"/>
+        </scene>
         <!--Badge View View Controller-->
         <scene sceneID="dfF-fb-KTp">
             <objects>
@@ -433,13 +462,25 @@
                                             <segue destination="psl-Hm-aQq" kind="push" id="b3O-rG-1jN"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="gUB-Zf-NTH">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="Fdq-Ra-vvw" style="IBUITableViewCellStyleDefault" id="gUB-Zf-NTH">
                                         <rect key="frame" x="0.0" y="424" width="414" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gUB-Zf-NTH" id="xjj-aR-pkl">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="382.5" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="HUD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Fdq-Ra-vvw">
+                                                    <rect key="frame" x="20" y="0.0" width="354.5" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="GiE-qQ-jSa" kind="push" id="MOv-Pe-QD8"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="VXE-r6-4d6">
                                         <rect key="frame" x="0.0" y="468" width="414" height="44"/>

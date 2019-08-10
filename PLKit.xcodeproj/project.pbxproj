@@ -59,6 +59,8 @@
 		81948F562278236000868B88 /* PLPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F552278236000868B88 /* PLPageScrollView.swift */; };
 		81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F572278237A00868B88 /* PageScrollViewController.swift */; };
 		81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */ = {isa = PBXBuildFile; fileRef = 81D5BA40228E964F00C9BF51 /* imagesrc.text */; };
+		81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E1ACC722FE6ED4007DB464 /* PLHUD.swift */; };
+		81E1ACCA22FE71AC007DB464 /* HUDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E1ACC922FE71AC007DB464 /* HUDViewController.swift */; };
 		81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */; };
 		81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */; };
 /* End PBXBuildFile section */
@@ -120,6 +122,8 @@
 		81948F552278236000868B88 /* PLPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPageScrollView.swift; sourceTree = "<group>"; };
 		81948F572278237A00868B88 /* PageScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageScrollViewController.swift; sourceTree = "<group>"; };
 		81D5BA40228E964F00C9BF51 /* imagesrc.text */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = imagesrc.text; sourceTree = "<group>"; };
+		81E1ACC722FE6ED4007DB464 /* PLHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLHUD.swift; sourceTree = "<group>"; };
+		81E1ACC922FE71AC007DB464 /* HUDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDViewController.swift; sourceTree = "<group>"; };
 		81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLSlideVerify.swift; sourceTree = "<group>"; };
 		81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideVerifyViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -208,6 +212,7 @@
 				51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */,
 				818997A622DC5D4E0042A93F /* StackCardViewController.swift */,
 				810FD77922FAAFE3002EB244 /* TabBarViewController.swift */,
+				81E1ACC922FE71AC007DB464 /* HUDViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -235,6 +240,7 @@
 				810FD77722FAAE5F002EB244 /* PLTabBarController.swift */,
 				810FD77B22FAB373002EB244 /* PLTabBar.swift */,
 				810FD77D22FAB964002EB244 /* PLTabBarItem.swift */,
+				81E1ACC722FE6ED4007DB464 /* PLHUD.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -388,6 +394,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81E1ACCA22FE71AC007DB464 /* HUDViewController.swift in Sources */,
 				81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */,
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
@@ -403,6 +410,7 @@
 				81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
 				51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */,
+				81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
 				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,

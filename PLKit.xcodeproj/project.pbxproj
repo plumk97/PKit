@@ -63,6 +63,10 @@
 		81E1ACCA22FE71AC007DB464 /* HUDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E1ACC922FE71AC007DB464 /* HUDViewController.swift */; };
 		81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */; };
 		81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */; };
+		81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE620D2302E24B00C9BD31 /* PLDot.swift */; };
+		81FE62102302E25A00C9BD31 /* DotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE620F2302E25A00C9BD31 /* DotViewController.swift */; };
+		81FE62132302EA1F00C9BD31 /* icon_dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */; };
+		81FE62142302EA1F00C9BD31 /* icon_dot@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -126,6 +130,10 @@
 		81E1ACC922FE71AC007DB464 /* HUDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDViewController.swift; sourceTree = "<group>"; };
 		81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLSlideVerify.swift; sourceTree = "<group>"; };
 		81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideVerifyViewController.swift; sourceTree = "<group>"; };
+		81FE620D2302E24B00C9BD31 /* PLDot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLDot.swift; sourceTree = "<group>"; };
+		81FE620F2302E25A00C9BD31 /* DotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotViewController.swift; sourceTree = "<group>"; };
+		81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_dot@2x.png"; sourceTree = "<group>"; };
+		81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_dot@3x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +159,8 @@
 		810FD7A722FAC13C002EB244 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */,
+				81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */,
 				810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */,
 				810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */,
 				8153641F22CDFF090025EDF4 /* icon_close@2x.png */,
@@ -213,6 +223,7 @@
 				818997A622DC5D4E0042A93F /* StackCardViewController.swift */,
 				810FD77922FAAFE3002EB244 /* TabBarViewController.swift */,
 				81E1ACC922FE71AC007DB464 /* HUDViewController.swift */,
+				81FE620F2302E25A00C9BD31 /* DotViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -241,6 +252,7 @@
 				810FD77B22FAB373002EB244 /* PLTabBar.swift */,
 				810FD77D22FAB964002EB244 /* PLTabBarItem.swift */,
 				81E1ACC722FE6ED4007DB464 /* PLHUD.swift */,
+				81FE620D2302E24B00C9BD31 /* PLDot.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -330,7 +342,9 @@
 				810FD79A22FAC11D002EB244 /* tabbar_space@3x.png in Resources */,
 				810FD79D22FAC11D002EB244 /* tabbar_guanxuan_selected@3x.png in Resources */,
 				812FBF39226EAE8A00CA1831 /* Assets.xcassets in Resources */,
+				81FE62142302EA1F00C9BD31 /* icon_dot@3x.png in Resources */,
 				810FD79E22FAC11D002EB244 /* tabbar_space_selected@2x.png in Resources */,
+				81FE62132302EA1F00C9BD31 /* icon_dot@2x.png in Resources */,
 				810FD7A422FAC11D002EB244 /* tabbar_mine_selected@2x.png in Resources */,
 				810FD7AB22FAC13C002EB244 /* arrow_bottom_small@3x.png in Resources */,
 				810FD79F22FAC11D002EB244 /* tabbar_guanxuan@3x.png in Resources */,
@@ -399,10 +413,12 @@
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
 				810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */,
+				81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */,
 				818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
 				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,
+				81FE62102302E25A00C9BD31 /* DotViewController.swift in Sources */,
 				810FD77E22FAB964002EB244 /* PLTabBarItem.swift in Sources */,
 				818997A922DC5D910042A93F /* PLStackCardView.swift in Sources */,
 				810FD77C22FAB373002EB244 /* PLTabBar.swift in Sources */,

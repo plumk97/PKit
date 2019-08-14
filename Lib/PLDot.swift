@@ -94,7 +94,7 @@ class PLDot: UIImageView {
         }
         
         
-        guard !(self.oldSize.equalTo(self.frame.size) || self.oldSuperViewFrame.equalTo(sv.frame)) else {
+        guard !(self.oldSize.equalTo(self.frame.size) && self.oldSuperViewFrame.equalTo(sv.frame)) else {
             return
         }
 

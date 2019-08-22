@@ -145,14 +145,20 @@ class PLPhotoBrowserPage: UIScrollView {
     }
     
     func resetZero() {
-        
         self.minimumZoomScale = 1
         
-        let imageSize = self.imageView.image?.size ?? .zero
+        var imageSize = self.imageView.image?.size ?? .zero
         if imageSize.equalTo(.zero) {
             self.maximumZoomScale = 1
         } else {
-            let ratio = min(imageSize.width / self.bounds.width, imageSize.height / self.bounds.height)
+            
+            var targetSize = self.bounds.size
+            if targetSize.equalTo(.zero) {
+                targetSize = UIScreen.main.bounds.size
+            }
+            
+            imageSize = PLPhotoBrowserPage.scale(fromSize: imageSize, targetSize: targetSize)
+            let ratio = min(imageSize.width / targetSize.width, imageSize.height / targetSize.height)
             self.maximumZoomScale = 1 / ratio + 1
         }
         self.setZoomScale(self.minimumZoomScale, animated: false)
@@ -183,6 +189,10 @@ class PLPhotoBrowserPage: UIScrollView {
     // MARK: - Gesture
     @objc func doubleTapGestureHandle(_ sender: UITapGestureRecognizer) {
         if sender.state == .ended {
+            guard self.maximumZoomScale > self.minimumZoomScale else {
+                return
+            }
+            
             if self.zoomScale <= self.minimumZoomScale {
                 self.zoom(to: .init(origin: sender.location(in: self), size: .zero), animated: true)
             } else {

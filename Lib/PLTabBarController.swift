@@ -34,7 +34,7 @@ class PLTabBarController: UIViewController {
         }
         return nil
     }
-    private(set) var selectedIndex: Int = -1
+    private(set) var selectedIndex: Int = 0
     
     var tabBarHeight: CGFloat = 54 { didSet{ renewTabBarFrame() } }
     private(set) var tabBar = PLTabBar()
@@ -91,13 +91,19 @@ class PLTabBarController: UIViewController {
             
         })
         tabBar.items = viewControllers?.map({$0.pl.tabBarItem})
-        setSelectedIndex(0)
+        setSelectedIndex(selectedIndex)
+        tabBar.setSelectedIndex(selectedIndex)
     }
     
     
     func setSelectedIndex(_ index: Int) {
         self.selectedViewController?.view.removeFromSuperview()
         self.selectedIndex = index
+        self.tabBar.setSelectedIndex(index)
+        guard self.warpView != nil else {
+            return
+        }
+        
         if let view = self.selectedViewController?.view {
             self.warpView.addSubview(view)
         }

@@ -16,8 +16,6 @@ extension Data: PLPhotoDatasource {}
 extension String: PLPhotoDatasource {}
 
 class PLPhoto: NSObject {
-    // 缩略图大小 不设置默认取缩略图大小
-    var thumbnailSize: CGSize = .zero
     var thumbnail: PLPhotoDatasource?
     var data: PLPhotoDatasource?
     convenience init(data: PLPhotoDatasource?, thumbnail: PLPhotoDatasource?) {
@@ -31,24 +29,26 @@ class PLPhoto: NSObject {
 typealias PLPhotoBrowserDownloadCompletionCallback = (UIImage?)->Void
 
 /// 下载Callback
-typealias PLPhotoBrowserDownloadCallback = (URL, @escaping PLPhotoBrowserDownloadCompletionCallback)->Void
+typealias PLPhotoBrowserDownloadCallback = (URL, Bool, @escaping PLPhotoBrowserDownloadCompletionCallback)->Void
 
 /// 界面改变Callback
 typealias PLPhotoBrowserDidChangePageCallback = (PLPhotoBrowser, Int)->Void
 
 class PLPhotoBrowser: UIViewController {
     
-    convenience init(photos: [PLPhoto], initIndex: Int = 0, fromView: UIView? = nil, fromOriginSize: CGSize = .zero) {
+    convenience init(photos: [PLPhoto], initIndex: Int = 0, fromView: UIImageView? = nil) {
         self.init()
-        self.fromOriginSize = fromOriginSize
         self.fromView = fromView
         self.photos = photos
         self.currentPageIndex = initIndex
         self.modalPresentationStyle = .custom
         self.transitioningDelegate = self
         
-        // 默认下载图片 无缓存
-        self.setDownloadImageCallback { (url, completion) in
+        // 默认下载图片 系统自带缓存
+        self.setDownloadImageCallback { (url, isThumb, completion) in
+            guard isThumb == false else {
+                return
+            }
             
             URLSession.shared.downloadTask(with: url, completionHandler: { (fileurl, response, error) in
                 
@@ -79,12 +79,12 @@ class PLPhotoBrowser: UIViewController {
         
     }
     
+    
     var itemSpacing: CGFloat = 10
     var enableSingleTapClose: Bool = true
     var didChangePageCallback: PLPhotoBrowserDidChangePageCallback?
     
-    weak var fromView: UIView?
-    var fromOriginSize: CGSize = .zero
+    weak var fromView: UIImageView?
     
     private(set) var photos: [PLPhoto]? {
         didSet {
@@ -205,13 +205,13 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
     
     var photo: PLPhoto? {
         didSet {
-            
+            self.page.image = nil
             if let thumbnail = photo?.thumbnail {
-                self.loadPhoto(thumbnail, forceSize: photo?.thumbnailSize)
+                self.loadPhoto(thumbnail, isThumb: true)
             }
             
             if let datasource = photo?.data {
-                self.loadPhoto(datasource, forceSize: nil)
+                self.loadPhoto(datasource, isThumb: false)
             }
         }
     }
@@ -227,7 +227,7 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
         }
         
         self.page.longPressCallback = {[unowned self] _ in
-            guard let image = self.page.dataSource?.image else {
+            guard let image = self.page.image else {
                 return
             }
             let activity = UIActivityViewController.init(activityItems: [image], applicationActivities: nil)
@@ -264,45 +264,45 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
         self.waitIndicator.center = .init(x: bounds.width / 2, y: bounds.height / 2)
     }
     
-    func loadPhoto(_ dataSource: PLPhotoDatasource, forceSize: CGSize?) {
+    func loadPhoto(_ dataSource: PLPhotoDatasource, isThumb: Bool) {
         
         if let image = dataSource as? UIImage {
-            self.page.dataSource = .init(image: image, forceSize: forceSize)
+            self.page.image = image
             return
         }
         
         if let data = dataSource as? Data {
             let image = UIImage.init(data: data)
-            self.page.dataSource = .init(image: image, forceSize: forceSize)
+            self.page.image = image
             return
         }
         
         if let str = dataSource as? String, let url = URL.init(string: str) {
-            self.parseURL(url, forceSize: forceSize)
+            self.parseURL(url, isThumb: isThumb)
             return
         }
         
         if let url = dataSource as? URL {
-            self.parseURL(url, forceSize: forceSize)
+            self.parseURL(url, isThumb: isThumb)
             return
         }
         
-        self.page.dataSource = nil
+        self.page.image = nil
     }
     
-    func parseURL(_ url: URL, forceSize: CGSize?) {
+    func parseURL(_ url: URL, isThumb: Bool) {
         if url.isFileURL {
             guard let data = try? Data.init(contentsOf: url) else {
                 return
             }
             
             let image = UIImage.init(data: data)
-            self.page.dataSource = .init(image: image, forceSize: forceSize)
+            self.page.image = image
         } else {
             self.waitIndicator.startAnimating()
-            self.browser?.downloadCallback?(url, {[weak self] image in
+            self.browser?.downloadCallback?(url, isThumb, {[weak self] image in
                 self?.waitIndicator.stopAnimating()
-                self?.page.dataSource = .init(image: image, forceSize: forceSize)
+                self?.page.image = image
             })
         }
     }
@@ -319,8 +319,13 @@ extension PLPhotoBrowser: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PLPhotoBrowserCell", for: indexPath) as! PLPhotoBrowserCell
         cell.browser = self
-        cell.photo = self.photos?[indexPath.row]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let cell = cell as? PLPhotoBrowserCell {
+            cell.photo = self.photos?[indexPath.row]
+        }
     }
 }
 
@@ -337,15 +342,15 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
     var isPresent = false
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.25
+        return 0.35
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
         let containerView = transitionContext.containerView
         
+        // 获取view
         var browser: PLPhotoBrowser?
-        
         var anotherView: UIView?
         var browserView: UIView?
         if self.isPresent {
@@ -360,8 +365,7 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             browserView = transitionContext.view(forKey: .from)
         }
         
-        
-        
+        // 添加view
         if self.isPresent {
             if let view = anotherView {
                 containerView.addSubview(view)
@@ -370,101 +374,104 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             if let view = browserView {
                 containerView.addSubview(view)
             }
-            // init snapshotView
-            let snapshotView = browser?.fromView?.snapshotView(afterScreenUpdates: true)
-            var fromOriginSize = browser?.fromOriginSize ?? .zero
-            if fromOriginSize.equalTo(.zero) {
-                fromOriginSize = browser?.fromView?.frame.size ?? .zero
-            }
-            
-            if let snapshotView = snapshotView {
-                let fromView = browser!.fromView!
-                let frame = fromView.superview!.convert(fromView.frame, to: containerView)
-                snapshotView.frame = frame
-                containerView.addSubview(snapshotView)
-                browser?.collectionView.isHidden = true
-            }
-            
-            // -
-            browserView?.alpha = 0
-            let animations: () -> Void = {
+        }
+        
+        // -- 动画
+        let duration = self.transitionDuration(using: nil)
+        
+        // 没有fromview 或 截取失败 做简单的渐变动画
+        if browser?.fromView == nil || browser?.fromView?.image == nil {
+            if self.isPresent {
                 
-                // config snapshotView
-                if let snapshotView = snapshotView {
-                    var frame = snapshotView.frame
-                    if !fromOriginSize.equalTo(.zero) {
-                        
-                        var size = fromOriginSize
-                        
-                        let ratio = min(1, min(containerView.bounds.width / size.width, containerView.bounds.height / size.height))
-                        
-                        size.width *= ratio
-                        size.height *= ratio
-                        
-                        frame.size = size
-                    }
-                    
-                    frame.origin = .init(x: (containerView.frame.width - frame.width) / 2, y: (containerView.frame.height - frame.height) / 2)
-                    snapshotView.frame = frame
+                browserView?.alpha = 0
+                UIView.animate(withDuration: duration, animations: {
+                    browserView?.alpha = 1
+                }) { (_) in
+                    transitionContext.completeTransition(true)
                 }
-                
-                // -
-                browserView?.alpha = 1
+            } else {
+                UIView.animate(withDuration: duration, animations: {
+                    browserView?.alpha = 0
+                }) { (_) in
+                    browserView?.removeFromSuperview()
+                    transitionContext.completeTransition(true)
+                }
             }
+            return
+        }
+        
+        guard let fromView = browser?.fromView else {
+            return
+        }
+        
+        
+        
+        if self.isPresent {
+            let snapshotView = UIImageView.init(image: browser?.fromView?.image)
+            snapshotView.contentMode = browser?.fromView?.contentMode ?? .scaleToFill
+            snapshotView.clipsToBounds = true
+            
+            let fromRect = fromView.superview?.convert(fromView.frame, to: browser!.view) ?? snapshotView.frame
+            snapshotView.frame = fromRect
+            containerView.addSubview(snapshotView)
             
             
-            UIView.animate(withDuration: self.transitionDuration(using: nil), animations: animations) { (_) in
-                //                another?.view.removeFromSuperview()
-                snapshotView?.removeFromSuperview()
+            let targetSize = browser!.view.frame.size
+            var toRect = snapshotView.frame
+            toRect.size = PLPhotoBrowserPage.scale(fromSize: browser?.fromView?.image?.size ?? toRect.size, targetSize: targetSize)
+            
+            toRect.origin.x = (targetSize.width - toRect.width) / 2
+            toRect.origin.y = (targetSize.height - toRect.height) / 2
+            
+            
+            browser?.collectionView.isHidden = true
+            browserView?.alpha = 0
+            
+            UIView.animate(withDuration: duration, animations: {
+                snapshotView.frame = toRect
+                browserView?.alpha = 1
+            }) { (_) in
                 browser?.collectionView.isHidden = false
+                snapshotView.removeFromSuperview()
                 transitionContext.completeTransition(true)
             }
             
         } else {
             
-            // init snapshotView
+            let imageView = browser?.currentBrowserPage().imageView
+            let snapshotView = UIImageView.init(image: imageView?.image)
+            snapshotView.contentMode = browser?.fromView?.contentMode ?? .scaleToFill
+            snapshotView.clipsToBounds = true
             
-            let fromView: UIView? = browser?.fromView != nil ? browser?.currentBrowserPage().imageView : nil
-            let snapshotView = fromView?.snapshotView(afterScreenUpdates: true)
+            let fromRect = browser?.currentBrowserPage().convert(imageView!.frame, to: browser!.view) ?? imageView!.frame
+            let toRect = fromView.superview?.convert(fromView.frame, to: browser!.view) ?? CGRect.zero
             
-            if let snapshotView = snapshotView {
-                snapshotView.frame = fromView!.frame
-                containerView.addSubview(snapshotView)
-                browser?.collectionView.isHidden = true
-            }
+            snapshotView.frame = fromRect
+            containerView.addSubview(snapshotView)
             
-            let animations: () -> Void = {
-                
-                // config snapshotView
-                if let fromView = browser?.fromView, let snapshotView = snapshotView {
-                    let frame = fromView.superview?.convert(fromView.frame, to: containerView) ?? .zero
-                    snapshotView.frame = frame
-                }
-                
+            browser?.collectionView.isHidden = true
+            UIView.animate(withDuration: duration, animations: {
+                snapshotView.frame = toRect
                 browserView?.alpha = 0
-            }
-            
-            UIView.animate(withDuration: self.transitionDuration(using: nil), animations: animations) { (_) in
-                snapshotView?.removeFromSuperview()
+            }) { (_) in
                 browserView?.removeFromSuperview()
+                snapshotView.removeFromSuperview()
                 transitionContext.completeTransition(true)
             }
         }
-        
-        
     }
 }
 
 extension PLPhotoBrowser: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        
+
         let obj = PLPhotoBrowserAnimatedTransitioning()
         obj.isPresent = true
         return obj
     }
-    
+
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        
+
         let obj = PLPhotoBrowserAnimatedTransitioning()
         obj.isPresent = false
         return obj

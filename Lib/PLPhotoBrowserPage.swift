@@ -238,7 +238,7 @@ class PLPhotoBrowserPage: UIScrollView {
     
     // MARK: - Static
     static func scale(fromSize: CGSize, targetSize: CGSize) -> CGSize {
-        let ratio = min(1, min(targetSize.width / fromSize.width, targetSize.height / fromSize.height))
+        let ratio = min(targetSize.width / fromSize.width, targetSize.height / fromSize.height)
         return .init(width: fromSize.width * ratio, height: fromSize.height * ratio)
     }
 }

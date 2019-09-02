@@ -233,8 +233,11 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
             
             var activity: UIActivityViewController!
             if let yyImage = image as? YYImage {
-                
-                activity = UIActivityViewController.init(activityItems: [yyImage.animatedImageData!], applicationActivities: nil)
+                if yyImage.animatedImageType == .GIF {
+                    activity = UIActivityViewController.init(activityItems: [yyImage.animatedImageData!], applicationActivities: nil)
+                } else {
+                    activity = UIActivityViewController.init(activityItems: [yyImage], applicationActivities: nil)
+                }
             } else {
                 activity = UIActivityViewController.init(activityItems: [image], applicationActivities: nil)
             }

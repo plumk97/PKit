@@ -230,7 +230,15 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
             guard let image = self.page.image else {
                 return
             }
-            let activity = UIActivityViewController.init(activityItems: [image], applicationActivities: nil)
+            
+            var activity: UIActivityViewController!
+            if let yyImage = image as? YYImage {
+                
+                activity = UIActivityViewController.init(activityItems: [yyImage.animatedImageData!], applicationActivities: nil)
+            } else {
+                activity = UIActivityViewController.init(activityItems: [image], applicationActivities: nil)
+            }
+            activity.excludedActivityTypes = [.print]
             activity.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
             }
             self.browser?.present(activity, animated: true, completion: nil)

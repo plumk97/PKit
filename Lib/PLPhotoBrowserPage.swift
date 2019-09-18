@@ -21,6 +21,7 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     override func reset() {
         super.reset()
         self.firstTouch = nil
+        self.isRunning = false
     }
     
     override func location(in view: UIView?) -> CGPoint {
@@ -54,6 +55,10 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        defer {
+            self.reset()
+        }
+        
         guard self.firstTouch?.phase == .ended else {
             return
         }
@@ -61,12 +66,14 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
         if self.state != .possible {
             self.state = .ended
         }
-        
-        self.reset()
     }
     
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+        defer {
+            self.reset()
+        }
+        
         guard self.firstTouch?.phase == .cancelled else {
             return
         }
@@ -75,8 +82,6 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
         if self.state != .possible {
             self.state = .cancelled
         }
-        
-        self.reset()
     }
 }
 
@@ -280,7 +285,7 @@ extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if self.panGesture.isRunning {
+        if gestureRecognizer != self.panGesture && self.panGesture.isRunning {
             return false
         }
         return true

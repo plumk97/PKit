@@ -52,6 +52,9 @@ class PLStackCardView: UIView {
                 transform = transform.translatedBy(x: 0, y: self.contentSize.height * (1 - self.scale) * 1.5)
                 view.transform = transform
             }
+            if idx > 1 {
+                view.isHidden = true
+            }
             self.addSubview(view)
         }
         
@@ -66,6 +69,10 @@ class PLStackCardView: UIView {
     
     @objc func panGestureHandle(_ sender: UIPanGestureRecognizer) {
         guard let view = self.cardViews?.first else {
+            return
+        }
+        
+        guard bounds.width > 0 && bounds.height > 0 else {
             return
         }
         
@@ -89,7 +96,16 @@ class PLStackCardView: UIView {
             if abs(progress) > 0.5 || abs(vel.x) >= 500 {
                 
                 let point = self.linePoint(point1: self.panBeginPoint, point2: point, distance: 1000)
+                if point.equalTo(.zero) {
+                    return
+                }
+                
                 self.cardViews?.removeFirst()
+                // 显示下一个
+                if self.cardViews?.count ?? 0 > 1 {
+                    self.cardViews?[1].isHidden = false
+                }
+                
                 UIView.animate(withDuration: 0.25, animations: {
                     view.center = point
                     self.cardViews?.first?.transform = .identity
@@ -116,6 +132,9 @@ class PLStackCardView: UIView {
     func linePoint(point1: CGPoint, point2: CGPoint, distance: CGFloat) -> CGPoint {
         
         let l = sqrt(pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2))
+        if l == 0 {
+            return .zero
+        }
         
         var point = CGPoint.zero
         point.y = (distance * (point2.y - point1.y)) / l + point1.y

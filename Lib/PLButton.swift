@@ -16,6 +16,12 @@ class PLButton: UIControl {
         }
     }
     
+    var attributedTitle: NSAttributedString? {
+        didSet {
+            self.setup()
+        }
+    }
+    
     var titleColor: UIColor = .black {
         didSet {
             self.setup()
@@ -158,9 +164,13 @@ class PLButton: UIControl {
     }
     
     fileprivate func setup() {
-        self.titleLabel.text = self.title
-        self.titleLabel.textColor = self.titleColor
-        self.titleLabel.font = self.font
+        if self.attributedTitle != nil {
+            self.titleLabel.attributedText = self.attributedTitle
+        } else {
+            self.titleLabel.text = self.title
+            self.titleLabel.textColor = self.titleColor
+            self.titleLabel.font = self.font
+        }
         
         self.leftIcon.renewImageViewImage()
         self.topIcon.renewImageViewImage()

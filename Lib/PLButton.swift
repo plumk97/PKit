@@ -84,7 +84,7 @@ class PLButton: UIControl {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.clipsToBounds = true
-        
+        self.prevState = self.state
         self.leftIcon = Icon.init(button: self)
         self.topIcon = Icon.init(button: self)
         self.rightIcon = Icon.init(button: self)
@@ -101,15 +101,19 @@ class PLButton: UIControl {
         self.contentView.addSubview(self.titleLabel)
         
         self.leftImageView = UIImageView()
+        self.leftIcon.relImageView = self.leftImageView
         self.contentView.addSubview(self.leftImageView)
         
         self.topImageView = UIImageView()
+        self.topIcon.relImageView = self.topImageView
         self.contentView.addSubview(self.topImageView)
         
         self.rightImageView = UIImageView()
+        self.rightIcon.relImageView = self.rightImageView
         self.contentView.addSubview(self.rightImageView)
         
         self.bottomImageView = UIImageView()
+        self.bottomIcon.relImageView = self.bottomImageView
         self.contentView.addSubview(self.bottomImageView)
         
         self.setup()
@@ -121,12 +125,30 @@ class PLButton: UIControl {
     }
     
     private func addLoopObserve() {
-        //        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) { (observer, activity) in
-        //            if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
-        //
-        //            }
-        //        }
-        //        CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
+        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) {[weak self] (observer, activity) in
+            guard self != nil else {
+                CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
+                return
+            }
+            if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
+                self?.renewAppearance()
+            }
+        }
+        CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
+    }
+    
+    fileprivate var prevState: State = .normal
+    fileprivate func renewAppearance() {
+        guard self.prevState != self.state else {
+            return
+        }
+        
+        self.leftIcon.renewImageViewImage()
+        self.topIcon.renewImageViewImage()
+        self.rightIcon.renewImageViewImage()
+        self.bottomIcon.renewImageViewImage()
+        
+        self.prevState = self.state
     }
     
     fileprivate func setupLayer() {
@@ -140,10 +162,10 @@ class PLButton: UIControl {
         self.titleLabel.textColor = self.titleColor
         self.titleLabel.font = self.font
         
-        self.leftImageView.image = self.leftIcon.image
-        self.topImageView.image = self.topIcon.image
-        self.rightImageView.image = self.rightIcon.image
-        self.bottomImageView.image = self.bottomIcon.image
+        self.leftIcon.renewImageViewImage()
+        self.topIcon.renewImageViewImage()
+        self.rightIcon.renewImageViewImage()
+        self.bottomIcon.renewImageViewImage()
         
         self.relayoutContentView()
         self.invalidateIntrinsicContentSize()
@@ -263,6 +285,7 @@ class PLButton: UIControl {
         self.contentView.frame = rect
     }
     
+    // MARK: - Size Fit
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         return self.intrinsicContentSize
     }
@@ -288,6 +311,8 @@ extension PLButton {
             }
         }
         
+        var highlightedImage: UIImage?
+        
         var imageSize: CGSize? {
             didSet {
                 self.button?.setup()
@@ -295,10 +320,29 @@ extension PLButton {
         }
         
         fileprivate weak var button: PLButton?
+        fileprivate weak var relImageView: UIImageView?
         
         fileprivate init(button: PLButton?) {
             super.init()
             self.button = button
+        }
+        
+        fileprivate func renewImageViewImage() {
+            guard let imageView = self.relImageView else {
+                return
+            }
+            
+            guard let btn = self.button else {
+                return
+            }
+            
+            if btn.state.contains(.highlighted) {
+                if self.highlightedImage != nil {
+                    imageView.image = self.highlightedImage
+                }
+            } else {
+                imageView.image = self.image
+            }
         }
     }
 }

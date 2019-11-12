@@ -19,7 +19,7 @@ class PLStackCardView: UIView {
     
     private(set) var contentSize: CGSize = .zero
     private(set) var scale: CGFloat = 0
-    
+    private(set) var leakage: CGFloat = 20
     var cardViews: [UIView]?
     
     override init(frame: CGRect) {
@@ -29,9 +29,9 @@ class PLStackCardView: UIView {
         self.addGestureRecognizer(pan)
     }
     
-    convenience init(contentSize: CGSize, scale: CGFloat = 0.97) {
-        self.init(frame: .init(x: 0, y: 0, width: contentSize.width, height: contentSize.height + contentSize.height * (1 - scale)))
-        
+    convenience init(contentSize: CGSize, leakage: CGFloat = 20, scale: CGFloat = 0.9) {
+        self.init(frame: .init(x: 0, y: 0, width: contentSize.width, height: contentSize.height + leakage))
+        self.leakage = leakage
         self.contentSize = contentSize
         self.scale = scale
     }
@@ -49,8 +49,10 @@ class PLStackCardView: UIView {
             view.frame.origin.y = 0
             if idx > 0 {
                 var transform = CGAffineTransform.identity.scaledBy(x: self.scale, y: self.scale)
-                transform = transform.translatedBy(x: 0, y: self.contentSize.height * (1 - self.scale) * 1.5)
+                let half = (self.contentSize.height - self.contentSize.height * self.scale) / 2
+                transform = transform.translatedBy(x: 0, y: half + self.leakage)
                 view.transform = transform
+                view.alpha = 0.8
             }
             if idx > 1 {
                 view.isHidden = true
@@ -109,6 +111,7 @@ class PLStackCardView: UIView {
                 UIView.animate(withDuration: 0.25, animations: {
                     view.center = point
                     self.cardViews?.first?.transform = .identity
+                    self.cardViews?.first?.alpha = 1
                 }) { (_) in
                     view.removeFromSuperview()
                     self.delegate?.stackCardView?(self, didDismiss: view)

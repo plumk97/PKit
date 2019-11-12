@@ -118,7 +118,7 @@ class PLTabBar: UIView {
         }
         
         let point = sender.location(in: self)
-        let width = contentView.frame.width / CGFloat(count)
+        let width = ceil(contentView.frame.width / CGFloat(count))
         let idx = Int(point.x / width)
         self.delegate?.tabBar?(self, didDoubleTap: idx)
     }
@@ -132,7 +132,7 @@ class PLTabBar: UIView {
                 return
             }
 
-            let width = contentView.frame.width / CGFloat(items.count)
+            let width = ceil(contentView.frame.width / CGFloat(items.count))
             if contentView.frame.contains(point) {
                 let idx = Int(point.x / width)
                 if (self.delegate?.tabBar?(self, willSelect: idx) ?? true) {

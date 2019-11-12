@@ -313,6 +313,9 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
             self.waitIndicator.startAnimating()
             self.browser?.downloadCallback?(url, isThumb, {[weak self] image in
                 self?.waitIndicator.stopAnimating()
+                if isThumb && self?.page.image != nil {
+                    return
+                }
                 self?.page.image = image
             })
         }
@@ -475,14 +478,14 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
 
 extension PLPhotoBrowser: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-
+        
         let obj = PLPhotoBrowserAnimatedTransitioning()
         obj.isPresent = true
         return obj
     }
-
+    
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-
+        
         let obj = PLPhotoBrowserAnimatedTransitioning()
         obj.isPresent = false
         return obj

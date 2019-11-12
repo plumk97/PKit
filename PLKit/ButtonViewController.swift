@@ -16,6 +16,7 @@ class ButtonViewController: UIViewController {
         let btn = PLButton()
         btn.title = "123123123"
         btn.rightIcon.image = UIImage.init(named: "arrow_bottom_small")
+        btn.rightIcon.highlightedImage = UIImage.init(named: "icon_close")
         btn.leftIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.topIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.bottomIcon.image = UIImage.init(named: "arrow_bottom_small")

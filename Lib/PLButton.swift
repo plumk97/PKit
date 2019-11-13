@@ -316,18 +316,23 @@ extension PLButton {
     
     class Icon: NSObject {
         var image: UIImage? {
-            didSet {
+            set {
+                self.setImage(newValue, state: .normal)
                 self.button?.setup()
             }
+            
+            get {
+                return self.getImage(state: .normal)
+            }
         }
-        
-        var highlightedImage: UIImage?
         
         var imageSize: CGSize? {
             didSet {
                 self.button?.setup()
             }
         }
+        
+        private var imageSet = [UIControl.State.RawValue: UIImage?]()
         
         fileprivate weak var button: PLButton?
         fileprivate weak var relImageView: UIImageView?
@@ -336,6 +341,15 @@ extension PLButton {
             super.init()
             self.button = button
         }
+        
+        func setImage(_ image: UIImage?, state: UIControl.State) {
+            self.imageSet[state.rawValue] = image
+        }
+        
+        func getImage(state: UIControl.State) -> UIImage? {
+            return self.imageSet[state.rawValue] ?? nil
+        }
+        
         
         fileprivate func renewImageViewImage() {
             guard let imageView = self.relImageView else {
@@ -346,12 +360,8 @@ extension PLButton {
                 return
             }
             
-            if btn.state.contains(.highlighted) {
-                if self.highlightedImage != nil {
-                    imageView.image = self.highlightedImage
-                }
-            } else {
-                imageView.image = self.image
+            if let img = self.imageSet[btn.state.rawValue] {
+                imageView.image = img
             }
         }
     }

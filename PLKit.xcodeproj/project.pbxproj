@@ -159,12 +159,12 @@
 		810FD7A722FAC13C002EB244 /* images */ = {
 			isa = PBXGroup;
 			children = (
-				81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */,
-				81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */,
 				810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */,
 				810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */,
 				8153641F22CDFF090025EDF4 /* icon_close@2x.png */,
 				8153641E22CDFF090025EDF4 /* icon_close@3x.png */,
+				81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */,
+				81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */,
 				810FD78722FAC11B002EB244 /* tabbar_guanxuan_selected@2x.png */,
 				810FD78922FAC11B002EB244 /* tabbar_guanxuan_selected@3x.png */,
 				810FD78522FAC11A002EB244 /* tabbar_guanxuan@2x.png */,

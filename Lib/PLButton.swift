@@ -12,25 +12,25 @@ class PLButton: UIControl {
     
     var title: String? {
         didSet {
-            self.setup()
+            self.setup(oldValue != title)
         }
     }
     
     var attributedTitle: NSAttributedString? {
         didSet {
-            self.setup()
+            self.setup(oldValue != attributedTitle)
         }
     }
     
     var titleColor: UIColor = .black {
         didSet {
-            self.setup()
+            self.setup(false)
         }
     }
     
     var font: UIFont = UIFont.systemFont(ofSize: 15) {
         didSet {
-            self.setup()
+            self.setup(oldValue != font)
         }
     }
     
@@ -41,7 +41,7 @@ class PLButton: UIControl {
     
     var spaceingTitleImage: CGFloat = 2 {
         didSet {
-            self.setup()
+            self.setup(oldValue != spaceingTitleImage)
         }
     }
     var spaceingEdge: UIEdgeInsets = .zero {
@@ -163,7 +163,7 @@ class PLButton: UIControl {
         self.layer.borderColor = self.borderColor.cgColor
     }
     
-    fileprivate func setup() {
+    fileprivate func setup(_ isRenewLayout: Bool = true) {
         if self.attributedTitle != nil {
             self.titleLabel.attributedText = self.attributedTitle
         } else {
@@ -177,8 +177,10 @@ class PLButton: UIControl {
         self.rightIcon.renewImageViewImage()
         self.bottomIcon.renewImageViewImage()
         
-        self.relayoutContentView()
-        self.invalidateIntrinsicContentSize()
+        if isRenewLayout {
+            self.relayoutContentView()
+            self.invalidateIntrinsicContentSize()
+        }
     }
     
     fileprivate func relayoutContentView() {
@@ -317,8 +319,17 @@ extension PLButton {
     class Icon: NSObject {
         var image: UIImage? {
             set {
+                
+                let oldValue = self.imageSet[UIControl.State.normal.rawValue]
                 self.setImage(newValue, state: .normal)
-                self.button?.setup()
+                
+                if let o = oldValue, let n = newValue {
+                    self.button?.setup(!o.size.equalTo(n.size))
+                } else if oldValue != newValue {
+                    self.button?.setup(true)
+                } else {
+                    self.button?.setup(false)
+                }
             }
             
             get {
@@ -328,11 +339,15 @@ extension PLButton {
         
         var imageSize: CGSize? {
             didSet {
-                self.button?.setup()
+                if let o = oldValue, let n = imageSize {
+                    self.button?.setup(!o.equalTo(n))
+                } else {
+                    self.button?.setup()
+                }
             }
         }
         
-        private var imageSet = [UIControl.State.RawValue: UIImage?]()
+        private var imageSet = [UIControl.State.RawValue: UIImage]()
         
         fileprivate weak var button: PLButton?
         fileprivate weak var relImageView: UIImageView?
@@ -343,11 +358,15 @@ extension PLButton {
         }
         
         func setImage(_ image: UIImage?, state: UIControl.State) {
-            self.imageSet[state.rawValue] = image
+            if image == nil {
+                self.imageSet.removeValue(forKey: state.rawValue)
+            } else {
+                self.imageSet[state.rawValue] = image
+            }
         }
         
         func getImage(state: UIControl.State) -> UIImage? {
-            return self.imageSet[state.rawValue] ?? nil
+            return self.imageSet[state.rawValue]
         }
         
         
@@ -360,8 +379,33 @@ extension PLButton {
                 return
             }
             
-            if let img = self.imageSet[btn.state.rawValue] {
-                imageView.image = img
+            switch btn.state {
+            case .normal:
+                imageView.image = self.getImage(state: .normal)
+                
+            case .normal, .highlighted:
+                if let img = self.getImage(state: [.normal, .highlighted]) {
+                    imageView.image = img
+                } else if let img = self.getImage(state: .highlighted) {
+                    imageView.image = img
+                } else {
+                    imageView.image = self.getImage(state: .normal)
+                }
+                
+            case .selected:
+                imageView.image = self.getImage(state: .selected)
+                
+            case .selected, .highlighted:
+                if let img = self.getImage(state: [.selected, .highlighted]) {
+                    imageView.image = img
+                } else if let img = self.getImage(state: .highlighted) {
+                    imageView.image = img
+                } else {
+                    imageView.image = self.getImage(state: .selected)
+                }
+                
+            default:
+                imageView.image = self.getImage(state: btn.state)
             }
         }
     }

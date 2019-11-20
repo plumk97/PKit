@@ -381,7 +381,9 @@ extension PLButton {
             
             switch btn.state {
             case .normal:
-                imageView.image = self.getImage(state: .normal)
+                if let img = self.getImage(state: .normal) {
+                    imageView.image = img
+                }
                 
             case [.normal, .highlighted]:
                 if let img = self.getImage(state: [.normal, .highlighted]) {
@@ -393,19 +395,23 @@ extension PLButton {
                 }
                 
             case .selected:
-                imageView.image = self.getImage(state: .selected)
+                if let img = self.getImage(state: .selected) {
+                    imageView.image = img
+                }
                 
             case [.selected, .highlighted]:
                 if let img = self.getImage(state: [.selected, .highlighted]) {
                     imageView.image = img
                 } else if let img = self.getImage(state: .highlighted) {
                     imageView.image = img
-                } else {
-                    imageView.image = self.getImage(state: .selected)
+                } else if let img = self.getImage(state: .selected) {
+                    imageView.image = img
                 }
                 
             default:
-                imageView.image = self.getImage(state: btn.state)
+                if let img = self.getImage(state: btn.state) {
+                    imageView.image = img
+                }
             }
         }
     }

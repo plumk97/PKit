@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2988B648EBB007AD26EE8219 /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */; };
+		0EFF90F30E4F390FAA5A4CBC /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 409954DF777D0C203453192F /* Pods_PLKit.framework */; };
 		51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF222ACEBF80021641A /* PLBadgeView.swift */; };
 		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
 		810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77722FAAE5F002EB244 /* PLTabBarController.swift */; };
@@ -43,6 +43,7 @@
 		812FBF3C226EAE8A00CA1831 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 812FBF3A226EAE8A00CA1831 /* LaunchScreen.storyboard */; };
 		812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF44226EAF0000CA1831 /* PLRippleAnimate.swift */; };
 		812FBF47226EB77400CA1831 /* PLKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF46226EB77400CA1831 /* PLKit.swift */; };
+		8130A0432387EAD8004F7F45 /* PacHost in Resources */ = {isa = PBXBuildFile; fileRef = 8130A0422387EAD8004F7F45 /* PacHost */; };
 		814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */; };
 		814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */; };
 		814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */; };
@@ -56,6 +57,8 @@
 		81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786DA022731154005B232D /* PLRefreshNormalHeader.swift */; };
 		818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818997A622DC5D4E0042A93F /* StackCardViewController.swift */; };
 		818997A922DC5D910042A93F /* PLStackCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818997A822DC5D910042A93F /* PLStackCardView.swift */; };
+		818BF10F241A264C00D84B86 /* MultiMenuTableViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */; };
+		818BF111241A26B300D84B86 /* PLMultimenuTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BF110241A26B300D84B86 /* PLMultimenuTableView.swift */; };
 		81948F562278236000868B88 /* PLPageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F552278236000868B88 /* PLPageScrollView.swift */; };
 		81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81948F572278237A00868B88 /* PageScrollViewController.swift */; };
 		81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */ = {isa = PBXBuildFile; fileRef = 81D5BA40228E964F00C9BF51 /* imagesrc.text */; };
@@ -70,8 +73,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D02F1EC418F44D92D64D09B /* Pods-PLKit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.release.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.release.xcconfig"; sourceTree = "<group>"; };
+		409954DF777D0C203453192F /* Pods_PLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		51014EF222ACEBF80021641A /* PLBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBadgeView.swift; sourceTree = "<group>"; };
 		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
 		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
@@ -110,6 +113,7 @@
 		812FBF3D226EAE8A00CA1831 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		812FBF44226EAF0000CA1831 /* PLRippleAnimate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRippleAnimate.swift; sourceTree = "<group>"; };
 		812FBF46226EB77400CA1831 /* PLKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLKit.swift; sourceTree = "<group>"; };
+		8130A0422387EAD8004F7F45 /* PacHost */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PacHost; sourceTree = "<group>"; };
 		814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPhotoBrowser.swift; sourceTree = "<group>"; };
 		814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoBrowserViewController.swift; sourceTree = "<group>"; };
 		814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPhotoBrowserPage.swift; sourceTree = "<group>"; };
@@ -123,6 +127,8 @@
 		81786DA022731154005B232D /* PLRefreshNormalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalHeader.swift; sourceTree = "<group>"; };
 		818997A622DC5D4E0042A93F /* StackCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCardViewController.swift; sourceTree = "<group>"; };
 		818997A822DC5D910042A93F /* PLStackCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLStackCardView.swift; sourceTree = "<group>"; };
+		818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiMenuTableViewViewController.swift; sourceTree = "<group>"; };
+		818BF110241A26B300D84B86 /* PLMultimenuTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLMultimenuTableView.swift; sourceTree = "<group>"; };
 		81948F552278236000868B88 /* PLPageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPageScrollView.swift; sourceTree = "<group>"; };
 		81948F572278237A00868B88 /* PageScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageScrollViewController.swift; sourceTree = "<group>"; };
 		81D5BA40228E964F00C9BF51 /* imagesrc.text */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = imagesrc.text; sourceTree = "<group>"; };
@@ -141,7 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2988B648EBB007AD26EE8219 /* Pods_PLKit.framework in Frameworks */,
+				0EFF90F30E4F390FAA5A4CBC /* Pods_PLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,7 +157,7 @@
 		2381AEE8F6D6C2349A54193C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				140A1B393A84656AD69C5DE7 /* Pods_PLKit.framework */,
+				409954DF777D0C203453192F /* Pods_PLKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -211,6 +217,7 @@
 		812FBF30226EAE8800CA1831 /* PLKit */ = {
 			isa = PBXGroup;
 			children = (
+				8130A0422387EAD8004F7F45 /* PacHost */,
 				810FD7A722FAC13C002EB244 /* images */,
 				812FBF31226EAE8800CA1831 /* AppDelegate.swift */,
 				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
@@ -224,6 +231,7 @@
 				810FD77922FAAFE3002EB244 /* TabBarViewController.swift */,
 				81E1ACC922FE71AC007DB464 /* HUDViewController.swift */,
 				81FE620F2302E25A00C9BD31 /* DotViewController.swift */,
+				818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -253,6 +261,7 @@
 				810FD77D22FAB964002EB244 /* PLTabBarItem.swift */,
 				81E1ACC722FE6ED4007DB464 /* PLHUD.swift */,
 				81FE620D2302E24B00C9BD31 /* PLDot.swift */,
+				818BF110241A26B300D84B86 /* PLMultimenuTableView.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -277,7 +286,7 @@
 				812FBF2A226EAE8800CA1831 /* Sources */,
 				812FBF2B226EAE8800CA1831 /* Frameworks */,
 				812FBF2C226EAE8800CA1831 /* Resources */,
-				2FCEA1D31732C0FA9FF3653D /* [CP] Embed Pods Frameworks */,
+				EB7C52D5FA96EC6E8D446ADC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -337,6 +346,7 @@
 				810FD7A022FAC11D002EB244 /* tabbar_message_selected@2x.png in Resources */,
 				810FD79322FAC11D002EB244 /* tabbar_home@2x.png in Resources */,
 				8153642122CDFF0A0025EDF4 /* icon_close@2x.png in Resources */,
+				8130A0432387EAD8004F7F45 /* PacHost in Resources */,
 				810FD7A122FAC11D002EB244 /* tabbar_message_selected@3x.png in Resources */,
 				810FD79822FAC11D002EB244 /* tabbar_mine@2x.png in Resources */,
 				810FD79A22FAC11D002EB244 /* tabbar_space@3x.png in Resources */,
@@ -362,23 +372,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2FCEA1D31732C0FA9FF3653D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		98A73CE24B6D196E29433D65 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -401,6 +394,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		EB7C52D5FA96EC6E8D446ADC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PLKit/Pods-PLKit-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -409,10 +419,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				81E1ACCA22FE71AC007DB464 /* HUDViewController.swift in Sources */,
+				818BF10F241A264C00D84B86 /* MultiMenuTableViewViewController.swift in Sources */,
 				81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */,
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
 				810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */,
+				818BF111241A26B300D84B86 /* PLMultimenuTableView.swift in Sources */,
 				81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */,
 				818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
@@ -583,16 +595,18 @@
 			baseConfigurationReference = 729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5QY2MC95W4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 75JCPG4E27;
 				INFOPLIST_FILE = PLKit/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.plumk.PLKit;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jitian.plkit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = com.jitian.wildcard;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -603,16 +617,18 @@
 			baseConfigurationReference = 1D02F1EC418F44D92D64D09B /* Pods-PLKit.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5QY2MC95W4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 75JCPG4E27;
 				INFOPLIST_FILE = PLKit/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.plumk.PLKit;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jitian.plkit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = com.jitian.wildcard;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

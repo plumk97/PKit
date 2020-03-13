@@ -50,13 +50,13 @@ class PageScrollViewController: UIViewController {
 
         self.pageScrollView.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {[unowned self] in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                self.pageScrollView.mj_header.endRefreshing()
+                self.pageScrollView.mj_header?.endRefreshing()
             })
         })
         
         tableView1.mj_footer = MJRefreshBackNormalFooter.init(refreshingBlock: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
-                tableView1.mj_footer.endRefreshing()
+                tableView1.mj_footer?.endRefreshing()
             })
         })
         

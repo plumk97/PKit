@@ -321,10 +321,15 @@ fileprivate class PLCellMultimenu: UIView {
             self.point = point
         } else if state == 1 {
             
-            let mius = self.point.x - point.x
+            var mius = self.point.x - point.x
+            
             var x = self.holdView?.frame.origin.x ?? 0
+            let progress = abs(x) / self.maximumWidth
+            mius *= progress > 1.0 ? 0.3 - (progress - 1) * 0.3 : 1
             x = min(0, x - mius)
             self.holdView?.frame.origin.x = x
+            self.items.forEach({$0.fllow(abs(x), maximumWidth: self.maximumWidth)})
+            
         } else {
             
             guard let view = self.holdView else {
@@ -346,6 +351,7 @@ fileprivate class PLCellMultimenu: UIView {
             
             UIView.animate(withDuration: TimeInterval(dur), delay: 0, options: .curveEaseOut, animations: {
                 self.holdView?.frame.origin.x = endX
+                self.items.forEach({$0.completeFllow(isOpen: endX < 0)})
             }) { (_) in
                 
             }
@@ -355,18 +361,20 @@ fileprivate class PLCellMultimenu: UIView {
     
     func setupActions(_ actions: [PLMultimenuAction]) {
         
-        var left: CGFloat = self.bounds.width
+        let bounds = self.bounds
+        var left = bounds.width
         for action in actions {
-            guard let item = PLCellMultimenuItem.init(action: action, height: self.bounds.height) else {
+            
+            guard let item = PLCellMultimenuItem.init(action: action, frame: .init(x: bounds.width, y: 0, width: bounds.width, height: bounds.height)) else {
                 return
             }
-            
-            self.maximumWidth += item.frame.width
-            
-            item.frame.origin.x = left - item.frame.width
-            left = item.frame.minX
+            item.originX = bounds.width
+            item.endX = left - item.visibleWidth
+            left = item.endX
+            self.maximumWidth += item.visibleWidth
             
             self.addSubview(item)
+            self.sendSubviewToBack(item)
             self.items.append(item)
         }
     }
@@ -381,13 +389,18 @@ fileprivate class PLCellMultimenuItem: UIView {
     
     var action: PLMultimenuAction?
     
-    init?(action: PLMultimenuAction, height: CGFloat) {
+    var visibleWidth: CGFloat = 0
+    var originX: CGFloat = 0
+    var endX: CGFloat = 0
+    
+    init?(action: PLMultimenuAction, frame: CGRect) {
         guard let view = action.view else {
             return nil
         }
-        super.init(frame: .init(x: 0, y: 0, width: view.bounds.width + action.xPadding, height: height))
-            
-        view.frame.origin = .init(x: (self.bounds.width - view.bounds.width) / 2,
+        super.init(frame: frame)
+        
+        self.visibleWidth = view.bounds.width + action.xPadding * 2
+        view.frame.origin = .init(x: (self.visibleWidth - view.bounds.width) / 2,
                                   y: (self.bounds.height - view.bounds.height) / 2)
         self.addSubview(view)
         
@@ -398,6 +411,21 @@ fileprivate class PLCellMultimenuItem: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
+    
+    func fllow(_ openWidth: CGFloat, maximumWidth: CGFloat) {
+        
+        let width = self.originX - self.endX
+        let rate = width / maximumWidth
+        self.frame.origin.x = self.originX - openWidth * rate
+    }
+    
+    func completeFllow(isOpen: Bool) {
+        if isOpen {
+            self.frame.origin.x = self.endX
+        } else {
+            self.frame.origin.x = self.originX
+        }
+    }
 }
 
 
@@ -405,7 +433,7 @@ fileprivate class PLCellMultimenuItem: UIView {
 class PLMultimenuAction: NSObject {
     typealias Handler = (PLMultimenuAction, IndexPath)->Void
     
-    var xPadding: CGFloat = 100
+    var xPadding: CGFloat = 25
     var backgroundColor = UIColor.red
     
     var view: UIView?

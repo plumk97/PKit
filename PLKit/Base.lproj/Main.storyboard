@@ -387,6 +387,25 @@
             </objects>
             <point key="canvasLocation" x="-4291" y="935"/>
         </scene>
+        <!--Arrange View Controller-->
+        <scene sceneID="DLW-eL-ZER">
+            <objects>
+                <viewController id="XiY-0H-brg" customClass="ArrangeViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qYg-Ei-ppp"/>
+                        <viewControllerLayoutGuide type="bottom" id="qmJ-eI-qTM"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="y1m-Hi-e8E">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="7lr-Y2-P39"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dQE-al-6um" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3610" y="935"/>
+        </scene>
         <!--Badge View View Controller-->
         <scene sceneID="dfF-fb-KTp">
             <objects>
@@ -415,7 +434,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <sections>
-                            <tableViewSection headerTitle="Section-1" id="Svw-ji-KMz">
+                            <tableViewSection headerTitle="Section-1" footerTitle="" id="Svw-ji-KMz">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="ylh-fD-bIk" style="IBUITableViewCellStyleDefault" id="Rde-8x-RUq">
                                         <rect key="frame" x="0.0" y="28" width="414" height="44"/>
@@ -675,6 +694,26 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="8rI-W6-fQv" kind="push" id="Efj-Hy-4u1"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="UgM-3w-8Wi" style="IBUITableViewCellStyleDefault" id="R3y-CQ-K0Q">
+                                        <rect key="frame" x="0.0" y="600" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="R3y-CQ-K0Q" id="LG0-lt-D1C">
+                                            <rect key="frame" x="0.0" y="0.0" width="383" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Arrange" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UgM-3w-8Wi">
+                                                    <rect key="frame" x="20" y="0.0" width="355" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="XiY-0H-brg" kind="push" id="jEc-Hv-GCS"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>

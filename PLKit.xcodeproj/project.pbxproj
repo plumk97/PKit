@@ -63,6 +63,8 @@
 		81D5BA41228E964F00C9BF51 /* imagesrc.text in Resources */ = {isa = PBXBuildFile; fileRef = 81D5BA40228E964F00C9BF51 /* imagesrc.text */; };
 		81D912982435971200A433D8 /* PLBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D912972435971200A433D8 /* PLBubble.swift */; };
 		81D9129A243599A200A433D8 /* BubbleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D91299243599A200A433D8 /* BubbleViewController.swift */; };
+		81D912A02435E5AA00A433D8 /* PLArrangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */; };
+		81D912A22435E9A200A433D8 /* ArrangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D912A12435E9A200A433D8 /* ArrangeViewController.swift */; };
 		81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E1ACC722FE6ED4007DB464 /* PLHUD.swift */; };
 		81E1ACCA22FE71AC007DB464 /* HUDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E1ACC922FE71AC007DB464 /* HUDViewController.swift */; };
 		81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */; };
@@ -134,6 +136,8 @@
 		81D5BA40228E964F00C9BF51 /* imagesrc.text */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = imagesrc.text; sourceTree = "<group>"; };
 		81D912972435971200A433D8 /* PLBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBubble.swift; sourceTree = "<group>"; };
 		81D91299243599A200A433D8 /* BubbleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleViewController.swift; sourceTree = "<group>"; };
+		81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLArrangeView.swift; sourceTree = "<group>"; };
+		81D912A12435E9A200A433D8 /* ArrangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrangeViewController.swift; sourceTree = "<group>"; };
 		81E1ACC722FE6ED4007DB464 /* PLHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLHUD.swift; sourceTree = "<group>"; };
 		81E1ACC922FE71AC007DB464 /* HUDViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDViewController.swift; sourceTree = "<group>"; };
 		81F1962022CC8F4900EEFA06 /* PLSlideVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLSlideVerify.swift; sourceTree = "<group>"; };
@@ -234,6 +238,7 @@
 				81FE620F2302E25A00C9BD31 /* DotViewController.swift */,
 				818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */,
 				81D91299243599A200A433D8 /* BubbleViewController.swift */,
+				81D912A12435E9A200A433D8 /* ArrangeViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -265,6 +270,7 @@
 				81FE620D2302E24B00C9BD31 /* PLDot.swift */,
 				818BF110241A26B300D84B86 /* PLMultimenuTableView.swift */,
 				81D912972435971200A433D8 /* PLBubble.swift */,
+				81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -420,6 +426,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81D912A22435E9A200A433D8 /* ArrangeViewController.swift in Sources */,
 				81E1ACCA22FE71AC007DB464 /* HUDViewController.swift in Sources */,
 				818BF10F241A264C00D84B86 /* MultiMenuTableViewViewController.swift in Sources */,
 				81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */,
@@ -445,6 +452,7 @@
 				81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
+				81D912A02435E5AA00A433D8 /* PLArrangeView.swift in Sources */,
 				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,
 				81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */,
 				814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */,

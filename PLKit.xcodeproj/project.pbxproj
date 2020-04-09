@@ -36,6 +36,8 @@
 		810FD7A622FAC11D002EB244 /* tabbar_mine@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD79222FAC11D002EB244 /* tabbar_mine@3x.png */; };
 		810FD7AA22FAC13C002EB244 /* arrow_bottom_small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */; };
 		810FD7AB22FAC13C002EB244 /* arrow_bottom_small@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */; };
+		811F280E243EFBEB00276CBF /* TabControlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811F280D243EFBEB00276CBF /* TabControlViewController.swift */; };
+		811F2810243EFBFF00276CBF /* PLTabControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811F280F243EFBFF00276CBF /* PLTabControl.swift */; };
 		812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF31226EAE8800CA1831 /* AppDelegate.swift */; };
 		812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */; };
 		812FBF37226EAE8800CA1831 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 812FBF35226EAE8800CA1831 /* Main.storyboard */; };
@@ -107,6 +109,8 @@
 		810FD79222FAC11D002EB244 /* tabbar_mine@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tabbar_mine@3x.png"; sourceTree = "<group>"; };
 		810FD7A822FAC13C002EB244 /* arrow_bottom_small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@2x.png"; sourceTree = "<group>"; };
 		810FD7A922FAC13C002EB244 /* arrow_bottom_small@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow_bottom_small@3x.png"; sourceTree = "<group>"; };
+		811F280D243EFBEB00276CBF /* TabControlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabControlViewController.swift; sourceTree = "<group>"; };
+		811F280F243EFBFF00276CBF /* PLTabControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLTabControl.swift; sourceTree = "<group>"; };
 		812FBF2E226EAE8800CA1831 /* PLKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PLKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		812FBF31226EAE8800CA1831 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RippleAnimateViewController.swift; sourceTree = "<group>"; };
@@ -239,6 +243,7 @@
 				818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */,
 				81D91299243599A200A433D8 /* BubbleViewController.swift */,
 				81D912A12435E9A200A433D8 /* ArrangeViewController.swift */,
+				811F280D243EFBEB00276CBF /* TabControlViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -271,6 +276,7 @@
 				818BF110241A26B300D84B86 /* PLMultimenuTableView.swift */,
 				81D912972435971200A433D8 /* PLBubble.swift */,
 				81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */,
+				811F280F243EFBFF00276CBF /* PLTabControl.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -432,12 +438,14 @@
 				81F1962122CC8F4900EEFA06 /* PLSlideVerify.swift in Sources */,
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
+				811F2810243EFBFF00276CBF /* PLTabControl.swift in Sources */,
 				810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */,
 				818BF111241A26B300D84B86 /* PLMultimenuTableView.swift in Sources */,
 				81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */,
 				818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
+				811F280E243EFBEB00276CBF /* TabControlViewController.swift in Sources */,
 				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,
 				81FE62102302E25A00C9BD31 /* DotViewController.swift in Sources */,
 				810FD77E22FAB964002EB244 /* PLTabBarItem.swift in Sources */,
@@ -607,18 +615,18 @@
 			baseConfigurationReference = 729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5QY2MC95W4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 75JCPG4E27;
 				INFOPLIST_FILE = PLKit/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.plumk.PLKit;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jitian.PLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = com.jitian.wildcard;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -629,18 +637,18 @@
 			baseConfigurationReference = 1D02F1EC418F44D92D64D09B /* Pods-PLKit.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5QY2MC95W4;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 75JCPG4E27;
 				INFOPLIST_FILE = PLKit/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.plumk.PLKit;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jitian.PLKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = com.jitian.wildcard;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

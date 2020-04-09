@@ -25,7 +25,8 @@ class ArrangeViewController: UIViewController {
         let view2 = UIView.init(frame: .init(x: 0, y: 0, width: 100, height: 50))
         view2.backgroundColor = .blue
         
-        let arrangeView = PLArrangeView.init(views: [view1, view2])
+        let arrangeView = PLArrangeView.init(views: [view1, view2], showDivider: true)
+        arrangeView.divider.edgeSpacing = 15
         arrangeView.frame.origin = .init(x: 20, y: 100)
         arrangeView.alignment = .bottom
         arrangeView.direction = .vertical

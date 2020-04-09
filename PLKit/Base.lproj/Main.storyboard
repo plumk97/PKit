@@ -406,6 +406,25 @@
             </objects>
             <point key="canvasLocation" x="-3610" y="935"/>
         </scene>
+        <!--Tab Control View Controller-->
+        <scene sceneID="VC5-cE-LKq">
+            <objects>
+                <viewController id="R7R-g1-zF0" customClass="TabControlViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="IoQ-b2-4A9"/>
+                        <viewControllerLayoutGuide type="bottom" id="wli-Od-kOn"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ZDB-h2-lJ5">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="xgd-Js-5Fz"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TLf-mE-zvP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2917" y="935"/>
+        </scene>
         <!--Badge View View Controller-->
         <scene sceneID="dfF-fb-KTp">
             <objects>
@@ -714,6 +733,26 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="XiY-0H-brg" kind="push" id="jEc-Hv-GCS"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="TGk-Ba-Ck6" style="IBUITableViewCellStyleDefault" id="zfI-2v-e48">
+                                        <rect key="frame" x="0.0" y="644" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="zfI-2v-e48" id="Kn4-d1-NBB">
+                                            <rect key="frame" x="0.0" y="0.0" width="383" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="TabControl" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TGk-Ba-Ck6">
+                                                    <rect key="frame" x="20" y="0.0" width="355" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="R7R-g1-zF0" kind="push" id="Fa4-d1-RnW"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>

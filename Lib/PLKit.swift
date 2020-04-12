@@ -29,3 +29,39 @@ extension NSObjectProtocol where Self: UIViewController {
         return PL(self)
     }
 }
+
+
+struct PLKit {
+    
+    struct Color {
+        
+        /// 创建过渡颜色
+        /// - Parameters:
+        ///   - fromColor: 起始颜色
+        ///   - toColor: 最终颜色
+        ///   - progress: 进度
+        static func makeTransitionColor(from fromColor: UIColor, to toColor: UIColor, progress: CGFloat) -> UIColor {
+            var r: CGFloat = 0
+            var g: CGFloat = 0
+            var b: CGFloat = 0
+            var a: CGFloat = 0
+            
+            var r1: CGFloat = 0
+            var g1: CGFloat = 0
+            var b1: CGFloat = 0
+            var a1: CGFloat = 0
+            
+            
+            fromColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+            toColor.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
+            
+            
+            let r2 = r + (r1 - r) * progress
+            let g2 = g + (g1 - g) * progress
+            let b2 = b + (b1 - b) * progress
+            let a2 = a + (a1 - a) * progress
+            
+            return .init(red: r2, green: b2, blue: g2, alpha: a2)
+        }
+    }
+}

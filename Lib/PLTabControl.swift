@@ -15,13 +15,19 @@ class PLTabControl: UIView {
     var didChangeSelectedIndexBlock: ((Int)->Void)?
     
     /// 没有选中状态下的缩小值
-    var zoomOutRatio: CGFloat = 0.6
+    var zoomOutRatio: CGFloat = 0.6 {
+        didSet {
+            transactionAnimation(duration: 0) {
+                self.updateDisplay()
+            }
+        }
+    }
     
     /// 最大化字体大小
-    var maximizeFont: UIFont = .boldSystemFont(ofSize: 22)
+    var maximizeFont: UIFont = .boldSystemFont(ofSize: 22) { didSet { self.reload() }}
     
     /// 间距
-    var spacing: CGFloat = 30
+    var spacing: CGFloat = 30 { didSet { self.reload() }}
     
     /// items
     var items: [Item]? { didSet { self.reload() }}
@@ -29,7 +35,7 @@ class PLTabControl: UIView {
     /// 指示条颜色
     var indicateColor: UIColor = .init(red: 255, green: 0, blue: 0, alpha: 1) {
         didSet {
-            self.indicateBar.backgroundColor = indicateColor.cgColor
+            self.indicateBar?.backgroundColor = indicateColor.cgColor
         }
     }
     
@@ -46,31 +52,40 @@ class PLTabControl: UIView {
     var indicateHeight: CGFloat = 3 { didSet { self.reloadIndicateBar() } }
     
     /// 指示条与标签的间距
-    var bothIndicateBarLabelSpacing: CGFloat = 5
+    var bothIndicateBarLabelSpacing: CGFloat = 5 {
+        didSet {
+            transactionAnimation(duration: 0) {
+                self.updateDisplay()
+                self.invalidateIntrinsicContentSize()
+            }
+        }
+    }
     
     /// 当前选中下标
-    private(set) var selectedIndex: Int = 0
+    fileprivate(set) var selectedIndex: Int = 0
     
     /// 显示使用的text layer
-    private var labels = [CATextLayer]()
+    fileprivate var labels = [CATextLayer]()
     
     /// 每个label的frame
-    private var labelFrames = [CGRect]()
+    fileprivate var labelFrames = [CGRect]()
     
     /// 当前内容大小
-    private var labelContentSize: CGSize = .zero
+    fileprivate var labelContentSize: CGSize = .zero
     
     /// 是否正在交互动画中
-    private(set) var isInInteractionAnimation: Bool = false
+    fileprivate(set) var isInInteractionAnimation: Bool = false
     
     /// 交互动画进度值
-    private var interactionAnimationProgress: CGFloat = 0
+    fileprivate var interactionAnimationProgress: CGFloat = 0
     
     /// 底部指示条
     private var indicateBar: CALayer!
     
-    init(items: [Item]) {
+    init(items: [Item], setup: ((PLTabControl)->Void)? = nil) {
         super.init(frame: .zero)
+        
+        setup?(self)
         
         self.indicateBar = CALayer()
         self.indicateBar.contentsScale = UIScreen.main.scale
@@ -87,7 +102,7 @@ class PLTabControl: UIView {
     
     
     /// 加载界面
-    private func reload() {
+    fileprivate func reload() {
         guard let items = self.items else {
             return
         }
@@ -101,6 +116,7 @@ class PLTabControl: UIView {
 
         let fontRef = CGFont.init(self.maximizeFont.fontName as CFString)
         for item in items {
+            
             let nstitle = item.title as NSString
             
             let maxSize = nstitle.size(withAttributes: [.font: self.maximizeFont])
@@ -135,7 +151,11 @@ class PLTabControl: UIView {
     
     
     /// 重新加载指示器
-    private func reloadIndicateBar() {
+    fileprivate func reloadIndicateBar() {
+        guard self.indicateBar != nil else {
+            return
+        }
+        
         self.indicateBar.frame.size.height = self.indicateHeight
         self.indicateBar.cornerRadius = self.indicateHeight / 2
         self.indicateBar.backgroundColor = self.indicateColor.cgColor
@@ -144,7 +164,7 @@ class PLTabControl: UIView {
     }
     
     /// 更新显示
-    private func updateDisplay() {
+    func updateDisplay() {
         
         guard let items = self.items else {
             return
@@ -174,9 +194,11 @@ class PLTabControl: UIView {
             let nextSelectedItem = items[nextSelectedIndex]
             
             
-            let tmpNextSelectedColor = self.makeTransitionColor(fromColor: selectedItem.color, toColor: nextSelectedItem.selectedColor, progress: abs(progress))
-            let tmpSelectedColor = self.makeTransitionColor(fromColor: selectedItem.selectedColor, toColor: nextSelectedItem.color, progress: abs(progress))
-            let tmpColor = self.makeTransitionColor(fromColor: selectedItem.color, toColor: nextSelectedItem.color, progress: abs(progress))
+            
+            
+            let tmpNextSelectedColor = PLKit.Color.makeTransitionColor(from: selectedItem.color, to: nextSelectedItem.selectedColor, progress: abs(progress))
+            let tmpSelectedColor = PLKit.Color.makeTransitionColor(from: selectedItem.selectedColor, to: nextSelectedItem.color, progress: abs(progress))
+            let tmpColor = PLKit.Color.makeTransitionColor(from: selectedItem.color, to: nextSelectedItem.color, progress: abs(progress))
             
             
             let b = (1 - self.zoomOutRatio) * abs(progress)
@@ -282,43 +304,12 @@ class PLTabControl: UIView {
             }
         }
     }
-    
-    
-    /// 创建过渡color
-    /// - Parameters:
-    ///   - fromColor: 起始color
-    ///   - toColor: 结束color
-    ///   - progress: 0 - 1
-    private func makeTransitionColor(fromColor: UIColor, toColor: UIColor, progress: CGFloat) -> UIColor {
-        
-        var r: CGFloat = 0
-        var g: CGFloat = 0
-        var b: CGFloat = 0
-        var a: CGFloat = 0
-        
-        var r1: CGFloat = 0
-        var g1: CGFloat = 0
-        var b1: CGFloat = 0
-        var a1: CGFloat = 0
-        
-        fromColor.getRed(&r, green: &g, blue: &b, alpha: &a)
-        toColor.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
-        
-        
-        let r2 = r + (r1 - r) * progress
-        let g2 = g + (g1 - g) * progress
-        let b2 = b + (b1 - b) * progress
-        let a2 = a + (a1 - a) * progress
-        
-        return .init(red: r2, green: b2, blue: g2, alpha: a2)
-    }
-    
-    
+
     /// 改变隐式动画
     /// - Parameters:
     ///   - duration: 持续时间 0为不需要隐式动画
     ///   - exec: 执行block
-    private func transactionAnimation(duration: CFTimeInterval, exec: ()->Void) {
+    func transactionAnimation(duration: CFTimeInterval, exec: ()->Void) {
         CATransaction.begin()
         if duration <= 0 {
             CATransaction.setDisableActions(true)
@@ -401,7 +392,7 @@ class PLTabControl: UIView {
     
     
     // MARK: - Bind ScrollView
-    private var beginPoint: CGPoint = .zero
+    fileprivate var beginPoint: CGPoint = .zero
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
@@ -427,10 +418,18 @@ class PLTabControl: UIView {
 
 extension PLTabControl {
     
-    struct Item {
-        var title: String
+    class Item: NSObject {
+        var title: String!
         
         var color: UIColor = .white
         var selectedColor: UIColor = .lightGray
+                
+        init(title: String, color: UIColor, selectedColor: UIColor) {
+            super.init()
+            
+            self.title = title
+            self.color = color
+            self.selectedColor = selectedColor
+        }
     }
 }

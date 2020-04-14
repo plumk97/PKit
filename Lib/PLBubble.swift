@@ -79,7 +79,7 @@ class PLBubble: UIView {
         }
         
         // 计算frame
-        guard let attachFrame = attachView.superview?.convert(attachView.frame, from: window) else {
+        guard let attachFrame = attachView.superview?.convert(attachView.frame, to: window) else {
             return
         }
         

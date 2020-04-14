@@ -87,9 +87,10 @@ class PLDot: UIImageView {
         }
         CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
     }
+  
     
-    private func reposition() {
-        guard let sv = self.superview else {
+    fileprivate func reposition() {
+        guard let sv = self.layer.superlayer else {
             return
         }
         
@@ -143,6 +144,12 @@ class PLDot: UIImageView {
 
 fileprivate var kPLDot = "kPLDot"
 extension PL where Base: UIView {
+    var dot: PLDot {
+        return self.base.layer.pl.dot
+    }
+}
+
+extension PL where Base: CALayer {
     
     var dot: PLDot {
         
@@ -151,7 +158,8 @@ extension PL where Base: UIView {
             obj = PLDot.init(frame: .init(x: 0, y: 0, width: 8, height: 8))
             obj?.backgroundColor = .red
             obj?.holdRound = true
-            self.base.addSubview(obj!)
+            self.base.addSublayer(obj!.layer)
+            obj?.reposition()
             objc_setAssociatedObject(self.base, &kPLDot, obj, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         return obj!

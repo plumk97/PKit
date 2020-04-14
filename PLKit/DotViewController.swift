@@ -21,7 +21,7 @@ class DotViewController: UIViewController {
         self.btn1.pl.dot.image = UIImage.init(named: "icon_dot")
         self.btn1.pl.dot.isHidden = false
         
-        self.btn2.pl.dot.isHidden = false
+        self.btn2.layer.pl.dot.isHidden = false
     }
     
 }

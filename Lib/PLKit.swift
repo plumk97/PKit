@@ -23,6 +23,13 @@ extension NSObjectProtocol where Self: UIView {
     }
 }
 
+extension NSObjectProtocol where Self: CALayer {
+    
+    var pl: PL<Self> {
+        return PL(self)
+    }
+}
+
 extension NSObjectProtocol where Self: UIViewController {
     
     var pl: PL<Self> {

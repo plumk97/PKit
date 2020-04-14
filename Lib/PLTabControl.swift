@@ -298,8 +298,10 @@ class PLTabControl: UIView {
         
         for (idx, frame) in self.labelFrames.enumerated() {
             if frame.contains(point) {
-                self.setSelectedIndex(idx, animtion: true)
-                self.didChangeSelectedIndexBlock?(idx)
+                if idx != self.selectedIndex {
+                    self.setSelectedIndex(idx, animtion: true)
+                    self.didChangeSelectedIndexBlock?(idx)
+                }
                 break
             }
         }
@@ -343,6 +345,13 @@ class PLTabControl: UIView {
                 self.updateDisplay()
             }
         }
+    }
+    
+    func getLabel(index: Int) -> CATextLayer? {
+        guard index >= 0 && index < self.labels.count else {
+            return nil
+        }
+        return self.labels[index]
     }
     
     // MARK: - interaction Animation

@@ -61,7 +61,8 @@ class PLBubble: UIView {
     
     // 箭头配置
     var arrow = Arrow()
-    
+    // 偏移 水平则为x偏移 垂直则为y偏移
+    var offset: CGFloat = 0
     // 背景填充
     var padding: UIEdgeInsets = .init(top: 10, left: 10, bottom: 10, right: 10)
     // 距离附加view的间距
@@ -165,15 +166,15 @@ class PLBubble: UIView {
             // 垂直方向 计算x坐标
             switch direction {
             case .TL, .BL:
-                frame.origin.x = attachFrame.minX - arrow.width
+                frame.origin.x = attachFrame.minX - borderRadius
             case .T, .B:
                 frame.origin.x = attachFrame.midX - frame.width / 2
             case .TR, .BR:
-                frame.origin.x = attachFrame.maxX - frame.width + arrow.width
+                frame.origin.x = attachFrame.maxX - frame.width + borderRadius
             default:
                 break
             }
-            
+            frame.origin.x += offset
             // 计算contentFrame
             contentFrame.origin.x = padding.left
             contentFrame.origin.y = padding.top + (direction.isBottom ? arrow.height : 0)
@@ -186,14 +187,15 @@ class PLBubble: UIView {
             // 水平方向 计算y坐标
             switch direction {
             case .LT, .RT:
-                frame.origin.y = attachFrame.minY - arrow.width
+                frame.origin.y = attachFrame.minY - borderRadius
             case .L, .R:
                 frame.origin.y = attachFrame.midY - frame.height / 2
             case .LB, .RB:
-                frame.origin.y = attachFrame.maxY - frame.height + arrow.width
+                frame.origin.y = attachFrame.maxY - frame.height + borderRadius
             default:
                 break
             }
+            frame.origin.y += offset
             
             // 计算contentFrame
             contentFrame.origin.x = padding.left + (direction.isRight ? arrow.height : 0)

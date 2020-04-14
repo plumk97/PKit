@@ -10,11 +10,55 @@ import UIKit
 
 class PLBubble: UIView {
     
+    
+    /// 弹出方向
+    enum PopupDirection {
+        
+        case TL
+        case T
+        case TR
+        
+        case BL
+        case B
+        case BR
+        
+        case RT
+        case R
+        case RB
+        
+        case LT
+        case L
+        case LB
+        
+        
+        var isVertical: Bool {
+            return (
+                self == .TL || self == .T || self == .TR ||
+                self == .BL || self == .B || self == .BR
+            )
+        }
+        
+        var isHorizontal: Bool {
+            return !self.isVertical
+        }
+        
+        var isBottom: Bool {
+            return self == .BL || self == .B || self == .BR
+        }
+        
+        var isRight: Bool {
+            return self == .RT || self == .R || self == .RB
+        }
+    }
+    
+    var popupDirection = PopupDirection.T
+    
     struct Arrow {
         var width: CGFloat = 7
         var height: CGFloat = 10
         var radius: CGFloat = 1
     }
+    
     // 箭头配置
     var arrow = Arrow()
     
@@ -89,122 +133,152 @@ class PLBubble: UIView {
         var frame = CGRect.zero
         frame.size = .init(width: contentFrame.width + padding.left + padding.right,
                            height: contentFrame.height + padding.top + padding.bottom)
-        frame.size.height += arrow.height
         
-        /// 获取方向 - 0上 1下
-        var direction = 0
-        if attachFrame.minY - frame.height - spacing < UIApplication.shared.statusBarFrame.height + 44 {
-            direction = 1
+        
+        
+        let direction = self.popupDirection
+        
+        if direction.isVertical {
+            frame.size.height += arrow.height
+        }  else {
+            frame.size.width += arrow.height
         }
         
-        /// 设置Y坐标
-        if direction == 0 {
+        /// 设置坐标
+        switch direction {
+        case .TL, .T, .TR:
             frame.origin.y = attachFrame.minY - spacing - frame.height
-        } else {
+        case .BL, .B, .BR:
             frame.origin.y = attachFrame.maxY + spacing
+        
+        case .LT, .L, .LB:
+            frame.origin.x = attachFrame.minX - spacing - frame.width
+        case .RT, .R, .RB:
+            frame.origin.x = attachFrame.maxX + spacing
         }
         
-        /// 设置X坐标
-        frame.origin.x = attachFrame.minX + (attachFrame.width - frame.width) / 2
-        if frame.minX <= 0 {
-            frame.origin.x = 10
-        } else if frame.maxX - window.bounds.width >= 0 {
-            frame.origin.x = window.bounds.width - frame.width - 10
+       
+        
+        var bubbleDrawPoint: CGFloat = 0
+        if direction.isVertical {
+
+            // 垂直方向 计算x坐标
+            switch direction {
+            case .TL, .BL:
+                frame.origin.x = attachFrame.minX - arrow.width
+            case .T, .B:
+                frame.origin.x = attachFrame.midX - frame.width / 2
+            case .TR, .BR:
+                frame.origin.x = attachFrame.maxX - frame.width + arrow.width
+            default:
+                break
+            }
+            
+            // 计算contentFrame
+            contentFrame.origin.x = padding.left
+            contentFrame.origin.y = padding.top + (direction.isBottom ? arrow.height : 0)
+            
+            // 气泡x中心点
+            bubbleDrawPoint = attachFrame.minX - frame.minX + attachFrame.width / 2
+            
+        } else if direction.isHorizontal {
+            
+            // 水平方向 计算y坐标
+            switch direction {
+            case .LT, .RT:
+                frame.origin.y = attachFrame.minY - arrow.width
+            case .L, .R:
+                frame.origin.y = attachFrame.midY - frame.height / 2
+            case .LB, .RB:
+                frame.origin.y = attachFrame.maxY - frame.height + arrow.width
+            default:
+                break
+            }
+            
+            // 计算contentFrame
+            contentFrame.origin.x = padding.left + (direction.isRight ? arrow.height : 0)
+            contentFrame.origin.y = padding.top
+            
+            // 气泡y中心点
+            bubbleDrawPoint = attachFrame.minY - frame.minY + attachFrame.height / 2
         }
         
         
-        /// 设置contentView frame
-        contentFrame.origin.x = padding.left
-        contentFrame.origin.y = padding.top + (direction == 0 ? 0 : arrow.height)
+        // 设置frame 和 绘画气泡
         contentView.frame = contentFrame
-        
         self.frame = frame
-        let x = attachFrame.minX - frame.minX + attachFrame.width / 2
-        self.drawBubble(direction: direction, arrowX: x)
-        
+        self.drawBubble(direction: direction, mid: bubbleDrawPoint)
     }
     
     
     /// 绘制气泡
     /// - Parameters:
     ///   - direction: 0上 1下
-    ///   - arrowX: 箭头x位置
-    private func drawBubble(direction: Int, arrowX: CGFloat) {
+    ///   - mid: 箭头位置  垂直则为x 水平则为y
+    private func drawBubble(direction: PopupDirection, mid: CGFloat) {
         
         
-        let path = UIBezierPath()
         let bounds = self.bounds
+        let path = UIBezierPath()
         
-        
-        let min: (x: CGFloat, y: CGFloat) = (CGFloat(0), CGFloat(direction == 0 ? 0 : arrow.height))
-        let max: (x: CGFloat, y: CGFloat) = (CGFloat(bounds.width), CGFloat(min.y + bounds.height - arrow.height))
-        
-        if direction == 0 {
-            self.arrowPoint = .init(x: arrowX, y: max.y + arrow.height)
+
+        switch direction {
+        case .TL, .T, .TR:
+            let min: (x: CGFloat, y: CGFloat) = (CGFloat(0), CGFloat(0))
+            let max: (x: CGFloat, y: CGFloat) = (CGFloat(bounds.width), CGFloat(min.y + bounds.height - arrow.height))
+            
+            self.arrowPoint = .init(x: mid, y: max.y + arrow.height)
+
+            path.move(to: .init(x: min.x + borderRadius, y: min.y))
+
+            PLBubble.Draw.topSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.rightSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.bottomArrow(path: path, min: min, max: max, radius: borderRadius, arrow: arrow, arrowPoint: arrowPoint)
+            PLBubble.Draw.leftSide(path: path, min: min, max: max, radius: borderRadius)
+            
+            
+        case .BL, .B, .BR:
+            let min: (x: CGFloat, y: CGFloat) = (CGFloat(0), CGFloat(arrow.height))
+            let max: (x: CGFloat, y: CGFloat) = (CGFloat(bounds.width), CGFloat(min.y + bounds.height - arrow.height))
+            
+            self.arrowPoint = .init(x: mid, y: min.y - arrow.height)
+
+            path.move(to: .init(x: min.x + borderRadius, y: min.y))
+            
+            PLBubble.Draw.topArrow(path: path, min: min, max: max, radius: borderRadius, arrow: arrow, arrowPoint: arrowPoint)
+            PLBubble.Draw.rightSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.bottomSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.leftSide(path: path, min: min, max: max, radius: borderRadius)
+    
+        case .LT, .L, .LB:
+            let min: (x: CGFloat, y: CGFloat) = (CGFloat(0), CGFloat(0))
+            let max: (x: CGFloat, y: CGFloat) = (CGFloat(min.x + bounds.width - arrow.height), CGFloat(bounds.height))
+            
+            self.arrowPoint = .init(x: max.x + arrow.height, y: mid)
             
             path.move(to: .init(x: min.x + borderRadius, y: min.y))
             
-            // 上边
-            path.addLine(to: .init(x: max.x - borderRadius, y: min.y))
-            path.addQuadCurve(to: .init(x: max.x, y: min.y + borderRadius), controlPoint: .init(x: max.x, y: min.y))
+            PLBubble.Draw.topSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.rightArrow(path: path, min: min, max: max, radius: borderRadius, arrow: arrow, arrowPoint: arrowPoint)
+            PLBubble.Draw.bottomSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.leftSide(path: path, min: min, max: max, radius: borderRadius)
             
-            // 右边
-            path.addLine(to: .init(x: max.x, y: max.y - borderRadius))
-            path.addQuadCurve(to: .init(x: max.x - borderRadius, y: max.y), controlPoint: .init(x: max.x, y: max.y))
+        case .RT, .R, .RB:
+            let min: (x: CGFloat, y: CGFloat) = (CGFloat(arrow.height), CGFloat(0))
+            let max: (x: CGFloat, y: CGFloat) = (CGFloat(min.x + bounds.width - arrow.height), CGFloat(bounds.height))
             
-            // 下边
-            path.addLine(to: .init(x: arrowX + arrow.width, y: max.y))
-            
-            // 三角形
-            path.addLine(to: .init(x: arrowX + arrow.radius, y: max.y + arrow.height - arrow.radius))
-            
-            path.addQuadCurve(to: .init(x: arrowX - arrow.radius, y: max.y + arrow.height - arrow.radius),
-                              controlPoint: self.arrowPoint)
-            
-            path.addLine(to: .init(x: arrowX - arrow.width, y: max.y))
-            
-            // --
-            path.addLine(to: .init(x: min.x + borderRadius, y: max.y))
-            path.addQuadCurve(to: .init(x: min.x, y: max.y - borderRadius), controlPoint: .init(x: min.x, y: max.y))
-            
-            // 左边
-            path.addLine(to: .init(x: min.x, y: min.y + borderRadius))
-            path.addQuadCurve(to: .init(x: min.x + borderRadius, y: min.y), controlPoint: .init(x: min.x, y: min.y))
-            
-        } else {
-            self.arrowPoint = .init(x: arrowX, y: min.y - arrow.height)
+            self.arrowPoint = .init(x: min.x - arrow.height, y: mid)
             
             path.move(to: .init(x: min.x + borderRadius, y: min.y))
-            path.addLine(to: .init(x: arrowX - arrow.width, y: min.y))
             
-            // 上边
-            
-            // 三角形
-            path.addLine(to: .init(x: arrowX - arrow.radius, y: min.y - arrow.height + arrow.radius))
-            
-            path.addQuadCurve(to: .init(x: arrowX + arrow.radius, y: min.y - arrow.height + arrow.radius),
-                              controlPoint: self.arrowPoint)
-            
-            path.addLine(to: .init(x: arrowX + arrow.width, y: min.y))
-            
-            
-            path.addLine(to: .init(x: max.x - borderRadius, y: min.y))
-            path.addQuadCurve(to: .init(x: max.x, y: min.y + borderRadius), controlPoint: .init(x: max.x, y: min.y))
-            
-            // 右边
-            path.addLine(to: .init(x: max.x, y: max.y - borderRadius))
-            path.addQuadCurve(to: .init(x: max.x - borderRadius, y: max.y), controlPoint: .init(x: max.x, y: max.y))
-            
-            // 下边
-            path.addLine(to: .init(x: min.x + borderRadius, y: max.y))
-            path.addQuadCurve(to: .init(x: min.x, y: max.y - borderRadius), controlPoint: .init(x: min.x, y: max.y))
-            
-            // 左边
-            path.addLine(to: .init(x: min.x, y: min.y + borderRadius))
-            path.addQuadCurve(to: .init(x: min.x + borderRadius, y: min.y), controlPoint: .init(x: min.x, y: min.y))
+            PLBubble.Draw.topSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.rightSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.bottomSide(path: path, min: min, max: max, radius: borderRadius)
+            PLBubble.Draw.leftArrow(path: path, min: min, max: max, radius: borderRadius, arrow: arrow, arrowPoint: arrowPoint)
+
         }
 
-        
+
         self.shapeLayer.path = path.cgPath
     }
     
@@ -282,3 +356,112 @@ class PLBubble: UIView {
         
     }
 }
+
+
+// MARK: - Draw
+extension PLBubble {
+    struct Draw {
+        
+        // side
+        static func topSide(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat) {
+            
+            path.addLine(to: .init(x: max.x - radius, y: min.y))
+            path.addQuadCurve(to: .init(x: max.x, y: min.y + radius), controlPoint: .init(x: max.x, y: min.y))
+        }
+        
+        static func rightSide(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat) {
+            
+            path.addLine(to: .init(x: max.x, y: max.y - radius))
+            path.addQuadCurve(to: .init(x: max.x - radius, y: max.y), controlPoint: .init(x: max.x, y: max.y))
+        }
+        
+        static func bottomSide(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat) {
+            
+            path.addLine(to: .init(x: min.x + radius, y: max.y))
+            path.addQuadCurve(to: .init(x: min.x, y: max.y - radius), controlPoint: .init(x: min.x, y: max.y))
+        }
+        
+        static func leftSide(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat) {
+            
+            path.addLine(to: .init(x: min.x, y: min.y + radius))
+            path.addQuadCurve(to: .init(x: min.x + radius, y: min.y), controlPoint: .init(x: min.x, y: min.y))
+        }
+        
+        
+        // arrow
+        static func bottomArrow(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat, arrow: Arrow, arrowPoint: CGPoint) {
+            
+            
+            path.addLine(to: .init(x: arrowPoint.x + arrow.width, y: max.y))
+            
+            // -- arrow begin
+            path.addLine(to: .init(x: arrowPoint.x + arrow.radius, y: max.y + arrow.height - arrow.radius))
+            
+            path.addQuadCurve(to: .init(x: arrowPoint.x - arrow.radius, y: max.y + arrow.height - arrow.radius),
+                              controlPoint: arrowPoint)
+            
+            path.addLine(to: .init(x: arrowPoint.x - arrow.width, y: max.y))
+            // -- arrow end
+            
+            path.addLine(to: .init(x: min.x + radius, y: max.y))
+            
+            path.addQuadCurve(to: .init(x: min.x, y: max.y - radius), controlPoint: .init(x: min.x, y: max.y))
+            
+        }
+        
+        static func topArrow(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat, arrow: Arrow, arrowPoint: CGPoint) {
+            
+            path.addLine(to: .init(x: arrowPoint.x - arrow.width, y: min.y))
+            
+            // -- arrow begin
+            path.addLine(to: .init(x: arrowPoint.x - arrow.radius, y: min.y - arrow.height + arrow.radius))
+
+            path.addQuadCurve(to: .init(x: arrowPoint.x + arrow.radius, y: min.y - arrow.height + arrow.radius),
+                              controlPoint: arrowPoint)
+
+            path.addLine(to: .init(x: arrowPoint.x + arrow.width, y: min.y))
+            // -- arrow end
+            
+            path.addLine(to: .init(x: max.x - radius, y: min.y))
+            path.addQuadCurve(to: .init(x: max.x, y: min.y + radius), controlPoint: .init(x: max.x, y: min.y))
+            
+        }
+        
+        static func rightArrow(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat, arrow: Arrow, arrowPoint: CGPoint) {
+            
+            path.addLine(to: .init(x: max.x, y: arrowPoint.y - arrow.width))
+            
+            // -- arrow begin
+            path.addLine(to: .init(x: max.x + arrow.height - arrow.radius, y: arrowPoint.y - arrow.radius))
+
+            path.addQuadCurve(to: .init(x: max.x + arrow.height - arrow.radius, y: arrowPoint.y + arrow.radius),
+                              controlPoint: arrowPoint)
+
+            path.addLine(to: .init(x: max.x, y: arrowPoint.y + arrow.width))
+            // -- arrow end
+            
+            path.addLine(to: .init(x: max.x, y: max.y - radius))
+            path.addQuadCurve(to: .init(x: max.x - radius, y: max.y), controlPoint: .init(x: max.x, y: max.y))
+            
+        }
+        
+        static func leftArrow(path: UIBezierPath, min: (x: CGFloat, y: CGFloat), max: (x: CGFloat, y: CGFloat), radius: CGFloat, arrow: Arrow, arrowPoint: CGPoint) {
+            
+            path.addLine(to: .init(x: min.x, y: arrowPoint.y + arrow.width))
+            
+            // -- arrow begin
+            path.addLine(to: .init(x: min.x - arrow.height + arrow.radius, y: arrowPoint.y + arrow.radius))
+
+            path.addQuadCurve(to: .init(x: min.x - arrow.height + arrow.radius, y: arrowPoint.y - arrow.radius),
+                              controlPoint: arrowPoint)
+
+            path.addLine(to: .init(x: min.x, y: arrowPoint.y - arrow.width))
+            // -- arrow end
+            
+            path.addLine(to: .init(x: min.x, y: min.y + radius))
+            path.addQuadCurve(to: .init(x: min.x + radius, y: min.y), controlPoint: .init(x: min.x, y: min.y))
+            
+        }
+    }
+}
+

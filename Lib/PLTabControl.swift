@@ -106,7 +106,7 @@ class PLTabControl: UIView {
         guard let items = self.items else {
             return
         }
-        
+        self.labels.forEach({ $0.removeFromSuperlayer() })
         self.labels.removeAll()
         self.labelFrames.removeAll()
         
@@ -259,7 +259,9 @@ class PLTabControl: UIView {
             return
         }
         
-        
+        guard self.selectedIndex < items.count else {
+            return
+        }
     
         let selectedItem = items[self.selectedIndex]
         for (idx, label) in self.labels.enumerated() {

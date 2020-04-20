@@ -129,6 +129,11 @@ extension PLTabBarController: PLTabBarDelegate {
 
 extension PL where Base: UIViewController {
     var tabBarController: PLTabBarController? {
-        return self.base.parent as? PLTabBarController
+        var parent = self.base.parent
+        while parent != nil && !(parent is PLTabBarController) {
+            parent = parent?.parent
+        }
+        return parent as? PLTabBarController
+
     }
 }

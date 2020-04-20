@@ -284,9 +284,13 @@ class PLBubble: UIView {
         self.shapeLayer.path = path.cgPath
     }
     
-    func show(attach view: UIView, animation: Bool = true) {
+    func show(attach view: UIView?, animation: Bool = true) {
         
         guard !self.isShowing else {
+            return
+        }
+        
+        guard view != nil else {
             return
         }
         
@@ -306,7 +310,7 @@ class PLBubble: UIView {
         
         
         self.coverControl = UIControl.init(frame: window.bounds)
-        self.coverControl.addTarget(self, action: #selector(coverControlClick), for: .touchUpInside)
+        self.bindHide(with: self.coverControl)
         window.addSubview(self.coverControl)
         
         // 设置锚点确定缩放位置
@@ -334,9 +338,6 @@ class PLBubble: UIView {
         
     }
     
-    @objc private func coverControlClick() {
-        self.hide()
-    }
     
     func hide(animation: Bool = true) {
         guard self.isShowing else {
@@ -355,7 +356,16 @@ class PLBubble: UIView {
             self.coverControl.removeFromSuperview()
             self.removeFromSuperview()
         }
-        
+    }
+    
+    @objc private func bindButtonClick() {
+        self.hide()
+    }
+    
+    func bindHide(with button: UIControl...) {
+        button.forEach({
+            $0.addTarget(self, action: #selector(bindButtonClick), for: .touchUpInside)
+        })
     }
 }
 

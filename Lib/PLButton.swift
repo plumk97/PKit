@@ -44,7 +44,7 @@ class PLButton: UIControl {
             self.setup(oldValue != spaceingTitleImage)
         }
     }
-    var spaceingEdge: UIEdgeInsets = .zero {
+    var padding: UIEdgeInsets = .zero {
         didSet {
             self.invalidateIntrinsicContentSize()
             self.setNeedsLayout()
@@ -287,12 +287,12 @@ class PLButton: UIControl {
         }
         
         var bounds = self.bounds
-        bounds.size.width -= self.spaceingEdge.left + self.spaceingEdge.right
-        bounds.size.height -= self.spaceingEdge.top + self.spaceingEdge.bottom
+        bounds.size.width -= self.padding.left + self.padding.right
+        bounds.size.height -= self.padding.top + self.padding.bottom
         
         var rect = self.contentView.frame
-        rect.origin.x = self.spaceingEdge.left + (bounds.width - rect.width) / 2
-        rect.origin.y = self.spaceingEdge.top + (bounds.height - rect.height) / 2
+        rect.origin.x = self.padding.left + (bounds.width - rect.width) / 2
+        rect.origin.y = self.padding.top + (bounds.height - rect.height) / 2
         
         self.contentView.frame = rect
     }
@@ -304,8 +304,8 @@ class PLButton: UIControl {
     
     override var intrinsicContentSize: CGSize {
         var size = self.contentSize
-        size.width += self.spaceingEdge.left + self.spaceingEdge.right
-        size.height += self.spaceingEdge.top + self.spaceingEdge.bottom
+        size.width += self.padding.left + self.padding.right
+        size.height += self.padding.top + self.padding.bottom
         
         return size
     }

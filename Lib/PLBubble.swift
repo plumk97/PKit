@@ -320,9 +320,11 @@ class PLBubble: UIView {
         
         self.layer.anchorPoint = anchorPoint
         
-        var transfrom = self.transform
-        transfrom = transfrom.translatedBy(x: self.bounds.width * (anchorPoint.x - 0.5), y: self.bounds.height * (anchorPoint.y - 0.5))
-        self.transform = transfrom.scaledBy(x: 0.01, y: 0.01)
+        self.frame.origin = .init(x: self.frame.minX + self.frame.width * (anchorPoint.x - 0.5),
+                                  y: self.frame.minY + self.frame.height * (anchorPoint.y - 0.5))
+        
+        let transfrom = self.transform
+        self.transform = transfrom.scaledBy(x: 0.1, y: 0.1)
         
         window.addSubview(self)
         

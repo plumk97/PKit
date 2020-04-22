@@ -116,7 +116,7 @@ class PLTabBarController: UIViewController {
     ///   - new:
     ///   - old:
     private func toggleViewController(new: UIViewController?, old: UIViewController?) {
-        guard new != old else {
+        guard new != old && self.bodyView != nil else {
             return
         }
         

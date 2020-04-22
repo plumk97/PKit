@@ -35,9 +35,11 @@ class TabBarViewController: PLTabBarController {
         
         vc4.pl.tabBarItem.style.title = "我的"
         vc4.pl.tabBarItem.style.image = UIImage.init(named: "tabbar_mine")
-        vc4.pl.tabBarItem.style.selectedImage = UIImage.init(named: "tabbar_mine_selected")
+        vc4.pl.tabBarItem.style.selectedImages = [Int](1 ... 15).map({ UIImage.init(named: "tabbar_mine_selected\($0)")!})
         
+        self.setSelectedIndex(2, animation: false)
         self.viewControllers = [vc1, vc2, vc3, vc4]
+        
     }
     
 }

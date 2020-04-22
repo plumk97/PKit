@@ -10,106 +10,157 @@ import UIKit
 
 // MARK: - PLTabBarControllerDelegate
 @objc protocol PLTabBarControllerDelegate: NSObjectProtocol {
+    
+    /// 是否能选中某个ViewController 返回false则不选中
+    /// - Parameters:
+    ///   - tabBarController:
+    ///   - index:
     @objc optional func tabBarController(_ tabBarController: PLTabBarController, shouldSelect index: Int) -> Bool
+    
+    /// 选中某个ViewController
+    /// - Parameters:
+    ///   - tabBarController:
+    ///   - index:
     @objc optional func tabBarController(_ tabBarController: PLTabBarController, didSelect index: Int)
+    
+    /// 某个ViewController.TabBarItem 被双击
+    /// - Parameters:
+    ///   - tabBarController:
+    ///   - index:
     @objc optional func tabBarController(_ tabBarController: PLTabBarController, didDoubleTap index: Int)
 }
 
 // MARK: - PLTabBarController
 class PLTabBarController: UIViewController {
-
+    
     weak var delegate: PLTabBarControllerDelegate?
     
-    var viewControllers: [UIViewController]? {
-        willSet { removeViewControllers() }
-        didSet { reloadViewControllers() }
-    }
+    var viewControllers: [UIViewController]? { didSet { self.reloadViewControllers(oldValue) }}
     
-    var selectedViewController: UIViewController? {
-        guard let vcs = viewControllers else {
-            return nil
-        }
-        if selectedIndex >= 0 && selectedIndex < vcs.count {
-            return vcs[selectedIndex]
-        }
-        return nil
-    }
     private(set) var selectedIndex: Int = 0
+    /// 当前选中的viewContnroler
+    private(set) weak var selectedViewController: UIViewController?
     
-    var tabBarHeight: CGFloat = 54 { didSet{ renewTabBarFrame() } }
+    /// TabBar 内容高度 不要使用tabBar设置
+    var tabBarHeight: CGFloat = 54 { didSet { self.view.setNeedsLayout() } }
+    
     private(set) var tabBar = PLTabBar()
-    private var warpView: UIView!
+    private var bodyView: UIView!
+    
     private var isNeedReloadAfterLoaded = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        warpView = UIView.init(frame: view.bounds)
-        view.addSubview(warpView)
+        self.bodyView = UIView.init(frame: self.view.bounds)
+        self.bodyView.backgroundColor = .white
+        self.view.addSubview(self.bodyView)
         
-        tabBar.delegate = self
-        view.addSubview(tabBar)
+        self.tabBar.delegate = self
+        self.view.addSubview(self.tabBar)
         
-        if isNeedReloadAfterLoaded {
-            reloadViewControllers()
-            isNeedReloadAfterLoaded = false
+        if self.isNeedReloadAfterLoaded {
+            self.reloadViewControllers(nil)
         }
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        warpView.frame = view.bounds
-        renewTabBarFrame()
-    }
-    
-    private func renewTabBarFrame() {
-        var height = self.tabBarHeight
+        
+        self.bodyView.frame = self.view.bounds
+        
+        var sumHeight = self.tabBarHeight
         if #available(iOS 11.0, *) {
-            height += view.safeAreaInsets.bottom
+            sumHeight += self.view.safeAreaInsets.bottom
         }
         
-        let frame = CGRect.init(x: 0, y: view.bounds.height - height, width: view.bounds.width, height: height)
-        tabBar.frame = frame
-        tabBar.contentHeight = self.tabBarHeight
+        self.tabBar.contentHeight = self.tabBarHeight
+        self.tabBar.frame = .init(x: 0,
+                                  y: self.view.bounds.height - sumHeight,
+                                  width: self.view.bounds.width,
+                                  height: sumHeight)
     }
     
-    private func removeViewControllers() {
-        self.viewControllers?.forEach({
-            $0.removeFromParent()
-            $0.view.removeFromSuperview()
-        })
-    }
     
-    private func reloadViewControllers() {
+    
+    /// 重新加载ViewControllers
+    /// - Parameter oldViewControllers:
+    private func reloadViewControllers(_ oldViewControllers: [UIViewController]?) {
+        
+        // 如果当前视图没有加载完成 放到加载完成之后
         guard self.isViewLoaded else {
-            isNeedReloadAfterLoaded = true
+            self.isNeedReloadAfterLoaded = true
             return
         }
         
-        viewControllers?.forEach({
-            self.addChild($0)
-            
+        oldViewControllers?.forEach({
+            $0.view.removeFromSuperview()
+            $0.removeFromParent()
         })
-        tabBar.items = viewControllers?.map({$0.pl.tabBarItem})
-        setSelectedIndex(selectedIndex)
-        tabBar.setSelectedIndex(selectedIndex)
+        
+        guard let viewControllers = self.viewControllers else {
+            return
+        }
+        
+        var items = [PLTabBarItem]()
+        for vc in viewControllers {
+            self.addChild(vc)
+            items.append(vc.pl.tabBarItem)
+        }
+        self.tabBar.items = items
+        self.setSelectedIndex(self.selectedIndex, animation: false)
     }
     
-    
-    func setSelectedIndex(_ index: Int) {
-        self.selectedViewController?.view.removeFromSuperview()
-        self.selectedIndex = index
-        self.tabBar.setSelectedIndex(index)
-        guard self.warpView != nil else {
+    /// 切换ViewController
+    /// - Parameters:
+    ///   - new:
+    ///   - old:
+    private func toggleViewController(new: UIViewController?, old: UIViewController?) {
+        guard new != old else {
             return
         }
         
-        if let view = self.selectedViewController?.view {
-            self.warpView.addSubview(view)
+        old?.view.removeFromSuperview()
+        
+        guard let new = new else {
+            return
+        }
+        self.selectedViewController = new
+        self.bodyView.addSubview(new.view)
+    }
+    
+    /// 设置选中ViewController下标
+    /// - Parameters:
+    ///   - index:
+    ///   - animation:
+    func setSelectedIndex(_ index: Int, animation: Bool) {
+        self.setSelectedIndex(index, animation: animation, isTabBarSelect: false)
+    }
+    
+    /// 设置选中ViewController下标
+    /// - Parameters:
+    ///   - index:
+    ///   - animation:
+    ///   - isTabBarSelect: 是否是通过tabbar选中的
+    private func setSelectedIndex(_ index: Int, animation: Bool, isTabBarSelect: Bool) {
+        self.selectedIndex = index
+        
+        if !isTabBarSelect {
+            self.tabBar.setSelectedIndex(index, animation: animation)
+        }
+        
+        guard let viewControllers = self.viewControllers else {
+            return
+        }
+        
+        if index < viewControllers.count && index >= 0 {
+            let vc = viewControllers[index]
+            self.toggleViewController(new: vc, old: self.selectedViewController)
         }
     }
 }
 
+// MARK: - PLTabBarDelegate
 extension PLTabBarController: PLTabBarDelegate {
     
     internal func tabBar(_ tabBar: PLTabBar, willSelect index: Int) -> Bool {
@@ -117,7 +168,7 @@ extension PLTabBarController: PLTabBarDelegate {
     }
     
     internal func tabBar(_ tabBar: PLTabBar, didSelect index: Int) {
-        self.setSelectedIndex(index)
+        self.setSelectedIndex(index, animation: true, isTabBarSelect: true)
         self.delegate?.tabBarController?(self, didSelect: index)
     }
     
@@ -126,7 +177,7 @@ extension PLTabBarController: PLTabBarDelegate {
     }
 }
 
-
+// MARK: - Extension UIViewController.PL.tabBarController
 extension PL where Base: UIViewController {
     var tabBarController: PLTabBarController? {
         var parent = self.base.parent

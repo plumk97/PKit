@@ -20,7 +20,7 @@ class ButtonViewController: UIViewController {
         btn.leftIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.topIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.bottomIcon.image = UIImage.init(named: "arrow_bottom_small")
-        btn.spaceingEdge = .init(top: 10, left: 20, bottom: 10, right: 0)
+        btn.padding = .init(top: 10, left: 20, bottom: 10, right: 0)
         btn.spaceingTitleImage = 10
         btn.pointBoundsInset = .init(top: -10, left: -10, bottom: -10, right: -10)
         btn.sizeToFit()

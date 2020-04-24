@@ -33,7 +33,7 @@ class PLTabControl: UIView {
     var items: [Item]? { didSet { self.reload() }}
     
     /// 指示条颜色
-    var indicateColor: UIColor = .init(red: 255, green: 0, blue: 0, alpha: 1) {
+    var indicateColor: UIColor = .init(red: 1, green: 0, blue: 0, alpha: 1) {
         didSet {
             self.indicateBar?.backgroundColor = indicateColor.cgColor
         }

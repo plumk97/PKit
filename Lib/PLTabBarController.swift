@@ -49,6 +49,13 @@ class PLTabBarController: UIViewController {
     
     private var isNeedReloadAfterLoaded = false
     
+    override var childForStatusBarStyle: UIViewController? {
+        return self.selectedViewController
+    }
+    override var childForStatusBarHidden: UIViewController? {
+        return self.selectedViewController
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -127,6 +134,7 @@ class PLTabBarController: UIViewController {
         }
         self.selectedViewController = new
         self.bodyView.addSubview(new.view)
+        self.setNeedsStatusBarAppearanceUpdate()
     }
     
     /// 设置选中ViewController下标

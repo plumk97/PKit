@@ -10,6 +10,8 @@
 		0EFF90F30E4F390FAA5A4CBC /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 409954DF777D0C203453192F /* Pods_PLKit.framework */; };
 		51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF222ACEBF80021641A /* PLBadgeView.swift */; };
 		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
+		8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102CA7124655A8F00AE2278 /* NavigationController.swift */; };
+		8102CA7424655EAF00AE2278 /* PLNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102CA7324655EAF00AE2278 /* PLNavigationController.swift */; };
 		810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77722FAAE5F002EB244 /* PLTabBarController.swift */; };
 		810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77922FAAFE3002EB244 /* TabBarViewController.swift */; };
 		810FD77C22FAB373002EB244 /* PLTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77B22FAB373002EB244 /* PLTabBar.swift */; };
@@ -111,6 +113,8 @@
 		51014EF222ACEBF80021641A /* PLBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBadgeView.swift; sourceTree = "<group>"; };
 		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
 		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
+		8102CA7124655A8F00AE2278 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
+		8102CA7324655EAF00AE2278 /* PLNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLNavigationController.swift; sourceTree = "<group>"; };
 		810FD77722FAAE5F002EB244 /* PLTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLTabBarController.swift; sourceTree = "<group>"; };
 		810FD77922FAAFE3002EB244 /* TabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		810FD77B22FAB373002EB244 /* PLTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLTabBar.swift; sourceTree = "<group>"; };
@@ -313,6 +317,7 @@
 			children = (
 				810FD7A722FAC13C002EB244 /* images */,
 				812FBF31226EAE8800CA1831 /* AppDelegate.swift */,
+				8102CA7124655A8F00AE2278 /* NavigationController.swift */,
 				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
 				81786D902272B095005B232D /* ButtonViewController.swift */,
 				81786D9C22730695005B232D /* RefreshViewController.swift */,
@@ -361,6 +366,7 @@
 				81D912972435971200A433D8 /* PLBubble.swift */,
 				81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */,
 				811F280F243EFBFF00276CBF /* PLTabControl.swift */,
+				8102CA7324655EAF00AE2278 /* PLNavigationController.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -569,12 +575,14 @@
 				81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
 				51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */,
+				8102CA7424655EAF00AE2278 /* PLNavigationController.swift in Sources */,
 				81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
 				81D912A02435E5AA00A433D8 /* PLArrangeView.swift in Sources */,
 				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,
 				81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */,
+				8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */,
 				814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */,
 				81786D9D22730695005B232D /* RefreshViewController.swift in Sources */,
 				81786D912272B095005B232D /* ButtonViewController.swift in Sources */,

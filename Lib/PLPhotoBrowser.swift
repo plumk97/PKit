@@ -36,12 +36,27 @@ typealias PLPhotoBrowserDidChangePageCallback = (PLPhotoBrowser, Int)->Void
 
 class PLPhotoBrowser: UIViewController {
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .default
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag) {
+            UIApplication.shared.keyWindow?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
+            completion?()
+        }
+    }
+    
     convenience init(photos: [PLPhoto], initIndex: Int = 0, fromView: UIImageView? = nil) {
         self.init()
         self.fromView = fromView
         self.photos = photos
         self.currentPageIndex = initIndex
         self.modalPresentationStyle = .custom
+        self.modalPresentationCapturesStatusBarAppearance = true
         self.transitioningDelegate = self
         
         // 默认下载图片 系统自带缓存

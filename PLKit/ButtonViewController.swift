@@ -12,6 +12,9 @@ class ButtonViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.backgroundColor = .white
+        
+        self.title = "Button \(self.navigationController?.viewControllers.count ?? 0)"
         
         let btn = PLButton()
         btn.title = "123123123"
@@ -40,6 +43,14 @@ class ButtonViewController: UIViewController {
         btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
     }
     
+    
     @objc func btnClick(_ sender: PLButton) {
+        
+        let vc = ButtonViewController()
+        if let nav = self.navigationController as? PLNavigationController {
+            nav.pushViewController(vc, animated: true) {
+                nav.removeViewController(self)
+            }
+        }
     }
 }

@@ -29,7 +29,7 @@
         <!--Navigation Controller-->
         <scene sceneID="pgr-6s-VdC">
             <objects>
-                <navigationController id="nmH-ho-4A6" customClass="NavigationController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController id="nmH-ho-4A6" customClass="PLNavigationController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="CtT-x9-0mm">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -481,6 +481,59 @@
             </objects>
             <point key="canvasLocation" x="-2917" y="935"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="9Pt-MA-x0x">
+            <objects>
+                <viewController storyboardIdentifier="NavigationController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Ywb-Wj-x0N" customClass="NavigationController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="uKQ-sf-3bJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="gR5-sR-Vhh"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="YCI-CU-CaS">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QJH-MG-3V9">
+                                <rect key="frame" x="26" y="149" width="35" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Push"/>
+                                <connections>
+                                    <action selector="push:" destination="Ywb-Wj-x0N" eventType="touchUpInside" id="JUY-El-FSM"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0aO-q2-ZKd">
+                                <rect key="frame" x="148" y="149" width="119" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Push and remove"/>
+                                <connections>
+                                    <action selector="pushAndRemove:" destination="Ywb-Wj-x0N" eventType="touchUpInside" id="O9f-uM-xhu"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y5A-8f-5U3">
+                                <rect key="frame" x="26" y="205" width="198" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Push and hide navigation bar"/>
+                                <connections>
+                                    <action selector="pushAndHideNavigationBar:" destination="Ywb-Wj-x0N" eventType="touchUpInside" id="rnQ-B2-mGm"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hjQ-Vm-T8n">
+                                <rect key="frame" x="26" y="254" width="192" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Push and hide transition bar"/>
+                                <connections>
+                                    <action selector="pushAndTransitionBar:" destination="Ywb-Wj-x0N" eventType="touchUpInside" id="zND-YJ-AvU"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="VWs-jP-zdZ"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yJw-OZ-VBZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2236.231884057971" y="934.82142857142856"/>
+        </scene>
         <!--Badge View View Controller-->
         <scene sceneID="dfF-fb-KTp">
             <objects>
@@ -503,7 +556,7 @@
         <!--Root View Controller-->
         <scene sceneID="VQr-qO-hfd">
             <objects>
-                <tableViewController id="gSA-RW-8Kx" sceneMemberID="viewController">
+                <tableViewController id="gSA-RW-8Kx" customClass="TableViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="RHS-yS-4dv">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -809,6 +862,26 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="R7R-g1-zF0" kind="push" id="Fa4-d1-RnW"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="okY-SA-hmE" style="IBUITableViewCellStyleDefault" id="6EL-gR-oPg">
+                                        <rect key="frame" x="0.0" y="688" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6EL-gR-oPg" id="Ype-ez-5tw">
+                                            <rect key="frame" x="0.0" y="0.0" width="383" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="NavigationController" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="okY-SA-hmE">
+                                                    <rect key="frame" x="20" y="0.0" width="355" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="Ywb-Wj-x0N" kind="push" id="GTv-d6-awl"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>

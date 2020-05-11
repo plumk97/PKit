@@ -15,6 +15,12 @@ class PhotoBrowserViewController: UIViewController {
     var index = 8
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "PhotoBrowserViewController"
+        
+        self.navigationItem.rightBarButtonItems = [
+            .init(title: "item", style: .plain, target: nil, action: nil),
+            .init(title: "item", style: .plain, target: nil, action: nil),
+            .init(title: "item", style: .plain, target: nil, action: nil)]
         
         imageView = UIImageView.init(frame: .init(x: 20, y: 100, width: 300, height: 199))
         imageView.contentMode = .scaleAspectFill

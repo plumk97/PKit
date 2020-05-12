@@ -22,10 +22,12 @@ class RippleAnimateViewController: UIViewController {
         rippleView.backgroundColor = .red
         self.view.addSubview(rippleView)
         
+        rippleView.pl.rippleAnimate.fromScale = 0.8
+        rippleView.pl.rippleAnimate.toScale = 1.5
         rippleView.pl.rippleAnimate.startAnimation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            rippleView.pl.rippleAnimate.animateNumber = 2
-        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            rippleView.pl.rippleAnimate.animateNumber = 2
+//        }
     }
 }
 

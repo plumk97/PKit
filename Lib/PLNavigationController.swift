@@ -194,16 +194,27 @@ extension PLNavigationController {
                 // -- back item
                 self.navigationItem.leftItemsSupplementBackButton = true
                 
-                let backImage = UIImage.init(named: "nav_back")?.withRenderingMode(.alwaysOriginal)
                 
-                let backButton = UIButton(type: .system)
-                backButton.setImage(backImage, for: .normal)
-                backButton.frame.size = .init(width: (backImage?.size.width ?? 0) + 19, height: 44)
-                backButton.addTarget(self, action: #selector(backBarButtonItemClick(_:)), for: .touchUpInside)
-                
-                
-                // 直接使用 .init(image: ) 在 iOS11以上 与 iOS11以下 表现不一样
-                self.navigationItem.leftBarButtonItem = .init(customView: backButton)
+                if let item = self.content.pl_navigationCustomBackItem() {
+                    self.navigationItem.leftBarButtonItem = item
+                } else {
+                    
+                    let backButton = UIButton(type: .system)
+                    
+                    
+                    if let image = self.content.pl_navigationCustomBackItemImage() {
+                        backButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+                        backButton.frame.size = .init(width: image.size.width + 19, height: 44)
+                    } else if let image = UIImage.init(named: "nav_back") {
+                        backButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+                        backButton.frame.size = .init(width: image.size.width + 19, height: 44)
+                    }
+                    
+                    backButton.addTarget(self, action: #selector(backBarButtonItemClick(_:)), for: .touchUpInside)
+                    
+                    // 直接使用 .init(image: ) 在 iOS11以上 与 iOS11以下 表现不一样
+                    self.navigationItem.leftBarButtonItem = .init(customView: backButton)
+                }
             }
             
             self.warpNavigationBar.navigationBar.pushItem(self.navigationItem, animated: false)
@@ -420,4 +431,20 @@ extension PL where Base: UIViewController {
         }
         return nil
     }
+}
+
+extension UIViewController {
+    
+    /// 自定义返回按钮图片
+    /// - Returns:
+    func pl_navigationCustomBackItemImage() -> UIImage? {
+        return nil
+    }
+    
+    /// 自定义返回按钮
+    /// - Returns:
+    func pl_navigationCustomBackItem() -> UIBarButtonItem? {
+        return nil
+    }
+    
 }

@@ -284,7 +284,7 @@ class PLBubble: UIView {
         self.shapeLayer.path = path.cgPath
     }
     
-    func show(attach view: UIView?, animation: Bool = true) {
+    func show(attach view: UIView?, touchClose: Bool = true, animation: Bool = true) {
         
         guard !self.isShowing else {
             return
@@ -310,6 +310,7 @@ class PLBubble: UIView {
         
         
         self.coverControl = UIControl.init(frame: window.bounds)
+        self.coverControl.isUserInteractionEnabled = touchClose
         self.bindHide(with: self.coverControl)
         window.addSubview(self.coverControl)
         

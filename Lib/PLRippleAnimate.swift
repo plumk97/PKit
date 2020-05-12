@@ -35,7 +35,13 @@ class PLRippleAnimate: NSObject {
         }
     }
     
-    var scale: CGFloat = 1.4 {
+    var fromScale: CGFloat = 1.0 {
+        didSet {
+            self.restartAnimation()
+        }
+    }
+    
+    var toScale: CGFloat = 1.4 {
         didSet {
             self.restartAnimation()
         }
@@ -124,7 +130,8 @@ class PLRippleAnimate: NSObject {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         self.animateLayers.forEach { (layer) in
-            layer.frame = self.view!.frame
+            layer.bounds = self.view!.bounds
+            layer.position = self.view!.center
             
             var path: UIBezierPath!
             if self.cornerRadius <= 0 {
@@ -142,7 +149,6 @@ class PLRippleAnimate: NSObject {
             }
             
             layer.path = path.cgPath
-            
         }
         CATransaction.commit()
     }
@@ -152,12 +158,13 @@ class PLRippleAnimate: NSObject {
             return
         }
         
+        let nowtime = CACurrentMediaTime()
         self.animateLayers.enumerated().forEach { (idx, layer) in
-            layer.isHidden = false
+            
+            layer.transform = CATransform3DScale(CATransform3DIdentity, self.fromScale, self.fromScale, 1)
             
             let scaleAnim = CABasicAnimation.init(keyPath: "transform")
-            scaleAnim.toValue = CATransform3DScale(CATransform3DIdentity, self.scale, self.scale, 1)
-            scaleAnim.fromValue = CATransform3DIdentity
+            scaleAnim.toValue = CATransform3DScale(CATransform3DIdentity, self.toScale, self.toScale, 1)
             
             let alphaAnim = CABasicAnimation.init(keyPath: "opacity")
             alphaAnim.toValue = self.toAlpha
@@ -169,10 +176,12 @@ class PLRippleAnimate: NSObject {
             group.duration = self.animateDuration
             
             
-            group.beginTime = CACurrentMediaTime() + CFTimeInterval(idx) * (self.animateDuration / CFTimeInterval(self.animateNumber))
+            group.beginTime = nowtime + CFTimeInterval(idx) * (self.animateDuration / CFTimeInterval(self.animateNumber))
             group.repeatCount = Float.greatestFiniteMagnitude
             group.isRemovedOnCompletion = false
             layer.add(group, forKey: nil)
+            
+            layer.isHidden = false
         }
     }
     

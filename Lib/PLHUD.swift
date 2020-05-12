@@ -10,15 +10,11 @@ import UIKit
 
 class PLHUD: UIView {
     
-    let style = Style()
-    
-    
+    var style = Style()
     var text: String?
-    
-    
-    
-    private var inView: UIView?
-    private var warpView: UIView!
+
+    private(set) var inView: UIView?
+    private(set) var warpView: UIView!
     
     convenience init(text: String) {
         self.init(frame: .zero)
@@ -60,6 +56,8 @@ class PLHUD: UIView {
         warpView = UIView()
         warpView.backgroundColor = style.bgColor
         warpView.layer.cornerRadius = style.cornerRadius
+        warpView.layer.borderColor = style.borderColor?.cgColor
+        warpView.layer.borderWidth = style.borderWidth
         
         // - 限制大小
         let limitSize = CGSize.init(width: inView.frame.width - style.minimumSideSpacing * 2 + (style.contentInset.left + style.contentInset.right),
@@ -97,7 +95,7 @@ class PLHUD: UIView {
     
     func show(_ inView: UIView? = nil) {
         if let view = inView ?? UIApplication.shared.delegate?.window! {
-            self.isUserInteractionEnabled = false
+            self.isUserInteractionEnabled = true
             self.inView = view
             self.setup()
             self.alpha = 0
@@ -106,8 +104,10 @@ class PLHUD: UIView {
             UIView.animate(withDuration: 0.15, animations: {
                 self.alpha = 1
             }) { (_) in
-                DispatchQueue.main.asyncAfter(deadline: .now() + self.style.duration) {
-                    self.hide()
+                if self.style.duration > 0 {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + self.style.duration) {
+                        self.hide()
+                    }
                 }
             }
         }
@@ -127,17 +127,19 @@ extension PLHUD {
         
         // - view
         var maskColor: UIColor = UIColor.clear
-        var bgColor: UIColor = UIColor.black.withAlphaComponent(0.8)
+        var bgColor: UIColor = UIColor.black.withAlphaComponent(0.5)
         var cornerRadius: CGFloat = 10
+        var borderColor: UIColor?
+        var borderWidth: CGFloat = 0
         
         var minimumSideSpacing: CGFloat = 15
-        var contentInset: UIEdgeInsets = .init(top: -10, left: -10, bottom: -10, right: -10)
+        var contentInset: UIEdgeInsets = .init(top: -10, left: -13, bottom: -10, right: -13)
         
         // - text
         var color: UIColor = .white
-        var font: UIFont = .systemFont(ofSize: 15)
+        var font: UIFont = .systemFont(ofSize: 14)
         
         // - show
-        var duration: TimeInterval = 1.5
+        var duration: TimeInterval = 1
     }
 }

@@ -48,15 +48,11 @@
 		814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */; };
 		8153642022CDFF0A0025EDF4 /* icon_close@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8153641E22CDFF090025EDF4 /* icon_close@3x.png */; };
 		8153642122CDFF0A0025EDF4 /* icon_close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8153641F22CDFF090025EDF4 /* icon_close@2x.png */; };
-		815F4FD722757F93003BA591 /* PLRefreshNormalFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */; };
 		8173AC4C246695CD0054DF13 /* nav_back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8173AC4A246695CC0054DF13 /* nav_back@2x.png */; };
 		8173AC4D246695CD0054DF13 /* nav_back@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8173AC4B246695CD0054DF13 /* nav_back@3x.png */; };
 		8173AC4F24669FDF0054DF13 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8173AC4E24669FDF0054DF13 /* TableViewController.swift */; };
 		81786D912272B095005B232D /* ButtonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D902272B095005B232D /* ButtonViewController.swift */; };
 		81786D932272B13B005B232D /* PLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D922272B13B005B232D /* PLButton.swift */; };
-		81786D9B227302B6005B232D /* PLRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D9A227302B6005B232D /* PLRefresh.swift */; };
-		81786D9D22730695005B232D /* RefreshViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786D9C22730695005B232D /* RefreshViewController.swift */; };
-		81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81786DA022731154005B232D /* PLRefreshNormalHeader.swift */; };
 		818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818997A622DC5D4E0042A93F /* StackCardViewController.swift */; };
 		818997A922DC5D910042A93F /* PLStackCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818997A822DC5D910042A93F /* PLStackCardView.swift */; };
 		818BF10F241A264C00D84B86 /* MultiMenuTableViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */; };
@@ -156,15 +152,11 @@
 		814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLPhotoBrowserPage.swift; sourceTree = "<group>"; };
 		8153641E22CDFF090025EDF4 /* icon_close@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_close@3x.png"; sourceTree = "<group>"; };
 		8153641F22CDFF090025EDF4 /* icon_close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_close@2x.png"; sourceTree = "<group>"; };
-		815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalFooter.swift; sourceTree = "<group>"; };
 		8173AC4A246695CC0054DF13 /* nav_back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nav_back@2x.png"; sourceTree = "<group>"; };
 		8173AC4B246695CD0054DF13 /* nav_back@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nav_back@3x.png"; sourceTree = "<group>"; };
 		8173AC4E24669FDF0054DF13 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		81786D902272B095005B232D /* ButtonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonViewController.swift; sourceTree = "<group>"; };
 		81786D922272B13B005B232D /* PLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLButton.swift; sourceTree = "<group>"; };
-		81786D9A227302B6005B232D /* PLRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefresh.swift; sourceTree = "<group>"; };
-		81786D9C22730695005B232D /* RefreshViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshViewController.swift; sourceTree = "<group>"; };
-		81786DA022731154005B232D /* PLRefreshNormalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLRefreshNormalHeader.swift; sourceTree = "<group>"; };
 		818997A622DC5D4E0042A93F /* StackCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackCardViewController.swift; sourceTree = "<group>"; };
 		818997A822DC5D910042A93F /* PLStackCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLStackCardView.swift; sourceTree = "<group>"; };
 		818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiMenuTableViewViewController.swift; sourceTree = "<group>"; };
@@ -328,7 +320,6 @@
 				8173AC4E24669FDF0054DF13 /* TableViewController.swift */,
 				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
 				81786D902272B095005B232D /* ButtonViewController.swift */,
-				81786D9C22730695005B232D /* RefreshViewController.swift */,
 				81948F572278237A00868B88 /* PageScrollViewController.swift */,
 				814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */,
 				81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */,
@@ -357,9 +348,6 @@
 				812FBF46226EB77400CA1831 /* PLKit.swift */,
 				81786D922272B13B005B232D /* PLButton.swift */,
 				812FBF44226EAF0000CA1831 /* PLRippleAnimate.swift */,
-				81786D9A227302B6005B232D /* PLRefresh.swift */,
-				81786DA022731154005B232D /* PLRefreshNormalHeader.swift */,
-				815F4FD622757F93003BA591 /* PLRefreshNormalFooter.swift */,
 				81948F552278236000868B88 /* PLPageScrollView.swift */,
 				814972F9228D63DF00F63C96 /* PLPhotoBrowser.swift */,
 				814972FD228D6EF100F63C96 /* PLPhotoBrowserPage.swift */,
@@ -582,7 +570,6 @@
 				818997A922DC5D910042A93F /* PLStackCardView.swift in Sources */,
 				810FD77C22FAB373002EB244 /* PLTabBar.swift in Sources */,
 				81D9129A243599A200A433D8 /* BubbleViewController.swift in Sources */,
-				81786D9B227302B6005B232D /* PLRefresh.swift in Sources */,
 				81D912982435971200A433D8 /* PLBubble.swift in Sources */,
 				81F1962322CC8FB200EEFA06 /* SlideVerifyViewController.swift in Sources */,
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
@@ -593,14 +580,11 @@
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
 				81D912A02435E5AA00A433D8 /* PLArrangeView.swift in Sources */,
 				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,
-				81786DA122731154005B232D /* PLRefreshNormalHeader.swift in Sources */,
 				8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */,
 				814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */,
-				81786D9D22730695005B232D /* RefreshViewController.swift in Sources */,
 				81786D912272B095005B232D /* ButtonViewController.swift in Sources */,
 				812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */,
 				81786D932272B13B005B232D /* PLButton.swift in Sources */,
-				815F4FD722757F93003BA591 /* PLRefreshNormalFooter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

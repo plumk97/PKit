@@ -17,7 +17,7 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
     fileprivate var transitionCompleteCallback: Complete?
     
     override init(rootViewController: UIViewController) {
-        super.init(rootViewController: ContainerController.init(content: rootViewController))
+        super.init(rootViewController: rootViewController)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -57,7 +57,10 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
     /// - Parameter viewController:
     /// - Returns:
     @discardableResult
-    func removeViewController(_ viewController: UIViewController) -> UIViewController?  {
+    func removeViewController(_ viewController: UIViewController?) -> UIViewController?  {
+        guard let viewController = viewController else {
+            return nil
+        }
         for (idx, container) in self.viewControllers.enumerated() {
             if let container = container as? ContainerController {
                 if container.content == viewController {
@@ -161,8 +164,19 @@ extension PLNavigationController {
     // MARK: - Class ContainerController
     class ContainerController: UIViewController, UIGestureRecognizerDelegate {
         
+        class BackItemButton: UIButton {
+            // 避免返回按钮看起来不靠左
+            override func imageRect(forContentRect contentRect: CGRect) -> CGRect {
+                var rect = super.imageRect(forContentRect: contentRect)
+                rect.origin.x = 0
+                return rect
+            }
+        }
+        
         var content: UIViewController!
         var warpNavigationBar: WarpNavigationBar!
+        
+        var isDisablePopGestureRecognizer = false
         
         init(content: UIViewController) {
             super.init(nibName: nil, bundle: nil)
@@ -185,6 +199,12 @@ extension PLNavigationController {
             }
             self.addChild(self.content)
         }
+        deinit {
+            // 需要手动释放 不会自动释放 系统的没这个问题 不知什么原因
+            self.navigationItem.leftBarButtonItems = nil
+            self.navigationItem.rightBarButtonItems = nil
+            self.navigationItem.backBarButtonItem = nil
+        }
         
         override func viewDidLoad() {
             super.viewDidLoad()
@@ -192,15 +212,11 @@ extension PLNavigationController {
             if self != self.navigationController?.viewControllers.first {
                 
                 // -- back item
-                self.navigationItem.leftItemsSupplementBackButton = true
-                
-                
-                if let item = self.content.pl_navigationCustomBackItem() {
+                if let item = self.content.pl_navigationCustomBackItem(target: self, action: #selector(backBarButtonItemClick)) {
                     self.navigationItem.leftBarButtonItem = item
                 } else {
                     
-                    let backButton = UIButton(type: .system)
-                    
+                    let backButton = BackItemButton(type: .system)
                     
                     if let image = self.content.pl_navigationCustomBackItemImage() {
                         backButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
@@ -210,13 +226,13 @@ extension PLNavigationController {
                         backButton.frame.size = .init(width: image.size.width + 19, height: 44)
                     }
                     
-                    backButton.addTarget(self, action: #selector(backBarButtonItemClick(_:)), for: .touchUpInside)
+                    backButton.addTarget(self, action: #selector(backBarButtonItemClick), for: .touchUpInside)
                     
                     // 直接使用 .init(image: ) 在 iOS11以上 与 iOS11以下 表现不一样
                     self.navigationItem.leftBarButtonItem = .init(customView: backButton)
                 }
             }
-            
+            self.content.pl_setupNavigationBar(self.warpNavigationBar.navigationBar)
             self.warpNavigationBar.navigationBar.pushItem(self.navigationItem, animated: false)
             
             // -- navigation bar frame
@@ -233,11 +249,18 @@ extension PLNavigationController {
             return self.content.navigationItem
         }
         
-        @objc fileprivate func backBarButtonItemClick(_ sender: UIButton) {
+        @objc fileprivate func backBarButtonItemClick() {
             self.navigationController?.popViewController(animated: true)
         }
         
         // MARK: - UIGestureRecognizerDelegate
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard gestureRecognizer == self.navigationController?.interactivePopGestureRecognizer else {
+                return true
+            }
+            return !self.isDisablePopGestureRecognizer
+        }
+        
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
             return gestureRecognizer == self.navigationController?.interactivePopGestureRecognizer
         }
@@ -290,106 +313,7 @@ extension PLNavigationController {
     // MARK: - Class WarpNavigationBar
     class WarpNavigationBar: UIView {
         
-        class _NavigationBar: UINavigationBar {
-            
-            // leftBarButtonItems 与边缘边距
-            var leftTrailing: CGFloat = 0
-            // rightBarButtonItems 与边缘边距
-            var rightTrailing: CGFloat = -8
-            
-            fileprivate weak var leftTrailingConstraint: NSLayoutConstraint?
-            fileprivate weak var rightTrailingConstraint: NSLayoutConstraint?
-            
-            override func layoutSubviews() {
-                super.layoutSubviews()
-                
-                if #available(iOS 11.0, *) {
-                    
-                    if self.leftTrailingConstraint == nil || self.rightTrailingConstraint == nil {
-                        self.subviews.forEach({
-                            if type(of: $0).description() == "_UINavigationBarContentView" {
-                                $0.constraints.forEach({[weak self] in
-                                    if $0.firstAttribute == .trailing {
-                                        if $0.constant > 0 {
-                                            self?.leftTrailingConstraint = $0
-                                        } else {
-                                            self?.rightTrailingConstraint = $0
-                                        }
-                                    }
-                                })
-                            }
-                        })
-                    }
-                    
-                    self.leftTrailingConstraint?.constant = self.leftTrailing
-                    // 加上8等于 right == self.bounds.width 再计算
-                    self.rightTrailingConstraint?.constant = 8 + self.rightTrailing
-                    
-                } else {
-                    
-                    self.relayoutSubviews()
-                }
-            }
-            
-            
-            /// iOS 11以下的使用的frame布局 重新计算frame
-            fileprivate func relayoutSubviews() {
-                guard let item = self.topItem else {
-                    return
-                }
-                
-                // -- leftBarButtonItems
-                // 与iOS 11以上的保持一致
-                var left: CGFloat = self.leftTrailing
-                if let leftBarButtonItems = item.leftBarButtonItems {
-                    for buttonItem in leftBarButtonItems {
-                        guard let view = buttonItem.value(forKey: "view") as? UIView else {
-                            return
-                        }
-                        
-                        view.frame.origin.x = left
-                        left = view.frame.maxX + 8
-                    }
-                }
-                
-                // -- rightBarButtonItems
-                // 与iOS 11以上的保持一致 iOS11以上的BarButtonItem内部留有8间距
-                var right: CGFloat = self.bounds.width - 8 + self.rightTrailing
-                if let rightBarButtonItems = item.rightBarButtonItems {
-                    for buttonItem in rightBarButtonItems {
-                        guard let view = buttonItem.value(forKey: "view") as? UIView else {
-                            return
-                        }
-                        
-                        view.frame.origin.x = right - view.frame.width
-                        
-                        right = view.frame.minX - 8
-                    }
-                }
-                
-                // -- UINavigationItemView
-                let itemView = self.subviews.first(where: {
-                    type(of: $0).description() == "UINavigationItemView"
-                })
-                if let itemView = itemView {
-                    
-                    var frame = itemView.frame
-                    frame.origin.x = (self.bounds.width - frame.width) / 2
-                    
-                    if frame.minX < left || frame.maxX > right {
-                        let remainWidth = right - left
-                        frame.size.width = min(remainWidth, frame.size.width)
-                        frame.origin.x = (remainWidth - frame.width) / 2 + left
-                    }
-                    
-                    itemView.frame = frame
-                }
-                
-            }
-        }
-        
-        
-        private(set) var navigationBar: _NavigationBar!
+        private(set) var navigationBar: UINavigationBar!
         
         override init(frame: CGRect) {
             super.init(frame: frame)
@@ -405,7 +329,7 @@ extension PLNavigationController {
             
             self.backgroundColor = UIColor.white
             
-            self.navigationBar = _NavigationBar()
+            self.navigationBar = UINavigationBar()
             self.navigationBar.setBackgroundImage(UIImage(), for: .default)
             self.addSubview(self.navigationBar)
         }
@@ -429,22 +353,52 @@ extension PL where Base: UIViewController {
         if let container = self.base.parent as? PLNavigationController.ContainerController {
             return container.warpNavigationBar
         }
+        
+        if let container = self.base as? PLNavigationController.ContainerController {
+            return container.warpNavigationBar
+        }
+        
         return nil
     }
 }
 
-extension UIViewController {
+// MARK: - PLNavigationControllerConfig
+@objc protocol PLNavigationControllerConfig {
     
     /// 自定义返回按钮图片
-    /// - Returns:
+    @objc optional func pl_navigationCustomBackItemImage() -> UIImage?
+    
+    /// 自定义返回按钮
+    @objc optional func pl_navigationCustomBackItem(target: Any, action: Selector) -> UIBarButtonItem?
+    
+    /// 设置导航栏
+    /// - Parameter bar:
+    @objc optional func pl_setupNavigationBar(_ bar: UINavigationBar)
+    
+    /// 是否屏蔽返回手势
+    var pl_isDisablePopGestureRecognizer: Bool { set get }
+}
+
+extension UIViewController: PLNavigationControllerConfig {
     func pl_navigationCustomBackItemImage() -> UIImage? {
         return nil
     }
     
-    /// 自定义返回按钮
-    /// - Returns:
-    func pl_navigationCustomBackItem() -> UIBarButtonItem? {
+    func pl_navigationCustomBackItem(target: Any, action: Selector) -> UIBarButtonItem? {
         return nil
     }
     
+    func pl_setupNavigationBar(_ bar: UINavigationBar) {
+        
+    }
+    
+    var pl_isDisablePopGestureRecognizer: Bool {
+        get {
+            return (self.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer ?? false
+        }
+        
+        set {
+            (self.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer = newValue
+        }
+    }
 }

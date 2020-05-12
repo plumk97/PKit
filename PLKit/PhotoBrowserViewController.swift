@@ -10,6 +10,11 @@ import UIKit
 
 class PhotoBrowserViewController: UIViewController {
 
+    class BUTT: UIButton {
+        deinit {
+            print("BUTT")
+        }
+    }
     var imageView: UIImageView!
     var imageCache = NSCache<NSString, UIImage>()
     var index = 8
@@ -20,7 +25,7 @@ class PhotoBrowserViewController: UIViewController {
         self.navigationItem.rightBarButtonItems = [
             .init(title: "item", style: .plain, target: nil, action: nil),
             .init(title: "item", style: .plain, target: nil, action: nil),
-            .init(title: "item", style: .plain, target: nil, action: nil)]
+            .init(customView: BUTT())]
         
         imageView = UIImageView.init(frame: .init(x: 20, y: 100, width: 300, height: 199))
         imageView.contentMode = .scaleAspectFill

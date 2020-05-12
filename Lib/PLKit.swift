@@ -72,3 +72,10 @@ struct PLKit {
         }
     }
 }
+
+
+extension UIEdgeInsets {
+    func equalTo(_ insets: UIEdgeInsets) -> Bool {
+        return self.top == insets.top && self.left == insets.left && self.right == insets.right && self.bottom == insets.bottom
+    }
+}

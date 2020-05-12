@@ -70,6 +70,43 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         return nil
     }
     
+    // MARK: - Child
+    override var childForStatusBarStyle: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForStatusBarHidden: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForHomeIndicatorAutoHidden: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return self.visibleViewController?.preferredStatusBarStyle ?? .default
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return self.visibleViewController?.preferredStatusBarUpdateAnimation ?? .fade
+    }
+    
+    override var shouldAutorotate: Bool {
+        return self.visibleViewController?.shouldAutorotate ?? false
+    }
+    
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return self.visibleViewController?.preferredInterfaceOrientationForPresentation ?? .portrait
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return self.visibleViewController?.supportedInterfaceOrientations ?? .portrait
+    }
+    
     // MARK: - PUSH And POP
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
         let container = ContainerController.init(content: viewController)
@@ -196,6 +233,43 @@ extension PLNavigationController {
         
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
             return gestureRecognizer == self.navigationController?.interactivePopGestureRecognizer
+        }
+        
+        // MARK: - Child
+        override var childForStatusBarStyle: UIViewController? {
+            return self.content
+        }
+        
+        override var childForStatusBarHidden: UIViewController? {
+            return self.content
+        }
+        
+        override var childForHomeIndicatorAutoHidden: UIViewController? {
+            return self.content
+        }
+        
+        override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
+            return self.content
+        }
+        
+        override var preferredStatusBarStyle: UIStatusBarStyle {
+            return self.content?.preferredStatusBarStyle ?? .default
+        }
+        
+        override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+            return self.content?.preferredStatusBarUpdateAnimation ?? .fade
+        }
+        
+        override var shouldAutorotate: Bool {
+            return self.content?.shouldAutorotate ?? false
+        }
+        
+        override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+            return self.content?.preferredInterfaceOrientationForPresentation ?? .portrait
+        }
+        
+        override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+            return self.content?.supportedInterfaceOrientations ?? .portrait
         }
     }
 }

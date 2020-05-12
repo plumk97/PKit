@@ -134,7 +134,9 @@ class PLTabBarController: UIViewController {
         }
         self.selectedViewController = new
         self.bodyView.addSubview(new.view)
-        self.setNeedsStatusBarAppearanceUpdate()
+        UIView.animate(withDuration: 0.25) {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
     }
     
     /// 设置选中ViewController下标

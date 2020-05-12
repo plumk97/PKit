@@ -45,7 +45,15 @@ class PLPhotoBrowser: UIViewController {
     
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag) {
-            UIApplication.shared.keyWindow?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
+            let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+            if flag {
+                UIView.animate(withDuration: 0.25) {
+                    rootViewController?.setNeedsStatusBarAppearanceUpdate()
+                }
+            } else {
+                rootViewController?.setNeedsStatusBarAppearanceUpdate()
+            }
+            
             completion?()
         }
     }

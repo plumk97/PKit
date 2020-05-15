@@ -385,7 +385,7 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
         let containerView = transitionContext.containerView
-        
+        containerView.frame = UIScreen.main.bounds
         // 获取view
         var browser: PLPhotoBrowser?
         var anotherView: UIView?
@@ -409,6 +409,7 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             }
             
             if let view = browserView {
+                view.frame = containerView.bounds
                 containerView.addSubview(view)
             }
         }

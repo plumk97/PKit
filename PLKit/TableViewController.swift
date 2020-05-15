@@ -13,7 +13,12 @@ class TableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.tableView.contentInset.top = 44
+//
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+//        self.tableView.contentInset.top = self.pl.navigationBar?.barHeight ?? 0
     }
 
 }

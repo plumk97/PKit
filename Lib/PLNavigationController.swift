@@ -35,10 +35,10 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setNavigationBarHidden(true, animated: false)
         self.delegate = self
+        // 直接隐藏 不能正确获取到frame
+        self.view.sendSubviewToBack(self.navigationBar)
     }
-    
     
     /// 重新设置手势代理
     fileprivate func resetInteractivePopGestureRecognizer() {
@@ -181,6 +181,7 @@ extension PLNavigationController {
             }
         }
         
+        var containerView: UIView!
         var content: UIViewController!
         var warpNavigationBar: WarpNavigationBar!
         
@@ -209,9 +210,9 @@ extension PLNavigationController {
         }
         deinit {
             // 需要手动释放 不会自动释放 系统的没这个问题 不知什么原因
-            self.navigationItem.leftBarButtonItems = nil
-            self.navigationItem.rightBarButtonItems = nil
-            self.navigationItem.backBarButtonItem = nil
+            self.content.navigationItem.leftBarButtonItems = nil
+            self.content.navigationItem.rightBarButtonItems = nil
+            self.content.navigationItem.backBarButtonItem = nil
         }
         
         override func viewDidLoad() {
@@ -221,7 +222,7 @@ extension PLNavigationController {
                 
                 // -- back item
                 if let item = self.content.pl_navigationCustomBackItem(target: self, action: #selector(backBarButtonItemClick)) {
-                    self.navigationItem.leftBarButtonItem = item
+                    self.content.navigationItem.leftBarButtonItem = item
                 } else {
                     
                     let backButton = BackItemButton(type: .system)
@@ -237,20 +238,35 @@ extension PLNavigationController {
                     backButton.addTarget(self, action: #selector(backBarButtonItemClick), for: .touchUpInside)
                     
                     // 直接使用 .init(image: ) 在 iOS11以上 与 iOS11以下 表现不一样
-                    self.navigationItem.leftBarButtonItem = .init(customView: backButton)
+                    self.content.navigationItem.leftBarButtonItem = .init(customView: backButton)
                 }
             }
             self.content.pl_setupNavigationBar(self.warpNavigationBar.navigationBar)
-            self.warpNavigationBar.navigationBar.pushItem(self.navigationItem, animated: false)
+            self.warpNavigationBar.navigationBar.pushItem(self.content.navigationItem, animated: false)
+            
+            self.containerView = UIView.init(frame: self.view.bounds)
+            self.view.addSubview(self.containerView)
             
             // -- navigation bar frame
-            self.view.addSubview(self.content.view)
-            self.view.addSubview(self.warpNavigationBar)
+            self.view.layoutIfNeeded()
+            
+            self.containerView.addSubview(self.content.view)
+            self.containerView.addSubview(self.warpNavigationBar)
         }
         
-        
-        override var navigationItem: UINavigationItem {
-            return self.content.navigationItem
+        override func viewWillLayoutSubviews() {
+            super.viewWillLayoutSubviews()
+                        
+            if let systemBarFrame = self.navigationController?.navigationBar.frame {
+                
+                self.warpNavigationBar.barHeight = systemBarFrame.height
+                let ownBarFrame = CGRect.init(x: 0, y: 0, width: systemBarFrame.width, height: systemBarFrame.height + systemBarFrame.minY)
+                self.warpNavigationBar.frame = ownBarFrame
+            }
+
+            
+            self.containerView.frame = self.view.bounds
+            self.content.view.frame = self.containerView.bounds
         }
         
         @objc fileprivate func backBarButtonItemClick() {
@@ -290,6 +306,10 @@ extension PLNavigationController {
             return self.content
         }
         
+        override var prefersStatusBarHidden: Bool {
+            return self.content?.prefersStatusBarHidden ?? false
+        }
+        
         override var preferredStatusBarStyle: UIStatusBarStyle {
             return self.content?.preferredStatusBarStyle ?? .default
         }
@@ -317,6 +337,7 @@ extension PLNavigationController {
     // MARK: - Class WarpNavigationBar
     class WarpNavigationBar: UIView {
         
+        fileprivate(set) var barHeight: CGFloat = 44
         private(set) var navigationBar: UINavigationBar!
         
         override init(frame: CGRect) {
@@ -340,7 +361,7 @@ extension PLNavigationController {
         
         override func layoutSubviews() {
             super.layoutSubviews()
-            self.navigationBar.frame = .init(x: 0, y: self.frame.height - 44, width: self.frame.width, height: 44)
+            self.navigationBar.frame = .init(x: 0, y: self.frame.height - self.barHeight, width: self.frame.width, height: self.barHeight)
         }
     }
 }

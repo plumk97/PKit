@@ -75,6 +75,7 @@ class PLTabBarController: UIViewController {
         super.viewWillLayoutSubviews()
         
         self.bodyView.frame = self.view.bounds
+        self.selectedViewController?.view.frame = self.bodyView.bounds
         
         var sumHeight = self.tabBarHeight
         if #available(iOS 11.0, *) {
@@ -133,6 +134,7 @@ class PLTabBarController: UIViewController {
             return
         }
         self.selectedViewController = new
+        new.view.frame = self.bodyView.bounds
         self.bodyView.addSubview(new.view)
         self.setNeedsStatusBarAppearanceUpdate()
     }

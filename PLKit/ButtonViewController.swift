@@ -48,9 +48,10 @@ class ButtonViewController: UIViewController {
         
         let vc = ButtonViewController()
         if let nav = self.navigationController as? PLNavigationController {
-            nav.pushViewController(vc, animated: true) {
-                nav.removeViewController(self)
-            }
+            nav.present(PLNavigationController.init(rootViewController: vc), animated: true, completion: nil)
+//            nav.pushViewController(vc, animated: true) {
+//                nav.removeViewController(self)
+//            }
         }
     }
 }

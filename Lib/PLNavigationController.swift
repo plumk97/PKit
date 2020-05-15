@@ -16,6 +16,14 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
     
     fileprivate var transitionCompleteCallback: Complete?
     
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    override init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
+        super.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
+    }
+    
     override init(rootViewController: UIViewController) {
         super.init(rootViewController: rootViewController)
     }
@@ -236,10 +244,6 @@ extension PLNavigationController {
             self.warpNavigationBar.navigationBar.pushItem(self.navigationItem, animated: false)
             
             // -- navigation bar frame
-            let statusBarFrame = UIApplication.shared.statusBarFrame
-            self.warpNavigationBar.frame = .init(x: 0, y: 0, width: self.view.frame.width, height: 44 + statusBarFrame.height)
-            
-            
             self.view.addSubview(self.content.view)
             self.view.addSubview(self.warpNavigationBar)
         }

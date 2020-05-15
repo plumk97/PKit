@@ -203,7 +203,7 @@ class PLRippleAnimate: NSObject {
         self.animateLayers.forEach { (layer) in
             layer.removeAllAnimations()
             layer.isHidden = true
-            layer.transform = CATransform3DIdentity
+            layer.transform = CATransform3DScale(CATransform3DIdentity, self.fromScale, self.fromScale, 1)
             layer.opacity = 1
         }
     }

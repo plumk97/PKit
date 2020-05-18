@@ -284,6 +284,11 @@ class PLBubble: UIView {
         self.shapeLayer.path = path.cgPath
     }
     
+    /// 显示
+    /// - Parameters:
+    ///   - view: 附加到哪个view
+    ///   - touchClose: 是否可以点击关闭
+    ///   - animation: 是否使用动画
     func show(attach view: UIView?, touchClose: Bool = true, animation: Bool = true) {
         
         guard !self.isShowing else {
@@ -341,7 +346,19 @@ class PLBubble: UIView {
         
     }
     
+    /// 重新定位当前位置
+    /// - Parameter view:
+    func relocation() {
+        
+        guard self.isShowing else {
+            return
+        }
+        
+        self.redraw()
+    }
     
+    /// 隐藏
+    /// - Parameter animation:
     func hide(animation: Bool = true) {
         guard self.isShowing else {
             return
@@ -361,10 +378,14 @@ class PLBubble: UIView {
         }
     }
     
+    /// 点击关闭
     @objc private func bindButtonClick() {
         self.hide()
     }
     
+    
+    /// 绑定按钮点击关闭
+    /// - Parameter button:
     func bindHide(with button: UIControl...) {
         button.forEach({
             $0.addTarget(self, action: #selector(bindButtonClick), for: .touchUpInside)

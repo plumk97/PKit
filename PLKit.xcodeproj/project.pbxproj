@@ -361,9 +361,9 @@
 				81FE620D2302E24B00C9BD31 /* PLDot.swift */,
 				818BF110241A26B300D84B86 /* PLMultimenuTableView.swift */,
 				81D912972435971200A433D8 /* PLBubble.swift */,
+				8102CA7324655EAF00AE2278 /* PLNavigationController.swift */,
 				81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */,
 				811F280F243EFBFF00276CBF /* PLTabControl.swift */,
-				8102CA7324655EAF00AE2278 /* PLNavigationController.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";

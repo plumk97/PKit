@@ -30,7 +30,7 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.setViewControllers(self.viewControllers.map({ ContainerController.init(content: $0) }), animated: false)
+        self.setViewControllers(self.viewControllers, animated: false)
     }
 
     override func viewDidLoad() {
@@ -69,10 +69,18 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         guard let viewController = viewController else {
             return nil
         }
+        
         for (idx, container) in self.viewControllers.enumerated() {
+            
+            // 传进来的是 ContainerController
+            if container == viewController {
+                self.viewControllers.remove(at: idx)
+                return (container as? ContainerController)?.content ?? container
+            }
+            
+            // 传进来的是其他的
             if let container = container as? ContainerController {
                 if container.content == viewController {
-                    
                     self.viewControllers.remove(at: idx)
                     return container.content
                 }
@@ -80,6 +88,36 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         }
         return nil
     }
+    
+    override func setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
+        super.setViewControllers(viewControllers.map({
+            
+            if let container = $0 as? ContainerController {
+                if container.isPushed {
+                    return container
+                }
+            }
+            
+            let vc = ContainerController.init(content: $0)
+            vc.isPushed = true
+            return vc
+        }), animated: animated)
+    }
+    
+    var pl_topViewController: UIViewController? {
+        let vc = self.topViewController
+        return vc?.pl_containerContentViewController
+    }
+    
+    var pl_visibleViewController: UIViewController? {
+        let vc = self.visibleViewController
+        return vc?.pl_containerContentViewController
+    }
+    
+    var pl_viewControllers: [UIViewController] {
+        return self.viewControllers.map({ $0.pl_containerContentViewController })
+    }
+    
     
     // MARK: - Child
     override var childForStatusBarStyle: UIViewController? {
@@ -120,20 +158,43 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
     
     // MARK: - PUSH And POP
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        let container = ContainerController.init(content: viewController)
-        super.pushViewController(container, animated: animated)
+        
+        if viewController != self.viewControllers.last && viewController.navigationController == nil {
+        
+            /*
+             animated 为true的时候
+             可能同一个viewController 会走2次这个方法
+             */
+            if let container = viewController as? ContainerController, container.isPushed {
+                return super.pushViewController(container, animated: animated)
+            }
+            
+            let container = ContainerController.init(content: viewController)
+            container.isPushed = true
+            super.pushViewController(container, animated: animated)
+        }
     }
     
     override func popViewController(animated: Bool) -> UIViewController? {
-        return super.popViewController(animated: animated)
+        let vc = super.popViewController(animated: animated)
+        return vc?.pl_containerContentViewController
     }
     
     override func popToRootViewController(animated: Bool) -> [UIViewController]? {
-        return super.popToRootViewController(animated: animated)
+        let vcs = super.popToRootViewController(animated: animated)
+        return vcs?.map({ $0.pl_containerContentViewController })
     }
     
     override func popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
-        return super.popToViewController(viewController, animated: animated)
+        
+        var vcs: [UIViewController]?
+        if let container = viewController.parent as? ContainerController {
+            vcs = super.popToViewController(container, animated: animated)
+        } else {
+            vcs = super.popToViewController(viewController, animated: animated)
+        }
+        
+        return vcs?.map({ $0.pl_containerContentViewController })
     }
     
     
@@ -180,6 +241,9 @@ extension PLNavigationController {
                 return rect
             }
         }
+        
+        // 当前容器是否已经push进navigationController
+        fileprivate var isPushed: Bool = false
         
         var containerView: UIView!
         var content: UIViewController!
@@ -425,5 +489,16 @@ extension UIViewController: PLNavigationControllerConfig {
         set {
             (self.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer = newValue
         }
+    }
+}
+
+
+// MARK: - Unwarp
+extension UIViewController {
+    var pl_containerContentViewController: UIViewController {
+        if let container = self as? PLNavigationController.ContainerController {
+            return container.content
+        }
+        return self
     }
 }

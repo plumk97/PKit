@@ -30,6 +30,7 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        // 从xib 过来的需要重置一下
         self.setViewControllers(self.viewControllers, animated: false)
     }
 
@@ -39,7 +40,7 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         // 直接隐藏 不能正确获取到frame
         self.view.sendSubviewToBack(self.navigationBar)
     }
-    
+
     /// 重新设置手势代理
     fileprivate func resetInteractivePopGestureRecognizer() {
         
@@ -61,34 +62,6 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         vc = self.viewControllers.last as? ContainerController
     }
     
-    /// 移除一个viewController
-    /// - Parameter viewController:
-    /// - Returns:
-    @discardableResult
-    func removeViewController(_ viewController: UIViewController?) -> UIViewController?  {
-        guard let viewController = viewController else {
-            return nil
-        }
-        
-        for (idx, container) in self.viewControllers.enumerated() {
-            
-            // 传进来的是 ContainerController
-            if container == viewController {
-                self.viewControllers.remove(at: idx)
-                return (container as? ContainerController)?.content ?? container
-            }
-            
-            // 传进来的是其他的
-            if let container = container as? ContainerController {
-                if container.content == viewController {
-                    self.viewControllers.remove(at: idx)
-                    return container.content
-                }
-            }
-        }
-        return nil
-    }
-    
     override func setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
         super.setViewControllers(viewControllers.map({
             
@@ -102,58 +75,6 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
             vc.isPushed = true
             return vc
         }), animated: animated)
-    }
-    
-    var pl_topViewController: UIViewController? {
-        let vc = self.topViewController
-        return vc?.pl_containerContentViewController
-    }
-    
-    var pl_visibleViewController: UIViewController? {
-        let vc = self.visibleViewController
-        return vc?.pl_containerContentViewController
-    }
-    
-    var pl_viewControllers: [UIViewController] {
-        return self.viewControllers.map({ $0.pl_containerContentViewController })
-    }
-    
-    
-    // MARK: - Child
-    override var childForStatusBarStyle: UIViewController? {
-        return self.visibleViewController
-    }
-    
-    override var childForStatusBarHidden: UIViewController? {
-        return self.visibleViewController
-    }
-    
-    override var childForHomeIndicatorAutoHidden: UIViewController? {
-        return self.visibleViewController
-    }
-    
-    override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
-        return self.visibleViewController
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return self.visibleViewController?.preferredStatusBarStyle ?? .default
-    }
-    
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        return self.visibleViewController?.preferredStatusBarUpdateAnimation ?? .fade
-    }
-    
-    override var shouldAutorotate: Bool {
-        return self.visibleViewController?.shouldAutorotate ?? false
-    }
-    
-    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-        return self.visibleViewController?.preferredInterfaceOrientationForPresentation ?? .portrait
-    }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return self.visibleViewController?.supportedInterfaceOrientations ?? .portrait
     }
     
     // MARK: - PUSH And POP
@@ -188,35 +109,24 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
     override func popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
         
         var vcs: [UIViewController]?
-        if let container = viewController.parent as? ContainerController {
-            vcs = super.popToViewController(container, animated: animated)
+        if let container = viewController.navigationController?.parent as? ContainerController {
+            if self.viewControllers.contains(container) {
+                vcs = super.popToViewController(container, animated: animated)
+            }
+
+        } else if let container = viewController.parent as? ContainerController {
+            if self.viewControllers.contains(container) {
+                vcs = super.popToViewController(container, animated: animated)
+            }
+            
         } else {
-            vcs = super.popToViewController(viewController, animated: animated)
+            if self.viewControllers.contains(viewController) {
+                vcs = super.popToViewController(viewController, animated: animated)
+            }
+
         }
         
         return vcs?.map({ $0.pl_containerContentViewController })
-    }
-    
-    
-    // -- completion callback
-    func pushViewController(_ viewController: UIViewController, animated: Bool, complete: Complete?) {
-        self.transitionCompleteCallback = complete
-        return self.pushViewController(viewController, animated: animated)
-    }
-    
-    func popViewController(animated: Bool, complete: Complete?) -> UIViewController? {
-        self.transitionCompleteCallback = complete
-        return self.popViewController(animated: animated)
-    }
-    
-    func popToRootViewController(animated: Bool, complete: Complete?) -> [UIViewController]? {
-        self.transitionCompleteCallback = complete
-        return self.popToRootViewController(animated: animated)
-    }
-    
-    func popToViewController(_ viewController: UIViewController, animated: Bool, complete: Complete?) -> [UIViewController]? {
-        self.transitionCompleteCallback = complete
-        return self.popToViewController(viewController, animated: animated)
     }
     
     // MARK: - UINavigationControllerDelegate
@@ -225,6 +135,47 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         
         self.transitionCompleteCallback?()
         self.transitionCompleteCallback = nil
+    }
+    
+    // MARK: - Child
+    override var childForStatusBarStyle: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForStatusBarHidden: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForHomeIndicatorAutoHidden: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
+        return self.visibleViewController
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return self.visibleViewController?.prefersStatusBarHidden ?? false
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return self.visibleViewController?.preferredStatusBarStyle ?? .default
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return self.visibleViewController?.preferredStatusBarUpdateAnimation ?? .fade
+    }
+    
+    override var shouldAutorotate: Bool {
+        return self.visibleViewController?.shouldAutorotate ?? false
+    }
+    
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return self.visibleViewController?.preferredInterfaceOrientationForPresentation ?? .portrait
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return self.visibleViewController?.supportedInterfaceOrientations ?? .portrait
     }
 }
 
@@ -245,8 +196,9 @@ extension PLNavigationController {
         // 当前容器是否已经push进navigationController
         fileprivate var isPushed: Bool = false
         
-        var containerView: UIView!
-        var content: UIViewController!
+        private(set) var conNavigationController: ContainerNavigationController!
+        private(set) var content: UIViewController!
+        
         var warpNavigationBar: WarpNavigationBar!
         
         var isDisablePopGestureRecognizer = false
@@ -270,8 +222,11 @@ extension PLNavigationController {
             guard self.content != nil else {
                 return
             }
-            self.addChild(self.content)
+            
+            self.conNavigationController = ContainerNavigationController.init(rootViewController: self.content)
+            self.addChild(self.conNavigationController)
         }
+        
         deinit {
             // 需要手动释放 不会自动释放 系统的没这个问题 不知什么原因
             self.content.navigationItem.leftBarButtonItems = nil
@@ -282,6 +237,11 @@ extension PLNavigationController {
         override func viewDidLoad() {
             super.viewDidLoad()
             
+            guard self.content != nil else {
+                return
+            }
+            
+            // -- 当前不是第一个才加入返回按钮
             if self != self.navigationController?.viewControllers.first {
                 
                 // -- back item
@@ -305,17 +265,16 @@ extension PLNavigationController {
                     self.content.navigationItem.leftBarButtonItem = .init(customView: backButton)
                 }
             }
+            
+            // --
             self.content.pl_setupNavigationBar(self.warpNavigationBar.navigationBar)
             self.warpNavigationBar.navigationBar.pushItem(self.content.navigationItem, animated: false)
             
-            self.containerView = UIView.init(frame: self.view.bounds)
-            self.view.addSubview(self.containerView)
-            
-            // -- navigation bar frame
+            // -- 先调整frame
             self.view.layoutIfNeeded()
             
-            self.containerView.addSubview(self.content.view)
-            self.containerView.addSubview(self.warpNavigationBar)
+            self.view.addSubview(self.conNavigationController.view)
+            self.view.addSubview(self.warpNavigationBar)
         }
         
         override func viewWillLayoutSubviews() {
@@ -328,9 +287,7 @@ extension PLNavigationController {
                 self.warpNavigationBar.frame = ownBarFrame
             }
 
-            
-            self.containerView.frame = self.view.bounds
-            self.content.view.frame = self.containerView.bounds
+            self.conNavigationController.view.frame = self.view.bounds
         }
         
         @objc fileprivate func backBarButtonItemClick() {
@@ -355,43 +312,186 @@ extension PLNavigationController {
         
         // MARK: - Child
         override var childForStatusBarStyle: UIViewController? {
-            return self.content
+            return self.conNavigationController
         }
         
         override var childForStatusBarHidden: UIViewController? {
-            return self.content
+            return self.conNavigationController
         }
         
         override var childForHomeIndicatorAutoHidden: UIViewController? {
-            return self.content
+            return self.conNavigationController
         }
         
         override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
-            return self.content
+            return self.conNavigationController
         }
         
         override var prefersStatusBarHidden: Bool {
-            return self.content?.prefersStatusBarHidden ?? false
+            return self.conNavigationController?.prefersStatusBarHidden ?? false
         }
         
         override var preferredStatusBarStyle: UIStatusBarStyle {
-            return self.content?.preferredStatusBarStyle ?? .default
+            return self.conNavigationController?.preferredStatusBarStyle ?? .default
         }
         
         override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-            return self.content?.preferredStatusBarUpdateAnimation ?? .fade
+            return self.conNavigationController?.preferredStatusBarUpdateAnimation ?? .fade
         }
         
         override var shouldAutorotate: Bool {
-            return self.content?.shouldAutorotate ?? false
+            return self.conNavigationController?.shouldAutorotate ?? false
         }
         
         override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-            return self.content?.preferredInterfaceOrientationForPresentation ?? .portrait
+            return self.conNavigationController?.preferredInterfaceOrientationForPresentation ?? .portrait
         }
         
         override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-            return self.content?.supportedInterfaceOrientations ?? .portrait
+            return self.conNavigationController?.supportedInterfaceOrientations ?? .portrait
+        }
+    }
+    
+    // MARK: - Class ContainerNavigationController
+    class ContainerNavigationController: UINavigationController {
+        
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            super.setNavigationBarHidden(true, animated: false)
+            self.interactivePopGestureRecognizer?.isEnabled = false
+        }
+        
+        override func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
+            
+            if let container = self.parent as? ContainerController {
+                container.warpNavigationBar.isHidden = hidden
+            } else {
+                super.setNavigationBarHidden(hidden, animated: animated)
+            }
+        }
+        
+        override var isNavigationBarHidden: Bool {
+            set {
+                if let container = self.parent as? ContainerController {
+                    container.warpNavigationBar.isHidden = newValue
+                } else {
+                    super.isNavigationBarHidden = newValue
+                }
+            }
+            
+            get {
+                if let container = self.parent as? ContainerController {
+                    return container.warpNavigationBar.isHidden
+                } else {
+                    return super.isNavigationBarHidden
+                }
+            }
+        }
+        
+        override func setViewControllers(_ viewControllers: [UIViewController], animated: Bool) {
+            if self.navigationController != nil {
+                self.navigationController?.setViewControllers(viewControllers, animated: animated)
+            } else {
+                super.setViewControllers(viewControllers, animated: animated)
+            }
+        }
+        
+        override var viewControllers: [UIViewController] {
+            set {
+                if self.navigationController != nil {
+                    self.navigationController?.viewControllers = newValue
+                } else {
+                    super.viewControllers = newValue
+                }
+            }
+            get {
+                if self.navigationController != nil {
+                    return self.navigationController!.viewControllers.map({ $0.pl_containerContentViewController })
+                } else {
+                    return super.viewControllers
+                }
+            }
+        }
+
+        override func forwardingTarget(for aSelector: Selector!) -> Any? {
+            if self.navigationController != nil {
+                return self.navigationController?.forwardingTarget(for: aSelector)
+            } else {
+                return super.forwardingTarget(for: aSelector)
+            }
+        }
+        
+        override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+            if self.navigationController != nil {
+                self.navigationController?.pushViewController(viewController, animated: animated)
+            } else {
+                super.pushViewController(viewController, animated: animated)
+            }
+        }
+        
+        override func popViewController(animated: Bool) -> UIViewController? {
+            if self.navigationController != nil {
+                return self.navigationController?.popViewController(animated: animated)
+            } else {
+                return super.popViewController(animated: animated)
+            }
+        }
+        
+        override func popToRootViewController(animated: Bool) -> [UIViewController]? {
+            if self.navigationController != nil {
+                return self.navigationController?.popToRootViewController(animated: animated)
+            } else {
+                return super.popToRootViewController(animated: animated)
+            }
+        }
+        
+        override func popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
+            if self.navigationController != nil {
+                return self.navigationController?.popToViewController(viewController, animated: animated)
+            } else {
+                return super.popToViewController(viewController, animated: animated)
+            }
+        }
+        
+        // MARK: - Child
+        override var childForStatusBarStyle: UIViewController? {
+            return self.visibleViewController
+        }
+        
+        override var childForStatusBarHidden: UIViewController? {
+            return self.visibleViewController
+        }
+        
+        override var childForHomeIndicatorAutoHidden: UIViewController? {
+            return self.visibleViewController
+        }
+        
+        override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
+            return self.visibleViewController
+        }
+        
+        override var prefersStatusBarHidden: Bool {
+            return self.visibleViewController?.prefersStatusBarHidden ?? false
+        }
+        
+        override var preferredStatusBarStyle: UIStatusBarStyle {
+            return self.visibleViewController?.preferredStatusBarStyle ?? .default
+        }
+        
+        override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+            return self.visibleViewController?.preferredStatusBarUpdateAnimation ?? .fade
+        }
+        
+        override var shouldAutorotate: Bool {
+            return self.visibleViewController?.shouldAutorotate ?? false
+        }
+        
+        override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+            return self.visibleViewController?.preferredInterfaceOrientationForPresentation ?? .portrait
+        }
+        
+        override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+            return self.visibleViewController?.supportedInterfaceOrientations ?? .portrait
         }
     }
 }
@@ -431,15 +531,96 @@ extension PLNavigationController {
 }
 
 
+// MARK: - Extension UINavigationController
+extension UINavigationController {
+    
+    /// 移除一个viewController
+    /// - Parameter viewController:
+    /// - Returns:
+    @discardableResult
+    func removeViewController(_ viewController: UIViewController?) -> UIViewController?  {
+        
+        guard let viewController = viewController else {
+            return nil
+        }
+        
+        if let nav = self as? PLNavigationController {
+            
+            for (idx, container) in nav.viewControllers.enumerated() {
+                
+                // 传进来的是 ContainerController
+                if container == viewController {
+                    nav.viewControllers.remove(at: idx)
+                    return (container as? PLNavigationController.ContainerController)?.content ?? container
+                }
+                
+                // 传进来的是其他的
+                if let container = container as? PLNavigationController.ContainerController {
+                    if container.content == viewController {
+                        nav.viewControllers.remove(at: idx)
+                        return container.content
+                    }
+                }
+            }
+        } else {
+            return self.navigationController?.removeViewController(viewController)
+        }
+        
+        return nil
+    }
+    
+    
+    func pushViewController(_ viewController: UIViewController, animated: Bool, complete: PLNavigationController.Complete?) {
+        if let nav = self as? PLNavigationController {
+            nav.transitionCompleteCallback = complete
+            nav.pushViewController(viewController, animated: animated)
+        } else {
+            self.navigationController?.pushViewController(viewController, animated: animated, complete: complete)
+        }
+    }
+    
+    func popViewController(animated: Bool, complete: PLNavigationController.Complete?) -> UIViewController? {
+        if let nav = self as? PLNavigationController {
+            nav.transitionCompleteCallback = complete
+            return nav.popViewController(animated: animated)
+        } else {
+            return self.navigationController?.popViewController(animated: animated, complete: complete)
+        }
+    }
+    
+    func popToRootViewController(animated: Bool, complete: PLNavigationController.Complete?) -> [UIViewController]? {
+        if let nav = self as? PLNavigationController {
+            nav.transitionCompleteCallback = complete
+            return nav.popToRootViewController(animated: animated)
+        } else {
+            return self.navigationController?.popToRootViewController(animated: animated, complete: complete)
+        }
+    }
+    
+    func popToViewController(_ viewController: UIViewController, animated: Bool, complete: PLNavigationController.Complete?) -> [UIViewController]? {
+        if let nav = self as? PLNavigationController {
+            nav.transitionCompleteCallback = complete
+            return nav.popToViewController(viewController, animated: animated)
+        } else {
+            return self.navigationController?.popToViewController(viewController, animated: animated, complete: complete)
+        }
+    }
+}
+
 // MARK: - Extension UIViewController.PL.navigationController
 extension PL where Base: UIViewController {
     
+    /*
+     这里取到是根部NavigationController 与 self.navigationController 不一样
+     通过 self.navigationController 调用 viewControllers topViewController visableViewController 得到的viewController 都是unpack之后的
+     通过该属性调用得到的viewController 都是 ContainerController
+     */
     var navigationController: PLNavigationController? {
-        return self.base.navigationController as? PLNavigationController
+        return self.base.navigationController?.navigationController as? PLNavigationController
     }
     
     var navigationBar: PLNavigationController.WarpNavigationBar? {
-        if let container = self.base.parent as? PLNavigationController.ContainerController {
+        if let container = self.base.navigationController?.parent as? PLNavigationController.ContainerController {
             return container.warpNavigationBar
         }
         
@@ -483,11 +664,11 @@ extension UIViewController: PLNavigationControllerConfig {
     
     var pl_isDisablePopGestureRecognizer: Bool {
         get {
-            return (self.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer ?? false
+            return (self.navigationController?.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer ?? false
         }
         
         set {
-            (self.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer = newValue
+            (self.navigationController?.parent as? PLNavigationController.ContainerController)?.isDisablePopGestureRecognizer = newValue
         }
     }
 }

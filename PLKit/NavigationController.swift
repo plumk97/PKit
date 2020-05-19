@@ -22,7 +22,6 @@ class NavigationController: UIViewController {
             self.pl.navigationBar?.isHidden = true
         }
         
-        
         if self.isTransitionNavigationBar {
             self.pl.navigationBar?.backgroundColor = .orange
             
@@ -34,6 +33,9 @@ class NavigationController: UIViewController {
             self.view.sendSubviewToBack(scrollView)
         }
         
+    }
+    deinit {
+        print("deinit")
     }
     
     @IBAction func push(_ sender: Any) {
@@ -57,7 +59,7 @@ class NavigationController: UIViewController {
             return
         }
         vc.isHideNavigationBar = true
-        self.pl.navigationController?.pushViewController(vc, animated: true)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @IBAction func pushAndTransitionBar(_ sender: Any) {
@@ -65,7 +67,7 @@ class NavigationController: UIViewController {
             return
         }
         vc.isTransitionNavigationBar = true
-        self.pl.navigationController?.pushViewController(vc, animated: true)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 

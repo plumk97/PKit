@@ -534,6 +534,20 @@ extension PLNavigationController {
 // MARK: - Extension UINavigationController
 extension UINavigationController {
     
+    var pl_topViewController: UIViewController? {
+        if let nav = self as? PLNavigationController {
+            return nav.topViewController?.pl_containerContentViewController
+        }
+        return self.navigationController?.pl_topViewController
+    }
+    
+    var pl_visiableViewController: UIViewController? {
+        if let nav = self as? PLNavigationController {
+            return nav.visibleViewController?.pl_containerContentViewController
+        }
+        return self.navigationController?.pl_visiableViewController
+    }
+    
     /// 移除一个viewController
     /// - Parameter viewController:
     /// - Returns:
@@ -612,8 +626,9 @@ extension PL where Base: UIViewController {
     
     /*
      这里取到是根部NavigationController 与 self.navigationController 不一样
-     通过 self.navigationController 调用 viewControllers topViewController visableViewController 得到的viewController 都是unpack之后的
+     通过 self.navigationController 调用 viewControllers 得到的viewController 都是unpack之后的
      通过该属性调用得到的viewController 都是 ContainerController
+     topViewController 和 visiableViewController 使用pl_开头的属性
      */
     var navigationController: PLNavigationController? {
         return self.base.navigationController?.navigationController as? PLNavigationController

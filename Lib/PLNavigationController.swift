@@ -9,12 +9,14 @@
 import UIKit
 
 
-
 // MARK: - Class PLNavigationController
 class PLNavigationController: UINavigationController, UINavigationControllerDelegate {
     typealias Complete = () -> Void
     
+    // push/pop 完成回调
     fileprivate var transitionCompleteCallback: Complete?
+
+    private var preNavigationBarFrame: CGRect = .zero
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -34,11 +36,34 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         self.setViewControllers(self.viewControllers, animated: false)
     }
 
+    deinit {
+        self.navigationBar.removeObserver(self, forKeyPath: "frame")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
+        
         // 直接隐藏 不能正确获取到frame
         self.view.sendSubviewToBack(self.navigationBar)
+        
+        // - 设置navigationBar为透明
+        self.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationBar.shadowImage = UIImage()
+        
+        // - 因为状态栏隐藏显示，不走viewWillLayoutSubviews方法，所以使用KVO监听frame
+        self.navigationBar.addObserver(self, forKeyPath: "frame", options: .new, context: nil)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let newRect = change?[.newKey] as? CGRect else {
+            return
+        }
+        
+        if !newRect.equalTo(self.preNavigationBarFrame) {
+            self.preNavigationBarFrame = newRect
+            (self.visibleViewController as? ContainerController)?.updateWarpNavigationBarFrame(newRect)
+        }
     }
 
     /// 重新设置手势代理
@@ -83,8 +108,9 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         if viewController != self.viewControllers.last && viewController.navigationController == nil {
         
             /*
-             animated 为true的时候
-             可能同一个viewController 会走2次这个方法
+             当前存在modal视图
+             在modal调用dissmiss之前push一个vc并且animated为true
+             这个方法会走2次
              */
             if let container = viewController as? ContainerController, container.isPushed {
                 return super.pushViewController(container, animated: animated)
@@ -123,7 +149,6 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
             if self.viewControllers.contains(viewController) {
                 vcs = super.popToViewController(viewController, animated: animated)
             }
-
         }
         
         return vcs?.map({ $0.pl_containerContentViewController })
@@ -271,23 +296,40 @@ extension PLNavigationController {
             self.warpNavigationBar.navigationBar.pushItem(self.content.navigationItem, animated: false)
             
             // -- 先调整frame
+            self.updateWarpNavigationBarFrame()
             self.view.layoutIfNeeded()
             
             self.view.addSubview(self.conNavigationController.view)
             self.view.addSubview(self.warpNavigationBar)
         }
         
+        override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            self.updateWarpNavigationBarFrame()
+        }
+        
         override func viewWillLayoutSubviews() {
             super.viewWillLayoutSubviews()
-                        
-            if let systemBarFrame = self.navigationController?.navigationBar.frame {
-                
-                self.warpNavigationBar.barHeight = systemBarFrame.height
-                let ownBarFrame = CGRect.init(x: 0, y: 0, width: systemBarFrame.width, height: systemBarFrame.height + systemBarFrame.minY)
+            self.conNavigationController.view.frame = self.view.bounds
+        }
+        
+        /// 更新warpNavigationBar的frame
+        /// - Parameter frame: 如果不指定 则获取navigationController.navigationBar.frame
+        func updateWarpNavigationBarFrame(_ frame: CGRect? = nil) {
+            
+            var ptr: CGRect?
+            
+            if frame != nil {
+                ptr = frame
+            } else if let systemBarFrame = self.navigationController?.navigationBar.frame {
+                ptr = systemBarFrame
+            }
+            
+            if let ptr = ptr {
+                self.warpNavigationBar.barHeight = ptr.height
+                let ownBarFrame = CGRect.init(x: 0, y: 0, width: ptr.width, height: ptr.height + ptr.minY)
                 self.warpNavigationBar.frame = ownBarFrame
             }
-
-            self.conNavigationController.view.frame = self.view.bounds
         }
         
         @objc fileprivate func backBarButtonItemClick() {

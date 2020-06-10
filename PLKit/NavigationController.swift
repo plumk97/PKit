@@ -35,7 +35,7 @@ class NavigationController: UIViewController {
         
     }
     deinit {
-        print("deinit")
+        print("NavigationController deinit")
     }
     
     @IBAction func push(_ sender: Any) {

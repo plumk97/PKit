@@ -82,6 +82,8 @@ class PLBubble: UIView {
     private(set) var contentView: UIView?
     // 附加view
     private weak var attachView: UIView?
+    // 显示到哪个view
+    private weak var inView: UIView?
     
     convenience init(contentView: UIView) {
         self.init(frame: .zero)
@@ -119,12 +121,12 @@ class PLBubble: UIView {
             return
         }
         
-        guard let window = UIApplication.shared.delegate?.window! else {
+        guard let inView = self.inView else {
             return
         }
         
         // 计算frame
-        guard let attachFrame = attachView.superview?.convert(attachView.frame, to: window) else {
+        guard let attachFrame = attachView.superview?.convert(attachView.frame, to: inView) else {
             return
         }
         
@@ -287,9 +289,10 @@ class PLBubble: UIView {
     /// 显示
     /// - Parameters:
     ///   - view: 附加到哪个view
+    ///   - inView: 显示到哪个view 为nil则显示到window
     ///   - touchClose: 是否可以点击关闭
     ///   - animation: 是否使用动画
-    func show(attach view: UIView?, touchClose: Bool = true, animation: Bool = true) {
+    func show(attach view: UIView?, in inView: UIView? = nil, touchClose: Bool = true, animation: Bool = true) {
         
         guard !self.isShowing else {
             return
@@ -303,7 +306,8 @@ class PLBubble: UIView {
             return
         }
         
-        guard let window = UIApplication.shared.delegate?.window! else {
+        self.inView = inView ?? UIApplication.shared.delegate?.window!
+        guard let inView = self.inView else {
             return
         }
         
@@ -314,10 +318,10 @@ class PLBubble: UIView {
         self.redraw()
         
         
-        self.coverControl = UIControl.init(frame: window.bounds)
+        self.coverControl = UIControl.init(frame: inView.bounds)
         self.coverControl.isUserInteractionEnabled = touchClose
         self.bindHide(with: self.coverControl)
-        window.addSubview(self.coverControl)
+        inView.addSubview(self.coverControl)
         
         // 设置锚点确定缩放位置
         var anchorPoint = CGPoint.zero
@@ -332,7 +336,7 @@ class PLBubble: UIView {
         let transfrom = self.transform
         self.transform = transfrom.scaledBy(x: 0.1, y: 0.1)
         
-        window.addSubview(self)
+        inView.addSubview(self)
         
         if animation{
             UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .layoutSubviews, animations: {
@@ -369,11 +373,9 @@ class PLBubble: UIView {
             UIView.animate(withDuration: 0.25, animations: {
                 self.transform = self.transform.scaledBy(x: 0.01, y: 0.01)
             }) { (_) in
-                self.coverControl.removeFromSuperview()
                 self.removeFromSuperview()
             }
         } else {
-            self.coverControl.removeFromSuperview()
             self.removeFromSuperview()
         }
     }
@@ -390,6 +392,17 @@ class PLBubble: UIView {
         button.forEach({
             $0.addTarget(self, action: #selector(bindButtonClick), for: .touchUpInside)
         })
+    }
+    
+    override func removeFromSuperview() {
+        super.removeFromSuperview()
+        self.coverControl.removeFromSuperview()
+    }
+    
+    override var isHidden: Bool {
+        didSet {
+            self.coverControl.isHidden = isHidden
+        }
     }
 }
 

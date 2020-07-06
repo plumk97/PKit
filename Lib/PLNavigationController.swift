@@ -108,9 +108,8 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         if viewController != self.viewControllers.last && viewController.navigationController == nil {
         
             /*
-             当前存在modal视图
-             在modal调用dissmiss之前push一个vc并且animated为true
-             这个方法会走2次
+             animated 为true的时候
+             可能同一个viewController 会走2次这个方法
              */
             if let container = viewController as? ContainerController, container.isPushed {
                 return super.pushViewController(container, animated: animated)
@@ -575,6 +574,13 @@ extension PLNavigationController {
 
 // MARK: - Extension UINavigationController
 extension UINavigationController {
+    
+    var pl_viewControllers: [UIViewController]? {
+        if let nav = self as? PLNavigationController {
+            return nav.viewControllers.map({ $0.pl_containerContentViewController })
+        }
+        return self.navigationController?.pl_viewControllers
+    }
     
     var pl_topViewController: UIViewController? {
         if let nav = self as? PLNavigationController {

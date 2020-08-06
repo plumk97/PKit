@@ -11,14 +11,30 @@ import UIKit
 class PLHUD: UIView {
     
     var style = Style()
+    
     var text: String?
-
+    var attributedText: NSAttributedString?
+    
     private(set) var inView: UIView?
     private(set) var warpView: UIView!
     
-    convenience init(text: String) {
+    convenience init(_ text: String) {
         self.init(frame: .zero)
         self.text = text
+    }
+    
+    convenience init(_ attributedText: NSAttributedString) {
+        self.init(frame: .zero)
+        self.attributedText = attributedText
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.commInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
         self.commInit()
     }
     
@@ -54,43 +70,43 @@ class PLHUD: UIView {
         self.backgroundColor = style.maskColor
         
         warpView = UIView()
-        warpView.backgroundColor = style.bgColor
+        warpView.backgroundColor = style.warpBackgroundColor
         warpView.layer.cornerRadius = style.cornerRadius
         warpView.layer.borderColor = style.borderColor?.cgColor
         warpView.layer.borderWidth = style.borderWidth
+        self.addSubview(warpView)
         
         // - 限制大小
         let limitSize = CGSize.init(width: inView.frame.width - style.minimumSideSpacing * 2 + (style.contentInset.left + style.contentInset.right),
                                     height: inView.frame.height - style.minimumSideSpacing * 2 + (style.contentInset.top + style.contentInset.bottom))
         
-        var contentSize: CGSize = .zero
-        if let text = text {
+        let textLabel = UILabel()
+        textLabel.numberOfLines = 0
+        warpView.addSubview(textLabel)
+        
+        var textSize: CGSize = .zero
+        if let text = self.text {
             
-            let textSize = (text as NSString).boundingRect(with: limitSize, options: .usesLineFragmentOrigin, attributes: [.font: style.font, .foregroundColor: style.color], context: nil).size
+            textLabel.text = text
+            textLabel.font = style.font
+            textLabel.textColor = style.color
             
-            let label = UILabel()
-            label.numberOfLines = 0
-            label.text = text
-            label.font = style.font
-            label.textColor = style.color
-            label.frame.size = textSize
-            warpView.addSubview(label)
+            textSize = (text as NSString).boundingRect(with: limitSize, options: .usesLineFragmentOrigin, attributes: [.font: style.font], context: nil).size
+            textLabel.frame.size = textSize
             
-            contentSize = textSize
+        } else if let attributedText = self.attributedText {
+            
+            textLabel.attributedText = attributedText
+            
+            textSize = attributedText.boundingRect(with: limitSize, options: .usesLineFragmentOrigin, context: nil).size
+            textLabel.frame.size = textSize
         }
         
-        
-        self.addSubview(warpView)
-        warpView.bounds.size = contentSize
+        warpView.bounds.size = textSize
         warpView.bounds = warpView.bounds.inset(by: style.contentInset)
-        self.updateWarpOrigin()
-    }
-    
-    private func updateWarpOrigin() {
-        var frame = warpView.frame
-        frame.origin.x = (self.frame.width - frame.width) / 2
-        frame.origin.y = (self.frame.height - frame.height) / 2
-        warpView.frame = frame
+        
+        warpView.frame.origin = .init(x: (self.frame.width - warpView.frame.width) / 2,
+                                      y: (self.frame.height - warpView.frame.height) / 2)
     }
     
     func show(_ inView: UIView? = nil) {
@@ -98,6 +114,7 @@ class PLHUD: UIView {
             self.isUserInteractionEnabled = true
             self.inView = view
             self.setup()
+            
             self.alpha = 0
             view.addSubview(self)
             
@@ -127,7 +144,8 @@ extension PLHUD {
         
         // - view
         var maskColor: UIColor = UIColor.clear
-        var bgColor: UIColor = UIColor.black.withAlphaComponent(0.5)
+        var warpBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.5)
+        
         var cornerRadius: CGFloat = 10
         var borderColor: UIColor?
         var borderWidth: CGFloat = 0

@@ -8,6 +8,7 @@
 
 import UIKit
 
+@IBDesignable
 class PLButton: UIControl {
     
     var title: String? {
@@ -89,6 +90,16 @@ class PLButton: UIControl {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.commInit()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.commInit()
+    }
+    
+    private func commInit() {
+        
         self.clipsToBounds = true
         self.prevState = self.state
         self.leftIcon = Icon.init(button: self)
@@ -124,10 +135,6 @@ class PLButton: UIControl {
         
         self.setup()
         self.addLoopObserve()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
     }
     
     private func addLoopObserve() {
@@ -381,9 +388,7 @@ extension PLButton {
             
             switch btn.state {
             case .normal:
-                if let img = self.getImage(state: .normal) {
-                    imageView.image = img
-                }
+                imageView.image = self.getImage(state: .normal)
                 
             case [.normal, .highlighted]:
                 if let img = self.getImage(state: [.normal, .highlighted]) {

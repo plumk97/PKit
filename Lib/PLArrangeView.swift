@@ -12,21 +12,28 @@ class PLArrangeView: UIView {
     
     // 布局方向
     var direction = Direction.horizontal { didSet { self.setNeedsLayout() } }
+    
     // 对齐方式
     var alignment = Alignment.center { didSet { self.setNeedsLayout() } }
+    
     // 间距
     var spacing: CGFloat = 10 { didSet { self.setNeedsLayout() } }
     
     // 分割线
     var divider = Divider() { didSet { self.setNeedsLayout() } }
+    
     // 是否显示分割线
     var showDivider = false { didSet { self.setNeedsLayout() } }
+    
     // 加载的view
     var views: [UIView]? { didSet { self.reload(oldViews: oldValue) }}
+    
     // 指定某条分割线是否显示
     private var specificDividerShows = [Int: Bool]()
+    
     // 分割线
     private var dividerViews = [UIView]()
+    
     // 显示所需的大小
     private var innerContentSize = CGSize.zero
     
@@ -149,7 +156,7 @@ class PLArrangeView: UIView {
                     if specificShow ?? self.showDivider {
                         d.backgroundColor = divider.color
                         d.isHidden = false
-                        d.frame = .init(x: left, y: divider.edgeSpacing, width: divider.width, height: maxHeight - divider.edgeSpacing * 2)
+                        d.frame = .init(x: left, y: divider.truncation, width: divider.width, height: maxHeight - divider.truncation * 2)
                         
                         left = d.frame.maxX + self.spacing
                     } else {
@@ -190,7 +197,7 @@ class PLArrangeView: UIView {
                     if specificShow ?? self.showDivider {
                         d.backgroundColor = divider.color
                         d.isHidden = false
-                        d.frame = .init(x: divider.edgeSpacing, y: top, width: maxWidth - divider.edgeSpacing * 2, height: divider.width)
+                        d.frame = .init(x: divider.truncation, y: top, width: maxWidth - divider.truncation * 2, height: divider.width)
                         
                         top = d.frame.maxY + self.spacing
                     } else {
@@ -231,7 +238,7 @@ extension PLArrangeView {
     struct Divider {
         var color: UIColor = .init(red: 0.85, green: 0.85, blue: 0.85, alpha: 1)
         var width: CGFloat = 0.5
-        var edgeSpacing: CGFloat = 0
+        var truncation: CGFloat = 0
     }
     
 }

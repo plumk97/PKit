@@ -62,7 +62,7 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         
         if !newRect.equalTo(self.preNavigationBarFrame) {
             self.preNavigationBarFrame = newRect
-            (self.visibleViewController as? ContainerController)?.updateWarpNavigationBarFrame(newRect)
+            (self.viewControllers.last as? ContainerController)?.updateWarpNavigationBarFrame(newRect)
         }
     }
 

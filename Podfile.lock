@@ -6,17 +6,26 @@ PODS:
 
 DEPENDENCIES:
   - MJRefresh (~> 3.2.0)
-  - YYImage/WebP (~> 1.0.4)
+  - YYImage/WebP (from `https://github.com/zx1262111739/YYImage`, tag `1.0.4.1`)
 
 SPEC REPOS:
   trunk:
     - MJRefresh
-    - YYImage
+
+EXTERNAL SOURCES:
+  YYImage:
+    :git: https://github.com/zx1262111739/YYImage
+    :tag: 1.0.4.1
+
+CHECKOUT OPTIONS:
+  YYImage:
+    :git: https://github.com/zx1262111739/YYImage
+    :tag: 1.0.4.1
 
 SPEC CHECKSUMS:
   MJRefresh: 2b1214a2dc8f4df4c5dcb028ea2ad4e245425fb7
-  YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
+  YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
 
-PODFILE CHECKSUM: 09e763bfeeb5fb8c229f012aa42adf0a0bb8a761
+PODFILE CHECKSUM: 114d9efb9020c725768d9f6bb31e0ce6fe9ff2aa
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.9.3

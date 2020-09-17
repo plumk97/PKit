@@ -7,6 +7,6 @@ target 'PLKit' do
 
   # Pods for PLKit
 pod 'MJRefresh', '~> 3.2.0'
-pod 'YYImage/WebP', '~> 1.0.4'
+pod 'YYImage/WebP', :git => 'https://github.com/zx1262111739/YYImage', :tag => '1.0.4.1'
 
 end

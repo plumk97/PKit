@@ -10,13 +10,28 @@ import UIKit
 
 class PLHUD: UIView {
     
+    /// 可以保存一些附带信息
+    var userInfo: Any?
+    
     var style = Style()
     
-    var text: String?
-    var attributedText: NSAttributedString?
+    var text: String? {
+        didSet {
+            self.textLabel?.text = text
+            self.recalculateFrame()
+        }
+    }
+    
+    var attributedText: NSAttributedString? {
+        didSet {
+            self.textLabel?.attributedText = attributedText
+            self.recalculateFrame()
+        }
+    }
     
     private(set) var inView: UIView?
-    private(set) var warpView: UIView!
+    private(set) var warpView: UIView?
+    private(set) var textLabel: UILabel?
     
     convenience init(_ text: String) {
         self.init(frame: .zero)
@@ -62,51 +77,60 @@ class PLHUD: UIView {
     
     private func setup() {
         
-        guard let inView = inView else {
-            return
-        }
-        
-        self.frame = inView.bounds
         self.backgroundColor = style.maskColor
         
-        warpView = UIView()
+        let warpView = UIView()
         warpView.backgroundColor = style.warpBackgroundColor
         warpView.layer.cornerRadius = style.cornerRadius
         warpView.layer.borderColor = style.borderColor?.cgColor
         warpView.layer.borderWidth = style.borderWidth
         self.addSubview(warpView)
         
-        // - 限制大小
-        let limitSize = CGSize.init(width: inView.frame.width - style.minimumSideSpacing * 2 + (style.contentInset.left + style.contentInset.right),
-                                    height: inView.frame.height - style.minimumSideSpacing * 2 + (style.contentInset.top + style.contentInset.bottom))
-        
         let textLabel = UILabel()
+        textLabel.textAlignment = style.alignment
         textLabel.numberOfLines = 0
         warpView.addSubview(textLabel)
         
-        var textSize: CGSize = .zero
         if let text = self.text {
             
             textLabel.text = text
             textLabel.font = style.font
             textLabel.textColor = style.color
-            
-            textSize = (text as NSString).boundingRect(with: limitSize, options: .usesLineFragmentOrigin, attributes: [.font: style.font], context: nil).size
-            textLabel.frame.size = textSize
-            
         } else if let attributedText = self.attributedText {
-            
             textLabel.attributedText = attributedText
-            
-            textSize = attributedText.boundingRect(with: limitSize, options: .usesLineFragmentOrigin, context: nil).size
-            textLabel.frame.size = textSize
         }
         
-        warpView.bounds.size = textSize
-        warpView.bounds = warpView.bounds.inset(by: style.contentInset)
+        self.warpView = warpView
+        self.textLabel = textLabel
+    }
+    
+    private func recalculateFrame() {
+        guard let warpView = self.warpView, let textLabel = self.textLabel, let inView = self.inView else {
+            return
+        }
         
+        self.frame = inView.bounds
+        
+        // - 限制大小
+        let limitSize = CGSize.init(width: inView.frame.width - style.minimumSideSpacing * 2 + (style.contentInset.left + style.contentInset.right),
+                                    height: inView.frame.height - style.minimumSideSpacing * 2 + (style.contentInset.top + style.contentInset.bottom))
+        
+        
+        var textSize = CGSize.zero
+        if let text = self.text {
+            textSize = (text as NSString).boundingRect(with: limitSize, options: .usesLineFragmentOrigin, attributes: [.font: style.font], context: nil).size
+        } else if let attributedText = self.attributedText {
+            textSize = attributedText.boundingRect(with: limitSize, options: .usesLineFragmentOrigin, context: nil).size
+        }
+        
+        warpView.frame.size = textSize
         warpView.frame.origin = .init(x: (self.frame.width - warpView.frame.width) / 2,
                                       y: (self.frame.height - warpView.frame.height) / 2)
+        warpView.frame = warpView.frame.inset(by: style.contentInset)
+        
+        textLabel.frame.size = textSize
+        textLabel.frame.origin = .init(x: (warpView.frame.width - textSize.width) / 2,
+                                       y: (warpView.frame.height - textSize.height) / 2)
     }
     
     func show(_ inView: UIView? = nil) {
@@ -114,6 +138,7 @@ class PLHUD: UIView {
             self.isUserInteractionEnabled = true
             self.inView = view
             self.setup()
+            self.recalculateFrame()
             
             self.alpha = 0
             view.addSubview(self)
@@ -156,6 +181,7 @@ extension PLHUD {
         // - text
         var color: UIColor = .white
         var font: UIFont = .systemFont(ofSize: 14)
+        var alignment: NSTextAlignment = .left
         
         // - show
         var duration: TimeInterval = 1

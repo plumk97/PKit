@@ -138,8 +138,9 @@ class PLButton: UIControl {
     }
     
     private func addLoopObserve() {
-        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) {[weak self] (observer, activity) in
+        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.beforeWaiting.rawValue, true, 0) {[weak self] (observer, activity) in
             guard self != nil else {
+                CFRunLoopObserverInvalidate(observer)
                 CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                 return
             }

@@ -87,13 +87,16 @@ class PLRippleAnimate: NSObject {
         self.updateLayers()
         
         /// 监听loop 更新self
-        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) { (observer, activity) in
+        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.beforeWaiting.rawValue, true, 0) { (observer, activity) in
             if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
                 
                 if self.view == nil {
-                    CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
+                    if CFRunLoopObserverIsValid(observer) {
+                        self.releaseLayers()
+                    }
+                    
                     CFRunLoopObserverInvalidate(observer)
-                    self.releaseLayers()
+                    CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                 } else {
                     if !(self.view?.frame.equalTo(self.preViewFrame) ?? true) {
                         self.preViewFrame = self.view!.frame
@@ -108,7 +111,9 @@ class PLRippleAnimate: NSObject {
     private func releaseLayers() {
         self.animateLayers.forEach { (layer) in
             layer.removeAllAnimations()
-            layer.removeFromSuperlayer()
+            if layer.superlayer != nil {
+                layer.removeFromSuperlayer()
+            }
         }
         self.animateLayers.removeAll()
     }

@@ -55,13 +55,12 @@ class PLHUD: UIView {
     
     private func commInit() {
         // 一直置顶
-        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) {[weak self] (observer, activity) in
+        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.beforeWaiting.rawValue, true, 0) {[weak self] (observer, activity) in
             if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
                 
                 if self == nil {
-                    CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                     CFRunLoopObserverInvalidate(observer)
-                    
+                    CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                 } else {
                     guard let superview = self?.superview else {
                         return

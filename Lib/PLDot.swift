@@ -74,12 +74,12 @@ class PLDot: UIImageView {
         self.isHidden = true
         
         /// 监听loop 更新self
-        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.allActivities.rawValue, true, 0) {[weak self] (observer, activity) in
+        let observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault()?.takeUnretainedValue(), CFRunLoopActivity.beforeWaiting.rawValue, true, 0) {[weak self] (observer, activity) in
             if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
                 
                 if self == nil {
-                    CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                     CFRunLoopObserverInvalidate(observer)
+                    CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                 } else {
                     self?.reposition()
                 }

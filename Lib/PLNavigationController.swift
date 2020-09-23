@@ -13,10 +13,19 @@ import UIKit
 class PLNavigationController: UINavigationController, UINavigationControllerDelegate {
     typealias Complete = () -> Void
     
+    /// 固定状态栏高度 用于设置导航栏高度 避免隐藏状态栏 导航栏会上移 不设置有默认逻辑
+    struct StatusBarConfig {
+        var portraitHeight: CGFloat?
+        var landscapeHeight: CGFloat?
+    }
+    var statusBarConfig = StatusBarConfig() {
+        didSet {
+            self.visibleViewController?.view.setNeedsLayout()
+        }
+    }
+    
     // push/pop 完成回调
     fileprivate var transitionCompleteCallback: Complete?
-
-    private var preNavigationBarFrame: CGRect = .zero
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -36,36 +45,13 @@ class PLNavigationController: UINavigationController, UINavigationControllerDele
         self.setViewControllers(self.viewControllers, animated: false)
     }
 
-    deinit {
-        self.navigationBar.removeObserver(self, forKeyPath: "frame")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
-        
-        // 直接隐藏 不能正确获取到frame
-        self.view.sendSubviewToBack(self.navigationBar)
-        
-        // - 设置navigationBar为透明
-        self.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationBar.shadowImage = UIImage()
-        
-        // - 因为状态栏隐藏显示，不走viewWillLayoutSubviews方法，所以使用KVO监听frame
-        self.navigationBar.addObserver(self, forKeyPath: "frame", options: .new, context: nil)
+        self.setNavigationBarHidden(true, animated: false)
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let newRect = change?[.newKey] as? CGRect else {
-            return
-        }
-        
-        if !newRect.equalTo(self.preNavigationBarFrame) {
-            self.preNavigationBarFrame = newRect
-            (self.viewControllers.last as? ContainerController)?.updateWarpNavigationBarFrame(newRect)
-        }
-    }
-
     /// 重新设置手势代理
     fileprivate func resetInteractivePopGestureRecognizer() {
         
@@ -223,9 +209,10 @@ extension PLNavigationController {
         private(set) var conNavigationController: ContainerNavigationController!
         private(set) var content: UIViewController!
         
-        var warpNavigationBar: WarpNavigationBar!
+        private(set) var isNavigationBarHidden: Bool = false
+        private(set) var warpNavigationBar: WarpNavigationBar!
         
-        var isDisablePopGestureRecognizer = false
+        fileprivate(set) var isDisablePopGestureRecognizer = false
         
         init(content: UIViewController) {
             super.init(nibName: nil, bundle: nil)
@@ -269,13 +256,13 @@ extension PLNavigationController {
             if self != self.navigationController?.viewControllers.first {
                 
                 // -- back item
-                if let item = self.content.pl_navigationCustomBackItem(target: self, action: #selector(backBarButtonItemClick)) {
+                if let item = self.content.pl_configNavigationCustomBackItem(target: self, action: #selector(backBarButtonItemClick)) {
                     self.content.navigationItem.leftBarButtonItem = item
                 } else {
                     
                     let backButton = BackItemButton(type: .system)
                     
-                    if let image = self.content.pl_navigationCustomBackItemImage() {
+                    if let image = self.content.pl_configNavigationCustomBackItemImage() {
                         backButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
                         backButton.frame.size = .init(width: image.size.width + 19, height: 44)
                     } else if let image = UIImage.init(named: "nav_back") {
@@ -291,11 +278,10 @@ extension PLNavigationController {
             }
             
             // --
-            self.content.pl_setupNavigationBar(self.warpNavigationBar.navigationBar)
+            self.content.pl_configNavigationBar(self.warpNavigationBar.navigationBar)
             self.warpNavigationBar.navigationBar.pushItem(self.content.navigationItem, animated: false)
             
             // -- 先调整frame
-            self.updateWarpNavigationBarFrame()
             self.view.layoutIfNeeded()
             
             self.view.addSubview(self.conNavigationController.view)
@@ -304,35 +290,65 @@ extension PLNavigationController {
         
         override func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
-            self.updateWarpNavigationBarFrame()
         }
         
         override func viewWillLayoutSubviews() {
             super.viewWillLayoutSubviews()
+            self.pl.navigationController?.statusBarConfig.landscapeHeight = 0
+            
+            if let nav = self.navigationController as? PLNavigationController {
+                var navBarFrame = CGRect.init(x: 0, y: 0, width: self.view.frame.width, height: 44)
+                
+                let isPortrait = UIDevice.current.orientation.isPortrait
+                let h = isPortrait ? nav.statusBarConfig.portraitHeight : nav.statusBarConfig.landscapeHeight
+                
+                if let statusBarHeight = h {
+                    navBarFrame.size.height += statusBarHeight
+                    
+                } else if #available(iOS 11.0, *) {
+                    
+                    if self.view.safeAreaInsets.bottom > 0 {
+                        // 全面屏不会出现状态栏上移的问题直接取系统状态栏高度
+                        navBarFrame.size.height += UIApplication.shared.statusBarFrame.height
+                    } else {
+                        // 非全面屏固定20
+                        navBarFrame.size.height += isPortrait ? 20 : 0
+                    }
+                } else {
+                    navBarFrame.size.height += isPortrait ? 20 : 0
+                }
+                
+                if self.isNavigationBarHidden {
+                    navBarFrame.origin.y = -navBarFrame.height
+                } else {
+                    navBarFrame.origin.y = 0
+                }
+                
+                self.warpNavigationBar.frame = navBarFrame
+            }
+            
             self.conNavigationController.view.frame = self.view.bounds
-        }
-        
-        /// 更新warpNavigationBar的frame
-        /// - Parameter frame: 如果不指定 则获取navigationController.navigationBar.frame
-        func updateWarpNavigationBarFrame(_ frame: CGRect? = nil) {
-            
-            var ptr: CGRect?
-            
-            if frame != nil {
-                ptr = frame
-            } else if let systemBarFrame = self.navigationController?.navigationBar.frame {
-                ptr = systemBarFrame
-            }
-            
-            if let ptr = ptr {
-                self.warpNavigationBar.barHeight = ptr.height
-                let ownBarFrame = CGRect.init(x: 0, y: 0, width: ptr.width, height: ptr.height + ptr.minY)
-                self.warpNavigationBar.frame = ownBarFrame
-            }
         }
         
         @objc fileprivate func backBarButtonItemClick() {
             self.navigationController?.popViewController(animated: true)
+        }
+        
+        func setNavigationBarHidden(_ isHidden: Bool, animated: Bool) {
+            guard self.isNavigationBarHidden != isHidden else {
+                return
+            }
+            self.isNavigationBarHidden = isHidden
+            if animated {
+                var frame = self.warpNavigationBar.frame
+                frame.origin.y = isHidden ? -frame.size.height : 0
+                UIView.animate(withDuration: 0.25) {
+                    self.warpNavigationBar.frame = frame
+                    
+                }
+            } else {
+                self.warpNavigationBar.isHidden = isHidden
+            }
         }
         
         // MARK: - UIGestureRecognizerDelegate
@@ -405,7 +421,7 @@ extension PLNavigationController {
         override func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
             
             if let container = self.parent as? ContainerController {
-                container.warpNavigationBar.isHidden = hidden
+                container.setNavigationBarHidden(hidden, animated: animated)
             } else {
                 super.setNavigationBarHidden(hidden, animated: animated)
             }
@@ -414,7 +430,7 @@ extension PLNavigationController {
         override var isNavigationBarHidden: Bool {
             set {
                 if let container = self.parent as? ContainerController {
-                    container.warpNavigationBar.isHidden = newValue
+                    container.setNavigationBarHidden(newValue, animated: false)
                 } else {
                     super.isNavigationBarHidden = newValue
                 }
@@ -422,7 +438,7 @@ extension PLNavigationController {
             
             get {
                 if let container = self.parent as? ContainerController {
-                    return container.warpNavigationBar.isHidden
+                    return container.isNavigationBarHidden
                 } else {
                     return super.isNavigationBarHidden
                 }
@@ -699,29 +715,29 @@ extension PL where Base: UIViewController {
 @objc protocol PLNavigationControllerConfig {
     
     /// 自定义返回按钮图片
-    @objc optional func pl_navigationCustomBackItemImage() -> UIImage?
+    @objc optional func pl_configNavigationCustomBackItemImage() -> UIImage?
     
     /// 自定义返回按钮
-    @objc optional func pl_navigationCustomBackItem(target: Any, action: Selector) -> UIBarButtonItem?
+    @objc optional func pl_configNavigationCustomBackItem(target: Any, action: Selector) -> UIBarButtonItem?
     
     /// 设置导航栏
     /// - Parameter bar:
-    @objc optional func pl_setupNavigationBar(_ bar: UINavigationBar)
+    @objc optional func pl_configNavigationBar(_ bar: UINavigationBar)
     
     /// 是否屏蔽返回手势
     var pl_isDisablePopGestureRecognizer: Bool { set get }
 }
 
 extension UIViewController: PLNavigationControllerConfig {
-    func pl_navigationCustomBackItemImage() -> UIImage? {
+    func pl_configNavigationCustomBackItemImage() -> UIImage? {
         return nil
     }
     
-    func pl_navigationCustomBackItem(target: Any, action: Selector) -> UIBarButtonItem? {
+    func pl_configNavigationCustomBackItem(target: Any, action: Selector) -> UIBarButtonItem? {
         return nil
     }
     
-    func pl_setupNavigationBar(_ bar: UINavigationBar) {
+    func pl_configNavigationBar(_ bar: UINavigationBar) {
         
     }
     

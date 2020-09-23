@@ -318,6 +318,11 @@ class PLBubble: UIView {
         self.redraw()
         
         
+        guard !self.frame.size.equalTo(.zero) else {
+            return
+        }
+        
+        
         self.coverControl = UIControl.init(frame: inView.bounds)
         self.coverControl.isUserInteractionEnabled = touchClose
         self.bindHide(with: self.coverControl)

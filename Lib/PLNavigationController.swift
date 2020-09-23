@@ -13,17 +13,6 @@ import UIKit
 class PLNavigationController: UINavigationController, UINavigationControllerDelegate {
     typealias Complete = () -> Void
     
-    /// 固定状态栏高度 用于设置导航栏高度 避免隐藏状态栏 导航栏会上移 不设置有默认逻辑
-    struct StatusBarConfig {
-        var portraitHeight: CGFloat?
-        var landscapeHeight: CGFloat?
-    }
-    var statusBarConfig = StatusBarConfig() {
-        didSet {
-            self.visibleViewController?.view.setNeedsLayout()
-        }
-    }
-    
     // push/pop 完成回调
     fileprivate var transitionCompleteCallback: Complete?
     
@@ -294,38 +283,37 @@ extension PLNavigationController {
         
         override func viewWillLayoutSubviews() {
             super.viewWillLayoutSubviews()
-            self.pl.navigationController?.statusBarConfig.landscapeHeight = 0
             
-            if let nav = self.navigationController as? PLNavigationController {
-                var navBarFrame = CGRect.init(x: 0, y: 0, width: self.view.frame.width, height: 44)
-                
-                let isPortrait = UIDevice.current.orientation.isPortrait
-                let h = isPortrait ? nav.statusBarConfig.portraitHeight : nav.statusBarConfig.landscapeHeight
-                
-                if let statusBarHeight = h {
-                    navBarFrame.size.height += statusBarHeight
-                    
-                } else if #available(iOS 11.0, *) {
-                    
+            var navBarFrame = CGRect.init(x: 0, y: 0, width: self.view.frame.width, height: 0)
+            
+            // 获取当前状态栏高度
+            var statusBarHeight: CGFloat = 0
+            if UIApplication.shared.statusBarOrientation.isPortrait {
+                // 只判断竖屏 横屏都是0
+                if #available(iOS 11, *) {
                     if self.view.safeAreaInsets.bottom > 0 {
-                        // 全面屏不会出现状态栏上移的问题直接取系统状态栏高度
-                        navBarFrame.size.height += UIApplication.shared.statusBarFrame.height
+                        // 全面屏不会出现状态栏上移的问题 直接取safeAreaInsets.top
+                        statusBarHeight = self.view.safeAreaInsets.top
                     } else {
                         // 非全面屏固定20
-                        navBarFrame.size.height += isPortrait ? 20 : 0
+                        statusBarHeight = 20
                     }
                 } else {
-                    navBarFrame.size.height += isPortrait ? 20 : 0
+                    // iOS11以下固定20
+                    statusBarHeight = 20
                 }
-                
-                if self.isNavigationBarHidden {
-                    navBarFrame.origin.y = -navBarFrame.height
-                } else {
-                    navBarFrame.origin.y = 0
-                }
-                
-                self.warpNavigationBar.frame = navBarFrame
             }
+            navBarFrame.size.height = statusBarHeight + self.warpNavigationBar.navigationBarHeight
+            
+            // -- 判断隐藏状态
+            if self.isNavigationBarHidden {
+                navBarFrame.origin.y = -navBarFrame.height
+            } else {
+                navBarFrame.origin.y = 0
+            }
+            
+            self.warpNavigationBar.frame = navBarFrame
+            
             
             self.conNavigationController.view.frame = self.view.bounds
         }
@@ -558,7 +546,23 @@ extension PLNavigationController {
     // MARK: - Class WarpNavigationBar
     class WarpNavigationBar: UIView {
         
-        fileprivate(set) var barHeight: CGFloat = 44
+        var navigationBarHeight: CGFloat {
+            
+            if #available(iOS 11, *) {
+                let insets = UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+                if insets.bottom > 0 {
+                    // 全面屏导航栏高度固定44
+                    return 44
+                }
+            }
+            
+            if UIApplication.shared.statusBarOrientation.isPortrait {
+                return 44
+            }
+            
+            return 32
+        }
+        
         private(set) var navigationBar: UINavigationBar!
         
         override init(frame: CGRect) {
@@ -582,7 +586,7 @@ extension PLNavigationController {
         
         override func layoutSubviews() {
             super.layoutSubviews()
-            self.navigationBar.frame = .init(x: 0, y: self.frame.height - self.barHeight, width: self.frame.width, height: self.barHeight)
+            self.navigationBar.frame = .init(x: 0, y: self.frame.height - self.navigationBarHeight, width: self.frame.width, height: self.navigationBarHeight)
         }
     }
 }

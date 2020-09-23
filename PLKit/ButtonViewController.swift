@@ -54,4 +54,8 @@ class ButtonViewController: UIViewController {
 //            }
         }
     }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 }

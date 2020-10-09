@@ -34,7 +34,12 @@ class PLButton: UIControl {
             self.setup(oldValue != font)
         }
     }
-    
+    var backgroundImage: UIImage? {
+        didSet {
+            self.backgroundImageView.image = backgroundImage
+            self.setup(oldValue != backgroundImage)
+        }
+    }
     private(set) var leftIcon: Icon!
     private(set) var topIcon: Icon!
     private(set) var rightIcon: Icon!
@@ -231,6 +236,11 @@ class PLButton: UIControl {
             contentSize.width = max(self.bottomImageView.bounds.width, contentSize.width)
             contentSize.height += self.rightImageView.bounds.height + self.spaceingTitleImage
         }
+        
+        if contentSize.equalTo(.zero) && self.backgroundImageView.image != nil {
+            contentSize = self.backgroundImageView.sizeThatFits(.zero)
+        }
+        
         self.contentSize = contentSize
         self.contentView.frame.size = contentSize
         

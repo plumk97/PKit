@@ -32,8 +32,8 @@ extension PLJSON {
                 callback(name, pros, isObjC)
             }
         }
-        
     }
+    
     @discardableResult
     func update(from: [String: Any]?) -> Self {
 
@@ -65,11 +65,6 @@ extension PLJSON {
     }
 }
 
-extension Optional {
-    static func fasda() {
-        print("123")
-    }
-}
 
 fileprivate protocol Property {
     
@@ -87,9 +82,8 @@ fileprivate protocol Property {
 }
 
 
-
 @propertyWrapper
-class JSONKey<T>: Property {
+class JSON<T>: Property {
     
     fileprivate var instance: PLJSON?
     fileprivate var name: String?
@@ -101,20 +95,35 @@ class JSONKey<T>: Property {
             } else if let v = self.wrappedValue as? PLJSON {
                 v.update(from: newValue as? [String: Any])
             } else {
-                // 可选类型
+                /// 取不到Object类型 先外部传入
+                if let o = self.modelType as? PLJSON.Type {
+                    
+                    switch newValue {
+                    case let dict as [String: Any]:
+                        if let v = o.deserialize(from: dict) as? T {
+                            self.wrappedValue = v
+                        }
+                        
+                    case let array as [[String: Any]]:
+                        if let v = array.map({ o.deserialize(from: $0) }) as? T {
+                            self.wrappedValue = v
+                        }
+                    default:
+                        break
+                    }
+                }
             }
         }
         
         get { self.wrappedValue}
     }
     
+    fileprivate var modelType: Any?
+    
     var wrappedValue: T
     
-    init(wrappedValue value: T) {
+    init(wrappedValue value: T, type: Any? = nil) {
         self.wrappedValue = value
-    }
-    
-    init(initialValue value: T) {
-        self.wrappedValue = value
+        self.modelType = type
     }
 }

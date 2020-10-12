@@ -104,6 +104,8 @@
 		81FE62102302E25A00C9BD31 /* DotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE620F2302E25A00C9BD31 /* DotViewController.swift */; };
 		81FE62132302EA1F00C9BD31 /* icon_dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */; };
 		81FE62142302EA1F00C9BD31 /* icon_dot@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */; };
+		FE9597E325343A8800CCB55C /* PLJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9597E225343A8800CCB55C /* PLJSON.swift */; };
+		FE9598022534539800CCB55C /* JsonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9598012534539800CCB55C /* JsonViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -208,6 +210,8 @@
 		81FE620F2302E25A00C9BD31 /* DotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotViewController.swift; sourceTree = "<group>"; };
 		81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_dot@2x.png"; sourceTree = "<group>"; };
 		81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_dot@3x.png"; sourceTree = "<group>"; };
+		FE9597E225343A8800CCB55C /* PLJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLJSON.swift; sourceTree = "<group>"; };
+		FE9598012534539800CCB55C /* JsonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -333,6 +337,7 @@
 				81D912A12435E9A200A433D8 /* ArrangeViewController.swift */,
 				811F280D243EFBEB00276CBF /* TabControlViewController.swift */,
 				8102CA7124655A8F00AE2278 /* NavigationController.swift */,
+				FE9598012534539800CCB55C /* JsonViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -364,6 +369,7 @@
 				8102CA7324655EAF00AE2278 /* PLNavigationController.swift */,
 				81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */,
 				811F280F243EFBFF00276CBF /* PLTabControl.swift */,
+				FE9597E225343A8800CCB55C /* PLJSON.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -561,6 +567,7 @@
 				818BF111241A26B300D84B86 /* PLMultimenuTableView.swift in Sources */,
 				81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */,
 				818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */,
+				FE9598022534539800CCB55C /* JsonViewController.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
 				811F280E243EFBEB00276CBF /* TabControlViewController.swift in Sources */,
@@ -585,6 +592,7 @@
 				81786D912272B095005B232D /* ButtonViewController.swift in Sources */,
 				812FBF32226EAE8800CA1831 /* AppDelegate.swift in Sources */,
 				81786D932272B13B005B232D /* PLButton.swift in Sources */,
+				FE9597E325343A8800CCB55C /* PLJSON.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

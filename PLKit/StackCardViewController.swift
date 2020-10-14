@@ -15,7 +15,7 @@ class StackCardViewController: UIViewController {
         super.viewDidLoad()
         
         
-        self.stackCardView = PLStackCardView.init(size: .init(width: 330, height: 490))
+        self.stackCardView = PLStackCardView.init(cardSize: .init(width: 330, height: 490))
         self.stackCardView.sizeToFit()
         self.stackCardView.frame.origin = .init(x: (view.bounds.width - 331) / 2, y: 100)
         self.view.addSubview(self.stackCardView)
@@ -24,7 +24,8 @@ class StackCardViewController: UIViewController {
         
         self.navigationItem.rightBarButtonItems = [
             .init(title: "Reload", style: .plain, target: self, action: #selector(reloadItemClick)),
-            .init(title: "Append", style: .plain, target: self, action: #selector(appendItemClick))]
+            .init(title: "Append", style: .plain, target: self, action: #selector(appendItemClick)),
+            .init(title: "Next", style: .plain, target: self, action: #selector(nextItemClick))]
     }
     
     @objc func reloadItemClick() {
@@ -33,6 +34,10 @@ class StackCardViewController: UIViewController {
     
     @objc func appendItemClick() {
         self.appendViews()
+    }
+    
+    @objc func nextItemClick() {
+        self.stackCardView.pop(isRight: true)
     }
     
     func reloadViews() {

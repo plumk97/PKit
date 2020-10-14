@@ -9,8 +9,8 @@
 import UIKit
 
 @objc protocol PLStackCardViewDelegate {
-    @objc optional func stackCardView(_ cardView: PLStackCardView, didDismiss view: UIView)
-    @objc optional func stackCardView(_ cardView: PLStackCardView, didAppear view: UIView)
+    @objc optional func stackCardView(_ cardView: PLStackCardView, didDismiss card: PLStackCardView.CardView)
+    @objc optional func stackCardView(_ cardView: PLStackCardView, didAppear card: PLStackCardView.CardView, nextCard: PLStackCardView.CardView?)
 }
 
 class PLStackCardView: UIView {
@@ -18,7 +18,7 @@ class PLStackCardView: UIView {
     weak var delegate: PLStackCardViewDelegate?
     
     /// 卡片大小
-    private(set) var size: CGSize = .zero
+    private(set) var cardSize: CGSize = .zero
     
     /// 底部漏出几张
     private(set) var leakCount: Int = 1
@@ -32,10 +32,10 @@ class PLStackCardView: UIView {
     ///
     private(set) var cardViews = [CardView]()
     
-    init(size: CGSize, leakCount: Int = 1, leakSize: CGFloat = 20, scale: CGFloat = 0.9) {
+    init(cardSize: CGSize, leakCount: Int = 1, leakSize: CGFloat = 20, scale: CGFloat = 0.9) {
         super.init(frame: .zero)
         
-        self.size = size
+        self.cardSize = cardSize
         self.leakCount = leakCount
         self.leakSize = leakSize
         self.scale = scale
@@ -58,18 +58,26 @@ class PLStackCardView: UIView {
         self.cardViews = views.map({ CardView($0) })
         self.reloadData(self.cardViews)
         self.update()
+        
+        if let view = self.cardViews.first {
+            self.delegate?.stackCardView?(self, didAppear: view, nextCard: self.nextCardView())
+        }
     }
     
     func appendCardViews(_ views: [UIView]) {
         self.cardViews.append(contentsOf: views.map({ CardView($0) }))
         self.reloadData([CardView](self.cardViews[(self.cardViews.count - views.count)...]))
         self.update(start: self.cardViews.count - views.count)
+        
+        if self.cardViews.count - views.count <= 0, let view = self.cardViews.first {
+            self.delegate?.stackCardView?(self, didAppear: view, nextCard: self.nextCardView())
+        }
     }
     
     /// 重新加载卡片
     private func reloadData(_ views: [CardView]) {
         for view in views {
-            view.frame = .init(x: 0, y: 0, width: self.size.width, height: self.size.height)
+            view.frame = .init(x: 0, y: 0, width: self.cardSize.width, height: self.cardSize.height)
             self.addSubview(view)
             self.sendSubviewToBack(view)
         }
@@ -81,7 +89,7 @@ class PLStackCardView: UIView {
             let view = self.cardViews[i]
             
             let s = pow(self.scale, CGFloat(i))
-            var transform = CGAffineTransform.identity.translatedBy(x: 0, y: self.size.height * (1 - s) / 2 + self.leakSize * CGFloat(i))
+            var transform = CGAffineTransform.identity.translatedBy(x: 0, y: self.cardSize.height * (1 - s) / 2 + self.leakSize * CGFloat(i))
             transform = transform.scaledBy(x: s, y: s)
             view.transform = transform
             
@@ -89,14 +97,50 @@ class PLStackCardView: UIView {
         }
     }
     
+    /// 弹出当前卡片
+    /// - Parameter isRight: 弹出方向
+    func pop(isRight: Bool) {
+        
+        guard let card = self.cardViews.first else {
+            return
+        }
+        
+        self.cardViews.removeFirst()
+        
+        let progress: CGFloat = isRight ? 1 : -1
+        let transform = CGAffineTransform.identity.rotated(by: .pi / 4 * progress)
+        let point = self.calculateNextLinePoint(p1: card.center, p2: .init(x: card.center.x + card.frame.width * progress, y: card.center.y), distance: 1000)
+        
+        UIView.animateKeyframes(withDuration: 0.35, delay: 0, options: .init(rawValue: 0)) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.5) {
+                card.transform = transform
+            }
+            
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
+                card.center = point
+                self.update()
+            }
+        } completion: { (_) in
+            card.removeFromSuperview()
+            
+            self.delegate?.stackCardView?(self, didDismiss: card)
+            if let first = self.cardViews.first {
+                self.delegate?.stackCardView?(self, didAppear: first, nextCard: self.nextCardView())
+            }
+        }
+    }
+    
+    private func nextCardView() -> CardView? {
+        return self.cardViews.count > 1 ? self.cardViews[1] : nil
+    }
     
     override var intrinsicContentSize: CGSize {
         return self.sizeThatFits(.zero)
     }
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        let totalHeight = self.size.height + CGFloat(self.leakCount) * self.leakSize
-        return .init(width: self.size.width, height: totalHeight)
+        let totalHeight = self.cardSize.height + CGFloat(self.leakCount) * self.leakSize
+        return .init(width: self.cardSize.width, height: totalHeight)
     }
     
     
@@ -121,35 +165,14 @@ class PLStackCardView: UIView {
         } else if sender.state == .changed {
 
             let x = point.x - panPrePoint.x
-            let y = point.y - panPrePoint.y
 
             view.transform = CGAffineTransform.identity.rotated(by: .pi / 4 * progress)
-
-            view.center.x += x * 1.5
-            view.center.y += y * 1.5
+            view.center.x += x * 2
 
         } else {
             let vel = sender.velocity(in: self)
             if abs(progress) > 0.5 || abs(vel.x) >= 500 {
-                
-                let point = self.calculateNextLinePoint(p1: self.panBeginPoint, p2: point, distance: 1000)
-                if point.equalTo(.zero) {
-                    return
-                }
-                self.cardViews.removeFirst()
-
-                UIView.animate(withDuration: 0.25, animations: {
-                    view.center = point
-                    self.update()
-                }) { (_) in
-                    view.removeFromSuperview()
-                    self.delegate?.stackCardView?(self, didDismiss: view)
-                    
-                    if let first = self.cardViews.first {
-                        self.delegate?.stackCardView?(self, didAppear: first)
-                    }
-                }
-
+                self.pop(isRight: progress > 0)
             } else {
                 UIView.animate(withDuration: 0.25) {
                     view.transform = CGAffineTransform.identity

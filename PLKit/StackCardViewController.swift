@@ -8,16 +8,17 @@
 
 import UIKit
 
-class StackCardViewController: UIViewController {
+class StackCardViewController: UIViewController, PLStackCardViewDelegate {
     
     var stackCardView: PLStackCardView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
-        self.stackCardView = PLStackCardView.init(cardSize: .init(width: 330, height: 490))
+        self.stackCardView = PLStackCardView.init(cardSize: .init(width: 330, height: 490), leakCount: 10)
         self.stackCardView.sizeToFit()
         self.stackCardView.frame.origin = .init(x: (view.bounds.width - 331) / 2, y: 100)
+        self.stackCardView.delegate = self
         self.view.addSubview(self.stackCardView)
         
         self.reloadViews()
@@ -37,7 +38,7 @@ class StackCardViewController: UIViewController {
     }
     
     @objc func nextItemClick() {
-        self.stackCardView.pop(isRight: true)
+        self.stackCardView.pop(.right)
     }
     
     func reloadViews() {
@@ -60,5 +61,23 @@ class StackCardViewController: UIViewController {
         }
         
         self.stackCardView.appendCardViews(views)
+    }
+    
+    
+    // MARK: - PLStackCardViewDelegate
+    func stackCardView(_ stackCardView: PLStackCardView, didDismiss card: PLStackCardView.CardView, direction: PLStackCardView.Direction) {
+        print("didDismiss", card, direction.rawValue)
+    }
+    
+    func stackCardView(_ stackCardView: PLStackCardView, didAppear card: PLStackCardView.CardView, nextCard: PLStackCardView.CardView?) {
+        print("didAppear", card, nextCard)
+    }
+    
+    func stackCardView(_ stackCardView: PLStackCardView, didChangeProgress progress: CGFloat) {
+        print("didChangeProgress", progress)
+    }
+    
+    func stackCardView(_ stackCardView: PLStackCardView, canPop card: PLStackCardView.CardView) -> Bool {
+        return false
     }
 }

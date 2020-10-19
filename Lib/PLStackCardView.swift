@@ -9,11 +9,51 @@
 import UIKit
 
 @objc protocol PLStackCardViewDelegate {
-    @objc optional func stackCardView(_ cardView: PLStackCardView, didDismiss card: PLStackCardView.CardView)
-    @objc optional func stackCardView(_ cardView: PLStackCardView, didAppear card: PLStackCardView.CardView, nextCard: PLStackCardView.CardView?)
+    
+    /// 卡片滑出
+    /// - Parameters:
+    ///   - stackCardView:
+    ///   - card: 滑出的卡片
+    ///   - direction: 滑出方向
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, willDismiss card: PLStackCardView.CardView, direction: PLStackCardView.Direction)
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, didDismiss card: PLStackCardView.CardView, direction: PLStackCardView.Direction)
+    
+    
+    /// 卡片显示
+    /// - Parameters:
+    ///   - stackCardView:
+    ///   - card: 当前卡片
+    ///   - nextCard: 下一张卡片
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, willAppear card: PLStackCardView.CardView, nextCard: PLStackCardView.CardView?)
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, didAppear card: PLStackCardView.CardView, nextCard: PLStackCardView.CardView?)
+    
+    
+    /// 卡片恢复原位 不执行操作
+    /// - Parameters:
+    ///   - stackCardView:
+    ///   - card:
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, didRestore card: PLStackCardView.CardView)
+    
+    
+    /// 卡片滑出进度
+    /// - Parameters:
+    ///   - stackCardView:
+    ///   - progress: -1<-0->1 之间 大于0向右 小于0向左
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, didChangeProgress progress: CGFloat)
+    
+    /// 卡片是否可以滑出
+    /// - Parameters:
+    ///   - stackCardView:
+    ///   - card:
+    ///   - direction:
+    @objc optional func stackCardView(_ stackCardView: PLStackCardView, canPop card: PLStackCardView.CardView, direction: PLStackCardView.Direction) -> Bool
 }
 
 class PLStackCardView: UIView {
+    @objc enum Direction: Int {
+        case left
+        case right
+    }
     
     weak var delegate: PLStackCardViewDelegate?
     
@@ -86,28 +126,43 @@ class PLStackCardView: UIView {
     /// 更新所有的卡片布局
     private func update(start: Int = 0) {
         for i in start ..< self.cardViews.count {
-            let view = self.cardViews[i]
+            let card = self.cardViews[i]
             
-            let s = pow(self.scale, CGFloat(i))
-            var transform = CGAffineTransform.identity.translatedBy(x: 0, y: self.cardSize.height * (1 - s) / 2 + self.leakSize * CGFloat(i))
+            let s = self.getCardScale(i)
+            var transform = CGAffineTransform.identity.translatedBy(x: 0, y: self.getOffsetY(i))
             transform = transform.scaledBy(x: s, y: s)
-            view.transform = transform
+            card.transform = transform
             
-            view.alpha = i > self.leakCount ? 0 : 1
+            card.alpha = i > self.leakCount ? 0 : 1
         }
+    }
+    
+    private func getOffsetY(_ index: Int) -> CGFloat {
+        let s = self.getCardScale(index)
+        let offsetY = self.cardSize.height * (1 - s) / 2 + self.leakSize * CGFloat(index)
+        return offsetY
+    }
+    
+    private func getCardScale(_ index: Int) -> CGFloat {
+        return pow(self.scale, CGFloat(index))
     }
     
     /// 弹出当前卡片
     /// - Parameter isRight: 弹出方向
-    func pop(isRight: Bool) {
+    func pop(_ direction: Direction) {
         
         guard let card = self.cardViews.first else {
             return
         }
         
         self.cardViews.removeFirst()
+        self.delegate?.stackCardView?(self, willDismiss: card, direction: direction)
+        if let first = self.cardViews.first {
+            self.delegate?.stackCardView?(self, willAppear: first, nextCard: self.nextCardView())
+        }
         
-        let progress: CGFloat = isRight ? 1 : -1
+        
+        let progress: CGFloat = direction == .right ? 1 : -1
         let transform = CGAffineTransform.identity.rotated(by: .pi / 4 * progress)
         let point = self.calculateNextLinePoint(p1: card.center, p2: .init(x: card.center.x + card.frame.width * progress, y: card.center.y), distance: 1000)
         
@@ -122,8 +177,7 @@ class PLStackCardView: UIView {
             }
         } completion: { (_) in
             card.removeFromSuperview()
-            
-            self.delegate?.stackCardView?(self, didDismiss: card)
+            self.delegate?.stackCardView?(self, didDismiss: card, direction: direction)
             if let first = self.cardViews.first {
                 self.delegate?.stackCardView?(self, didAppear: first, nextCard: self.nextCardView())
             }
@@ -149,39 +203,91 @@ class PLStackCardView: UIView {
     private var panPrePoint = CGPoint.zero
     
     @objc private func panGestureHandle(_ sender: UIPanGestureRecognizer) {
-        guard let view = self.cardViews.first else {
+        guard let card = self.cardViews.first else {
             return
         }
-
+        
         guard bounds.width > 0 && bounds.height > 0 else {
             return
         }
 
         let point = sender.location(in: self)
         let progress = min(1, max(-1, (point.x - panBeginPoint.x) / (bounds.width / 2)))
+        let rotateProgress = min(1, max(-1, (point.x - panBeginPoint.x) / (bounds.width / 1)))
         
         if sender.state == .began {
             self.panBeginPoint = point
         } else if sender.state == .changed {
 
             let x = point.x - panPrePoint.x
-
-            view.transform = CGAffineTransform.identity.rotated(by: .pi / 4 * progress)
-            view.center.x += x * 2
-
+            
+            card.transform = CGAffineTransform.identity.rotated(by: .pi / 4 * rotateProgress)
+            card.center.x += x * 1.5
+            self.interactiveUpdateBackCards(progress)
+            
+            self.delegate?.stackCardView?(self, didChangeProgress: progress)
+            
         } else {
+            
+            let canPop = self.delegate?.stackCardView?(self, canPop: card, direction: progress > 0 ? .right : .left) ?? true
             let vel = sender.velocity(in: self)
-            if abs(progress) > 0.5 || abs(vel.x) >= 500 {
-                self.pop(isRight: progress > 0)
+            if canPop && (abs(progress) > 0.5 || abs(vel.x) >= 500) {
+                self.pop(progress > 0 ? .right : .left)
             } else {
+                self.delegate?.stackCardView?(self, didRestore: card)
                 UIView.animate(withDuration: 0.25) {
-                    view.transform = CGAffineTransform.identity
-                    view.center = .init(x: view.bounds.width / 2, y: view.bounds.height / 2)
+                    card.transform = CGAffineTransform.identity
+                    card.center = .init(x: card.bounds.width / 2, y: card.bounds.height / 2)
+                    self.interactiveRestoreBackCards()
                 }
             }
         }
 
         self.panPrePoint = point
+    }
+    
+    
+    /// 手势-更新第一张之后的卡片
+    /// - Parameter progress:
+    private func interactiveUpdateBackCards(_ progress: CGFloat) {
+        if self.cardViews.count > 1 {
+            let absp = abs(progress)
+            for i in 1 ..< self.cardViews.count {
+                let tc = self.cardViews[i]
+                guard tc.alpha == 1 else {
+                    break
+                }
+                let nextScale = self.getCardScale(i - 1)
+                var scale = self.getCardScale(i)
+                scale = (nextScale - scale) * absp + scale
+                
+                let nextOffsetY = self.getOffsetY(i - 1)
+                var offsetY = self.getOffsetY(i)
+                offsetY -= (offsetY - nextOffsetY) * absp
+                var transform = CGAffineTransform.identity.translatedBy(x: 0, y: offsetY)
+                transform = transform.scaledBy(x: scale, y: scale)
+                tc.transform = transform
+            }
+        }
+    }
+    
+    /// 手势-恢复卡片为原来的状态
+    private func interactiveRestoreBackCards() {
+        if self.cardViews.count > 1 {
+            
+            for i in 1 ..< self.cardViews.count {
+                let tc = self.cardViews[i]
+                guard tc.alpha == 1 else {
+                    break
+                }
+                let scale = self.getCardScale(i)
+                
+                let offsetY = self.getOffsetY(i)
+                var transform = CGAffineTransform.identity.translatedBy(x: 0, y: offsetY)
+                transform = transform.scaledBy(x: scale, y: scale)
+                tc.transform = transform
+            }
+        }
     }
     
     /// 计算一条直线的下一个点的位置

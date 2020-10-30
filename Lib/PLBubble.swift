@@ -2,7 +2,7 @@
 //  PLBubble.swift
 //  PLKit
 //
-//  Created by iOS on 2020/4/2.
+//  Created by Plumk on 2020/4/2.
 //  Copyright © 2020 iOS. All rights reserved.
 //
 
@@ -394,7 +394,11 @@ class PLBubble: UIView {
     /// 绑定按钮点击关闭
     /// - Parameter button:
     func bindHide(with button: UIControl...) {
-        button.forEach({
+        self.bindHide(with: button)
+    }
+    
+    func bindHide(with buttons: [UIControl]) {
+        buttons.forEach({
             $0.addTarget(self, action: #selector(bindButtonClick), for: .touchUpInside)
         })
     }

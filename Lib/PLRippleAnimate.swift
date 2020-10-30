@@ -2,7 +2,7 @@
 //  PLRippleAnimate.swift
 //  PLKit
 //
-//  Created by iOS on 2019/4/23.
+//  Created by Plumk on 2019/4/23.
 //  Copyright © 2019 iOS. All rights reserved.
 //
 

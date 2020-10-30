@@ -2,7 +2,7 @@
 //  PLArrangeView.swift
 //  PLKit
 //
-//  Created by iOS on 2020/4/2.
+//  Created by Plumk on 2020/4/2.
 //  Copyright © 2020 iOS. All rights reserved.
 //
 
@@ -37,12 +37,18 @@ class PLArrangeView: UIView {
     // 显示所需的大小
     private var innerContentSize = CGSize.zero
     
-    convenience init(views: [UIView]? = nil, showDivider: Bool = false) {
-        self.init(frame: .zero)
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    init(views: [UIView]? = nil, showDivider: Bool = false) {
+        super.init(frame: .zero)
         
         self.views = views
         self.showDivider = showDivider
         self.loadViews()
+        self.clipsToBounds = true
     }
     
     /// 加载view 和 分割线
@@ -218,6 +224,11 @@ class PLArrangeView: UIView {
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         return self.innerContentSize
+    }
+    
+    override func sizeToFit() {
+        self.layoutIfNeeded()
+        super.sizeToFit()
     }
 }
 

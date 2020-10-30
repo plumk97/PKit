@@ -2,7 +2,7 @@
 //  PLStackCardView.swift
 //  PLKit
 //
-//  Created by iOS on 2019/7/15.
+//  Created by Plumk on 2019/7/15.
 //  Copyright © 2019 iOS. All rights reserved.
 //
 
@@ -138,6 +138,10 @@ class PLStackCardView: UIView {
     }
     
     private func getOffsetY(_ index: Int) -> CGFloat {
+        guard self.leakSize > 0 else {
+            return 0
+        }
+        
         let s = self.getCardScale(index)
         let offsetY = self.cardSize.height * (1 - s) / 2 + self.leakSize * CGFloat(index)
         return offsetY
@@ -228,10 +232,15 @@ class PLStackCardView: UIView {
             self.delegate?.stackCardView?(self, didChangeProgress: progress)
             
         } else {
-            
-            let canPop = self.delegate?.stackCardView?(self, canPop: card, direction: progress > 0 ? .right : .left) ?? true
             let vel = sender.velocity(in: self)
-            if canPop && (abs(progress) > 0.5 || abs(vel.x) >= 500) {
+            let isOk = abs(progress) > 0.5 || abs(vel.x) >= 500
+            
+            var canPop = true
+            if isOk {
+                canPop = self.delegate?.stackCardView?(self, canPop: card, direction: progress > 0 ? .right : .left) ?? true
+            }
+            
+            if isOk && canPop {
                 self.pop(progress > 0 ? .right : .left)
             } else {
                 self.delegate?.stackCardView?(self, didRestore: card)

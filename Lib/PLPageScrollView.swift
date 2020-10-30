@@ -2,7 +2,7 @@
 //  PLPageScrollView.swift
 //  PLKit
 //
-//  Created by iOS on 2019/4/30.
+//  Created by Plumk on 2019/4/30.
 //  Copyright © 2019 iOS. All rights reserved.
 //
 

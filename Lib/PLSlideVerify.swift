@@ -2,7 +2,7 @@
 //  PLSlideVerify.swift
 //  PLKit
 //
-//  Created by iOS on 2019/7/3.
+//  Created by Plumk on 2019/7/3.
 //  Copyright © 2019 iOS. All rights reserved.
 //
 

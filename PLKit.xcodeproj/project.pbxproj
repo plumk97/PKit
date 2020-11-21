@@ -10,6 +10,8 @@
 		0EFF90F30E4F390FAA5A4CBC /* Pods_PLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 409954DF777D0C203453192F /* Pods_PLKit.framework */; };
 		51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF222ACEBF80021641A /* PLBadgeView.swift */; };
 		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
+		5152869A25694F9000AED246 /* PLGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152869925694F9000AED246 /* PLGridView.swift */; };
+		5152869E2569586700AED246 /* GridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152869D2569586700AED246 /* GridViewController.swift */; };
 		8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102CA7124655A8F00AE2278 /* NavigationController.swift */; };
 		8102CA7424655EAF00AE2278 /* PLNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102CA7324655EAF00AE2278 /* PLNavigationController.swift */; };
 		810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77722FAAE5F002EB244 /* PLTabBarController.swift */; };
@@ -113,6 +115,8 @@
 		409954DF777D0C203453192F /* Pods_PLKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PLKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		51014EF222ACEBF80021641A /* PLBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBadgeView.swift; sourceTree = "<group>"; };
 		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
+		5152869925694F9000AED246 /* PLGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLGridView.swift; sourceTree = "<group>"; };
+		5152869D2569586700AED246 /* GridViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridViewController.swift; sourceTree = "<group>"; };
 		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
 		8102CA7124655A8F00AE2278 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		8102CA7324655EAF00AE2278 /* PLNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLNavigationController.swift; sourceTree = "<group>"; };
@@ -338,6 +342,7 @@
 				811F280D243EFBEB00276CBF /* TabControlViewController.swift */,
 				8102CA7124655A8F00AE2278 /* NavigationController.swift */,
 				FE9598012534539800CCB55C /* JsonViewController.swift */,
+				5152869D2569586700AED246 /* GridViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -370,6 +375,7 @@
 				81D9129F2435E5AA00A433D8 /* PLArrangeView.swift */,
 				811F280F243EFBFF00276CBF /* PLTabControl.swift */,
 				FE9597E225343A8800CCB55C /* PLJSON.swift */,
+				5152869925694F9000AED246 /* PLGridView.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -413,7 +419,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1020;
 				LastUpgradeCheck = 1020;
-				ORGANIZATIONNAME = iOS;
+				ORGANIZATIONNAME = Plumk;
 				TargetAttributes = {
 					812FBF2D226EAE8800CA1831 = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -568,8 +574,10 @@
 				81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */,
 				818997A722DC5D4E0042A93F /* StackCardViewController.swift in Sources */,
 				FE9598022534539800CCB55C /* JsonViewController.swift in Sources */,
+				5152869A25694F9000AED246 /* PLGridView.swift in Sources */,
 				812FBF34226EAE8800CA1831 /* RippleAnimateViewController.swift in Sources */,
 				814972FA228D63DF00F63C96 /* PLPhotoBrowser.swift in Sources */,
+				5152869E2569586700AED246 /* GridViewController.swift in Sources */,
 				811F280E243EFBEB00276CBF /* TabControlViewController.swift in Sources */,
 				814972FE228D6EF100F63C96 /* PLPhotoBrowserPage.swift in Sources */,
 				81FE62102302E25A00C9BD31 /* DotViewController.swift in Sources */,

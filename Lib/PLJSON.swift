@@ -3,7 +3,7 @@
 //  PLKit
 //
 //  Created by mini2019 on 2020/10/12.
-//  Copyright © 2020 iOS. All rights reserved.
+//  Copyright © 2020 Plumk. All rights reserved.
 //
 
 import Foundation

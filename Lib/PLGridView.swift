@@ -19,28 +19,28 @@ class PLGridView: UIView {
     /// 布局方向
     var direction = Axis.horizontal {
         didSet {
-            self.decideIsRelayout()
+            self.setNeedsLayout()
         }
     }
     
     /// 根据方向指示有多少 行/列 最小为1 0不显示
     var crossAxisCount: Int = 1 {
         didSet {
-            self.decideIsRelayout()
+            self.setNeedsLayout()
         }
     }
     
     /// 当前方向间距
     var mainAxisSpacing: CGFloat = 0 {
         didSet {
-            self.decideIsRelayout()
+            self.setNeedsLayout()
         }
     }
     
     /// 反方向间距 横向则是纵向间距 纵向则是横向间距
     var crossAxisSpacing: CGFloat = 0 {
         didSet {
-            self.decideIsRelayout()
+            self.setNeedsLayout()
         }
     }
     
@@ -49,24 +49,26 @@ class PLGridView: UIView {
     
     var views = [UIView]() {
         didSet {
-            self.decideIsRelayout()
+            self.setNeedsLayout()
         }
     }
     
-    private var isNeedRelayout = false
     private var innerContentSize: CGSize = .zero
     
     override var frame: CGRect {
         didSet {
             if !frame.size.equalTo(oldValue.size) {
-                self.decideIsRelayout()
+                self.setNeedsLayout()
             }
         }
     }
     
-    init(_ views: [UIView], direction: Axis? = nil, crossAxisCount: Int? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil) {
+    init(_ views: [UIView]? = nil, direction: Axis? = nil, crossAxisCount: Int? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil) {
         super.init(frame: .zero)
-        self.views = views
+        
+        if let x = views {
+            self.views = x
+        }
         
         if let x = direction {
             self.direction = x
@@ -96,21 +98,15 @@ class PLGridView: UIView {
     private func commInit() {
         self.clipsToBounds = true
     }
-    
-    private func decideIsRelayout() {
-        if self.superview == nil {
-            self.isNeedRelayout = true
-        } else {
-            self.relayoutViews()
-        }
-    }
-        
+     
     private func relayoutViews() {
-        
-        self.isNeedRelayout = false
-        self.innerContentSize = .zero
+        print("relayoutViews")
+        var tmpInnerContentSize: CGSize = .zero
         defer {
-            self.invalidateIntrinsicContentSize()
+            if !self.innerContentSize.equalTo(tmpInnerContentSize) {
+                self.innerContentSize = tmpInnerContentSize
+                self.invalidateIntrinsicContentSize()
+            }
         }
         guard self.crossAxisCount > 0 else {
             return
@@ -121,7 +117,7 @@ class PLGridView: UIView {
             guard self.frame.width > 0 else {
                 return
             }
-            self.innerContentSize.width = self.frame.width
+            tmpInnerContentSize.width = self.frame.width
             
             var size: CGSize = .zero
             size.width = (self.frame.width - CGFloat(self.crossAxisCount - 1) * self.mainAxisSpacing) / CGFloat(self.crossAxisCount)
@@ -151,13 +147,13 @@ class PLGridView: UIView {
                 origin.x = rect.maxX + self.mainAxisSpacing
             }
             
-            self.innerContentSize.height = self.views.last?.frame.maxY ?? 0
+            tmpInnerContentSize.height = self.views.last?.frame.maxY ?? 0
             
         case .vertical:
             guard self.frame.height > 0 else {
                 return
             }
-            self.innerContentSize.height = self.frame.height
+            tmpInnerContentSize.height = self.frame.height
             
             var size: CGSize = .zero
             size.height = (self.frame.height - CGFloat(self.crossAxisCount - 1) * self.mainAxisSpacing) / CGFloat(self.crossAxisCount)
@@ -187,16 +183,13 @@ class PLGridView: UIView {
                 origin.y = rect.maxY + self.mainAxisSpacing
             }
             
-            self.innerContentSize.width = self.views.last?.frame.maxX ?? 0
+            tmpInnerContentSize.width = self.views.last?.frame.maxX ?? 0
         }
     }
     
-
-    override func willMove(toSuperview newSuperview: UIView?) {
-        super.willMove(toSuperview: newSuperview)
-        if newSuperview != nil && self.isNeedRelayout {
-            self.relayoutViews()
-        }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.relayoutViews()
     }
     
     override var intrinsicContentSize: CGSize {
@@ -208,7 +201,7 @@ class PLGridView: UIView {
     }
     
     override func sizeToFit() {
-        self.relayoutViews()
+        self.layoutIfNeeded()
         super.sizeToFit()
     }
     

@@ -100,7 +100,6 @@ class PLGridView: UIView {
     }
      
     private func relayoutViews() {
-        print("relayoutViews")
         var tmpInnerContentSize: CGSize = .zero
         defer {
             if !self.innerContentSize.equalTo(tmpInnerContentSize) {

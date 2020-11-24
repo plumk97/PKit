@@ -19,32 +19,37 @@ class ArrangeViewController: UIViewController {
     }
 
     func load1() {
-        let view1 = UIView.init(frame: .init(x: 0, y: 0, width: 50, height: 100))
-        view1.backgroundColor = .red
         
-        let view2 = UIView.init(frame: .init(x: 0, y: 0, width: 100, height: 50))
-        view2.backgroundColor = .blue
+        let tags = ["和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐"]
         
-        let arrangeView = PLArrangeView.init(views: [view1, view2], showDivider: true)
-        arrangeView.divider.truncation = 15
-        arrangeView.frame.origin = .init(x: 20, y: 100)
-        arrangeView.alignment = .bottom
-        arrangeView.direction = .vertical
-        arrangeView.layoutIfNeeded()
-        arrangeView.sizeToFit()
-        self.view.addSubview(arrangeView)
+        let arrange = PLArrangeView.init(tags.map({
+            let label = UILabel()
+            label.text = $0
+            label.backgroundColor = .red
+            return label
+        }), direction: .horizontal, mainAxisSpacing: 10, crossAxisSpacing: 10)
+        self.view.addSubview(arrange)
+        
+        arrange.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-100-[view]", options: [], metrics: nil, views: ["view": arrange]))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[view]-|", options: [], metrics: nil, views: ["view": arrange]))
+        
     }
     
     func load2() {
-        let view1 = UIView.init(frame: .init(x: 0, y: 0, width: 50, height: 100))
-        view1.backgroundColor = .red
         
-        let view2 = UIView.init(frame: .init(x: 0, y: 0, width: 100, height: 50))
-        view2.backgroundColor = .blue
+        let tags = ["和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐"]
         
-        let arrangeView = PLArrangeView.init(views: [view1, view2])
-        arrangeView.frame.origin = .init(x: 20, y: 400)
-        arrangeView.sizeToFit()
-        self.view.addSubview(arrangeView)
+        let arrange = PLArrangeView.init(tags.map({
+            let label = UILabel()
+            label.text = $0
+            label.backgroundColor = .red
+            return label
+        }), direction: .vertical, mainAxisSpacing: 10, crossAxisSpacing: 10)
+        self.view.addSubview(arrange)
+
+        arrange.frame.origin = .init(x: 15, y: 300)
+        arrange.frame.size.height = 300
+        arrange.sizeToFit()
     }
 }

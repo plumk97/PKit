@@ -9,215 +9,158 @@
 import UIKit
 
 class PLArrangeView: UIView {
-    
-    // 布局方向
-    var direction = Direction.horizontal { didSet { self.setNeedsLayout() } }
-    
-    // 对齐方式
-    var alignment = Alignment.center { didSet { self.setNeedsLayout() } }
-    
-    // 间距
-    var spacing: CGFloat = 10 { didSet { self.setNeedsLayout() } }
-    
-    // 分割线
-    var divider = Divider() { didSet { self.setNeedsLayout() } }
-    
-    // 是否显示分割线
-    var showDivider = false { didSet { self.setNeedsLayout() } }
-    
-    // 加载的view
-    var views: [UIView]? { didSet { self.reload(oldViews: oldValue) }}
-    
-    // 指定某条分割线是否显示
-    private var specificDividerShows = [Int: Bool]()
-    
-    // 分割线
-    private var dividerViews = [UIView]()
-    
-    // 显示所需的大小
-    private var innerContentSize = CGSize.zero
-    
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    enum Axis {
+        case horizontal
+        case vertical
     }
     
-    init(views: [UIView]? = nil, showDivider: Bool = false) {
+    /// 布局方向
+    var direction = Axis.horizontal {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    /// 当前方向间距
+    var mainAxisSpacing: CGFloat = 0 {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
+    /// 反方向间距 横向则是纵向间距 纵向则是横向间距
+    var crossAxisSpacing: CGFloat = 0 {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
+    var views = [UIView]() {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
+    private var innerContentSize: CGSize = .zero
+    
+    init(_ views: [UIView]? = nil, direction: Axis? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil) {
         super.init(frame: .zero)
         
-        self.views = views
-        self.showDivider = showDivider
-        self.loadViews()
+        if let x = views {
+            self.views = x
+        }
+        
+        if let x = direction {
+            self.direction = x
+        }
+
+        
+        if let x = mainAxisSpacing {
+            self.mainAxisSpacing = x
+        }
+        
+        if let x = crossAxisSpacing {
+            self.crossAxisSpacing = x
+        }
+        self.commInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        self.commInit()
+    }
+    
+    
+    private func commInit() {
         self.clipsToBounds = true
     }
     
-    /// 加载view 和 分割线
-    private func loadViews() {
-        
-        guard let views = self.views else {
-            return
-        }
-        
-        for _ in 0 ..< views.count - 1 {
-            let d = UIView()
-            d.isHidden = true
-            self.addSubview(d)
-            self.dividerViews.append(d)
-        }
-        
-        for view in views {
-            self.addSubview(view)
-        }
-        
-        self.setNeedsLayout()
-    }
-    
-    
-    /// 重新加载 - 清理之前的
-    /// - Parameter oldViews:
-    private func reload(oldViews: [UIView]?) {
-        
-        self.specificDividerShows.removeAll()
-        
-        self.dividerViews.forEach({ $0.removeFromSuperview() })
-        self.dividerViews.removeAll()
-        
-        oldViews?.forEach({ $0.removeFromSuperview() })
-        
-        self.loadViews()
-    }
-    
-    /// 提升某个view到最前面显示
-    /// - Parameter idx:
-    func bringSubviewToFront(_ idx: Int) {
-        guard let views = self.views else {
-            return
-        }
-        
-        guard idx < views.count && idx >= 0 else {
-            return
-        }
-        
-        let view = views[idx]
-        self.bringSubviewToFront(view)
-    }
-    
-    
-    /// 指定某条分割线是否显示
-    /// - Parameters:
-    ///   - isShow:
-    ///   - index:
-    func showDivider(_ isShow: Bool, index: Int) {
-        guard let views = self.views else {
-            return
-        }
-        
-        guard index < views.count && index >= 0 else {
-            return
-        }
-        
-        self.specificDividerShows[index] = isShow
-        self.setNeedsLayout()
-    }
-    
-    
-    // --
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        guard let views = self.views else {
-            
-            self.innerContentSize = .zero
-            self.invalidateIntrinsicContentSize()
-            return
+        var tmpInnerContentSize: CGSize = .zero
+        defer {
+            if !tmpInnerContentSize.equalTo(self.innerContentSize) {
+                self.innerContentSize = tmpInnerContentSize
+                self.invalidateIntrinsicContentSize()
+            }
         }
         
-        if self.direction == .horizontal {
+        switch self.direction {
+        case .horizontal:
             
+            var origin: CGPoint = .zero
             var maxHeight: CGFloat = 0
-            for view in views {
+            
+            for view in self.views {
+                if view.superview != self {
+                    if view.superview != nil {
+                        view.removeFromSuperview()
+                    }
+                    self.addSubview(view)
+                }
+                
+                if view.frame.size.equalTo(.zero) {
+                    view.frame.size = view.intrinsicContentSize
+                }
+                
                 if view.frame.size.equalTo(.zero) {
                     view.sizeToFit()
                 }
+                
+                
+                
+                if origin.x + view.frame.width > self.frame.width {
+                    origin.y = origin.y + maxHeight + self.crossAxisSpacing
+                    origin.x = 0
+                    
+                }
+                
+                
+                view.frame.origin = origin
+                origin.x = view.frame.maxX + self.mainAxisSpacing
                 maxHeight = max(view.frame.height, maxHeight)
             }
             
-            var left: CGFloat = 0
-            for (idx, view) in views.enumerated() {
-                if self.alignment == .top {
-                    view.frame.origin = .init(x: left, y: 0)
-                } else if self.alignment == .bottom {
-                    view.frame.origin = .init(x: left, y: maxHeight - view.frame.height)
-                } else {
-                    view.frame.origin = .init(x: left, y: (maxHeight - view.frame.height) / 2)
-                }
-                
-                left = view.frame.maxX + self.spacing
-                
-                // layout divider
-                if idx < self.dividerViews.count {
-                   
-                    let d = self.dividerViews[idx]
-                    let specificShow = self.specificDividerShows[idx]
-                    if specificShow ?? self.showDivider {
-                        d.backgroundColor = divider.color
-                        d.isHidden = false
-                        d.frame = .init(x: left, y: divider.truncation, width: divider.width, height: maxHeight - divider.truncation * 2)
-                        
-                        left = d.frame.maxX + self.spacing
-                    } else {
-                        d.isHidden = true
-                    }
-                }
-            }
+            tmpInnerContentSize = .init(width: self.frame.width, height: origin.y + maxHeight)
             
-            self.innerContentSize = .init(width: left - self.spacing, height: maxHeight)
+        case .vertical:
             
-        } else {
-            
+            var origin: CGPoint = .zero
             var maxWidth: CGFloat = 0
-            for view in views {
+            
+            for view in self.views {
+                if view.superview != self {
+                    if view.superview != nil {
+                        view.removeFromSuperview()
+                    }
+                    self.addSubview(view)
+                }
+                
+                if view.frame.size.equalTo(.zero) {
+                    view.frame.size = view.intrinsicContentSize
+                }
+                
                 if view.frame.size.equalTo(.zero) {
                     view.sizeToFit()
                 }
+                
+                
+                
+                if origin.y + view.frame.height > self.frame.height {
+                    origin.x = origin.x + maxWidth + self.crossAxisSpacing
+                    origin.y = 0
+                }
+                
+                
+                view.frame.origin = origin
+                origin.y = view.frame.maxY + self.mainAxisSpacing
                 maxWidth = max(view.frame.width, maxWidth)
             }
             
-            var top: CGFloat = 0
-            for (idx, view) in views.enumerated() {
-                if self.alignment == .left {
-                    view.frame.origin = .init(x: 0, y: top)
-                } else if self.alignment == .left {
-                    view.frame.origin = .init(x: maxWidth - view.frame.width, y: top)
-                } else {
-                    view.frame.origin = .init(x: (maxWidth - view.frame.width) / 2, y: top)
-                }
-                top = view.frame.maxY + self.spacing
-                
-                // layout divider
-                if idx < self.dividerViews.count {
-                   
-                    let d = self.dividerViews[idx]
-                    let specificShow = self.specificDividerShows[idx]
-                    
-                    if specificShow ?? self.showDivider {
-                        d.backgroundColor = divider.color
-                        d.isHidden = false
-                        d.frame = .init(x: divider.truncation, y: top, width: maxWidth - divider.truncation * 2, height: divider.width)
-                        
-                        top = d.frame.maxY + self.spacing
-                    } else {
-                        d.isHidden = true
-                    }
-                }
-            }
-            
-            self.innerContentSize = .init(width: maxWidth, height: top - self.spacing)
+            tmpInnerContentSize = .init(width: origin.x + maxWidth, height: self.frame.height)
         }
-        
-        self.invalidateIntrinsicContentSize()
     }
-
+    
     override var intrinsicContentSize: CGSize {
         return self.innerContentSize
     }
@@ -225,31 +168,9 @@ class PLArrangeView: UIView {
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         return self.innerContentSize
     }
-    
     override func sizeToFit() {
         self.layoutIfNeeded()
         super.sizeToFit()
     }
 }
 
-
-extension PLArrangeView {
-    enum Direction {
-        case horizontal
-        case vertical
-    }
-    
-    enum Alignment {
-        case left, right // vertical
-        case center
-        case top, bottom // horizontal
-    }
-    
-    
-    struct Divider {
-        var color: UIColor = .init(red: 0.85, green: 0.85, blue: 0.85, alpha: 1)
-        var width: CGFloat = 0.5
-        var truncation: CGFloat = 0
-    }
-    
-}

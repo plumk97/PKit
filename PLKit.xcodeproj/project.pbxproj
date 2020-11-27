@@ -106,6 +106,8 @@
 		81FE62102302E25A00C9BD31 /* DotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FE620F2302E25A00C9BD31 /* DotViewController.swift */; };
 		81FE62132302EA1F00C9BD31 /* icon_dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */; };
 		81FE62142302EA1F00C9BD31 /* icon_dot@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */; };
+		FE0FD8BA2570A7C400948ED2 /* AudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */; };
+		FE0FD8BD2570A7EB00948ED2 /* PLAudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */; };
 		FE9597E325343A8800CCB55C /* PLJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9597E225343A8800CCB55C /* PLJSON.swift */; };
 		FE9598022534539800CCB55C /* JsonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9598012534539800CCB55C /* JsonViewController.swift */; };
 /* End PBXBuildFile section */
@@ -214,6 +216,8 @@
 		81FE620F2302E25A00C9BD31 /* DotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotViewController.swift; sourceTree = "<group>"; };
 		81FE62112302EA1F00C9BD31 /* icon_dot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_dot@2x.png"; sourceTree = "<group>"; };
 		81FE62122302EA1F00C9BD31 /* icon_dot@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_dot@3x.png"; sourceTree = "<group>"; };
+		FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderViewController.swift; sourceTree = "<group>"; };
+		FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLAudioRecorder.swift; sourceTree = "<group>"; };
 		FE9597E225343A8800CCB55C /* PLJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLJSON.swift; sourceTree = "<group>"; };
 		FE9598012534539800CCB55C /* JsonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -343,6 +347,7 @@
 				8102CA7124655A8F00AE2278 /* NavigationController.swift */,
 				FE9598012534539800CCB55C /* JsonViewController.swift */,
 				5152869D2569586700AED246 /* GridViewController.swift */,
+				FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -376,6 +381,7 @@
 				811F280F243EFBFF00276CBF /* PLTabControl.swift */,
 				FE9597E225343A8800CCB55C /* PLJSON.swift */,
 				5152869925694F9000AED246 /* PLGridView.swift */,
+				FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -591,8 +597,10 @@
 				51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */,
 				8102CA7424655EAF00AE2278 /* PLNavigationController.swift in Sources */,
 				81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */,
+				FE0FD8BD2570A7EB00948ED2 /* PLAudioRecorder.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
+				FE0FD8BA2570A7C400948ED2 /* AudioRecorderViewController.swift in Sources */,
 				81D912A02435E5AA00A433D8 /* PLArrangeView.swift in Sources */,
 				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,
 				8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */,

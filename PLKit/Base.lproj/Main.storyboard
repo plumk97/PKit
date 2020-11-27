@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="nmH-ho-4A6">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="nmH-ho-4A6">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -230,6 +230,73 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xzu-Ss-Ab3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1978" y="230"/>
+        </scene>
+        <!--Audio Recorder View Controller-->
+        <scene sceneID="ssx-K7-Bnn">
+            <objects>
+                <viewController id="1S4-ne-a9X" customClass="AudioRecorderViewController" customModule="PLKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="P63-wI-FtM"/>
+                        <viewControllerLayoutGuide type="bottom" id="FR6-je-tGs"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QZa-eD-lrs">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nH3-9b-7d4">
+                                <rect key="frame" x="184" y="81" width="46" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="csK-Jc-XHl">
+                                <rect key="frame" x="141.5" y="150" width="131" height="57"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="57" id="D0h-Dc-dX2"/>
+                                    <constraint firstAttribute="width" constant="131" id="NsE-fD-pJX"/>
+                                </constraints>
+                                <state key="normal" title="录制">
+                                    <color key="titleColor" red="0.96470588239999999" green="0.96470588239999999" blue="0.96470588239999999" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="recordBtnClick:" destination="1S4-ne-a9X" eventType="touchUpInside" id="AHY-xZ-SgT"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G6a-0F-5ii">
+                                <rect key="frame" x="141.5" y="240" width="131" height="57"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="播放">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="playBtnClick:" destination="1S4-ne-a9X" eventType="touchUpInside" id="i4q-0Q-MKA"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="G6a-0F-5ii" firstAttribute="centerX" secondItem="csK-Jc-XHl" secondAttribute="centerX" id="FnQ-FP-4Eu"/>
+                            <constraint firstItem="G6a-0F-5ii" firstAttribute="width" secondItem="csK-Jc-XHl" secondAttribute="width" id="FsD-GM-QPf"/>
+                            <constraint firstItem="nH3-9b-7d4" firstAttribute="centerX" secondItem="QZa-eD-lrs" secondAttribute="centerX" id="MuQ-Hn-98U"/>
+                            <constraint firstItem="csK-Jc-XHl" firstAttribute="centerX" secondItem="QZa-eD-lrs" secondAttribute="centerX" id="bHu-qI-YFP"/>
+                            <constraint firstItem="G6a-0F-5ii" firstAttribute="height" secondItem="csK-Jc-XHl" secondAttribute="height" id="ciN-4R-OO7"/>
+                            <constraint firstItem="csK-Jc-XHl" firstAttribute="top" secondItem="nH3-9b-7d4" secondAttribute="bottom" constant="48" id="vd9-cE-8RJ"/>
+                            <constraint firstItem="nH3-9b-7d4" firstAttribute="top" secondItem="QZa-eD-lrs" secondAttribute="top" constant="81" id="xHk-x4-JHo"/>
+                            <constraint firstItem="G6a-0F-5ii" firstAttribute="top" secondItem="csK-Jc-XHl" secondAttribute="bottom" constant="33" id="xmd-rC-qxb"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="tw3-l9-mhS"/>
+                    <connections>
+                        <outlet property="durationLabel" destination="nH3-9b-7d4" id="d0z-d3-A8Y"/>
+                        <outlet property="playBtn" destination="G6a-0F-5ii" id="GoG-bS-XK7"/>
+                        <outlet property="recordBtn" destination="csK-Jc-XHl" id="vYE-I0-LtW"/>
+                        <outlet property="rootTopConstraint" destination="xHk-x4-JHo" id="7mX-bW-eqr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xRX-ve-WBN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-136.23188405797103" y="934.82142857142856"/>
         </scene>
         <!--Multi Menu Table View View Controller-->
         <scene sceneID="hVc-sj-gZ3">
@@ -910,6 +977,26 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="W68-c0-LH2" kind="push" id="ELM-oX-Ejm"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="hQb-rQ-CMl" style="IBUITableViewCellStyleDefault" id="Plv-aG-q6t">
+                                        <rect key="frame" x="0.0" y="776" width="414" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Plv-aG-q6t" id="kvQ-Qo-ATT">
+                                            <rect key="frame" x="0.0" y="0.0" width="383" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="VoiceRecorder" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hQb-rQ-CMl">
+                                                    <rect key="frame" x="20" y="0.0" width="355" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="1S4-ne-a9X" kind="push" id="Dj0-IF-DYD"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>

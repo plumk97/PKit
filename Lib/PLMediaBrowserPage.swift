@@ -153,7 +153,7 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
     
     static func fitSize(_ size: CGSize, targetSize: CGSize) -> CGSize {
         let ratio = min(targetSize.width / size.width, targetSize.height / size.height)
-        let newSize = CGSize.init(width: size.width * ratio, height: size.height * ratio)
+        let newSize = CGSize.init(width: Int(size.width * ratio), height: Int(size.height * ratio))
         return newSize
     }
 }

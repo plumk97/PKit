@@ -9,60 +9,87 @@
 import UIKit
 import YYImage
 
-protocol PLPhotoDatasource {}
-extension UIImage: PLPhotoDatasource {}
-extension URL: PLPhotoDatasource {}
-extension Data: PLPhotoDatasource {}
-extension String: PLPhotoDatasource {}
+protocol PLPhotoData {}
+extension UIImage: PLPhotoData {}
+extension URL: PLPhotoData {}
+extension Data: PLPhotoData {}
+extension String: PLPhotoData {}
 
 class PLPhoto: NSObject {
-    var thumbnail: PLPhotoDatasource?
-    var data: PLPhotoDatasource?
-    convenience init(data: PLPhotoDatasource?, thumbnail: PLPhotoDatasource?) {
+    var thumbnail: PLPhotoData?
+    var data: PLPhotoData?
+    convenience init(data: PLPhotoData?, thumbnail: PLPhotoData?) {
         self.init()
         self.data = data
         self.thumbnail = thumbnail
     }
 }
 
-/// 下载完成Callback
-typealias PLPhotoBrowserDownloadCompletionCallback = (UIImage?)->Void
-
-/// 下载Callback
-typealias PLPhotoBrowserDownloadCallback = (URL, Bool, @escaping PLPhotoBrowserDownloadCompletionCallback)->Void
-
-/// 界面改变Callback
-typealias PLPhotoBrowserDidChangePageCallback = (PLPhotoBrowser, Int)->Void
-
 class PLPhotoBrowser: UIViewController {
     
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .default
-    }
+    /// 下载完成Callback
+    typealias DownloadCompleteCallback = (UIImage?)->Void
     
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag) {
-            let rootViewController = UIApplication.shared.keyWindow?.rootViewController
-            if flag {
-                UIView.animate(withDuration: 0.25) {
-                    rootViewController?.setNeedsStatusBarAppearanceUpdate()
-                }
-            } else {
-                rootViewController?.setNeedsStatusBarAppearanceUpdate()
-            }
-            
-            completion?()
+    /// 下载Callback (下载链接, 是否是缩略图，下载完成回调)
+    typealias DownloadCallback = (URL, Bool, @escaping DownloadCompleteCallback)->Void
+    
+    /// 翻页Callback
+    typealias DidChangePageCallback = (PLPhotoBrowser, Int)->Void
+    
+    /// 每页之间的间距
+    var pageSpacing: CGFloat = 10
+    
+    /// 启用单击关闭
+    var enableSingleTapClose: Bool = true
+    
+    /// 翻页回调
+    var didChangePageCallback: DidChangePageCallback?
+    
+    /// 来自哪一个view 与过渡动画有关
+    weak var fromImageView: UIImageView?
+    
+    /// 当前数据源
+    private(set) var photos: [PLPhoto]? {
+        didSet {
+            self.updatePageTips()
         }
     }
     
-    convenience init(photos: [PLPhoto], initIndex: Int = 0, fromView: UIImageView? = nil) {
-        self.init()
-        self.fromView = fromView
+    /// 当前第几页
+    private(set) var currentPageIndex: Int = 0 {
+        didSet {
+            self.updatePageTips()
+            if oldValue != currentPageIndex {
+                self.didChangePageCallback?(self, currentPageIndex)
+            }
+        }
+    }
+    
+    /// 需要下载时的回调
+    fileprivate var downloadCallback: DownloadCallback?
+    
+    // --
+    fileprivate var collectionView: UICollectionView!
+    fileprivate var pageTipsLabel: UILabel!
+    
+    
+    init(photos: [PLPhoto], initIndex: Int = 0, fromImageView: UIImageView? = nil) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.fromImageView = fromImageView
         self.photos = photos
         self.currentPageIndex = initIndex
+        
+        self.commInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        
+        self.commInit()
+    }
+    
+    fileprivate func commInit() {
         self.modalPresentationStyle = .custom
         self.modalPresentationCapturesStatusBarAppearance = true
         self.transitioningDelegate = self
@@ -99,41 +126,15 @@ class PLPhotoBrowser: UIViewController {
                 
             }).resume()
         }
-        
     }
-    
-    
-    var itemSpacing: CGFloat = 10
-    var enableSingleTapClose: Bool = true
-    var didChangePageCallback: PLPhotoBrowserDidChangePageCallback?
-    
-    weak var fromView: UIImageView?
-    
-    private(set) var photos: [PLPhoto]? {
-        didSet {
-            self.updatePageTips()
-        }
-    }
-    
-    private(set) var currentPageIndex: Int = 0 {
-        didSet {
-            self.updatePageTips()
-            if oldValue != currentPageIndex {
-                self.didChangePageCallback?(self, currentPageIndex)
-            }
-        }
-    }
-    
-    fileprivate var downloadCallback: PLPhotoBrowserDownloadCallback?
-    fileprivate var collectionView: UICollectionView!
-    fileprivate var pageTipsLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .black
         
         var bounds = self.view.bounds
-        bounds.size.width += 10
+        bounds.size.width += self.pageSpacing
+        
         let collectionLayout = UICollectionViewFlowLayout()
         collectionLayout.minimumLineSpacing = 0
         collectionLayout.minimumInteritemSpacing = 0
@@ -157,7 +158,8 @@ class PLPhotoBrowser: UIViewController {
         self.view.addSubview(self.pageTipsLabel)
         
         DispatchQueue.main.async {
-            self.setup()
+            self.collectionView.setContentOffset(.init(x: CGFloat(self.currentPageIndex) * self.collectionView.frame.width, y: 0), animated: true)
+            self.updatePageTips()
         }
     }
     
@@ -165,7 +167,7 @@ class PLPhotoBrowser: UIViewController {
         super.viewWillLayoutSubviews()
         
         var frame = self.view.bounds
-        frame.size.width += self.itemSpacing
+        frame.size.width += self.pageSpacing
         
         let layout = self.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
         layout?.itemSize = frame.size
@@ -173,16 +175,16 @@ class PLPhotoBrowser: UIViewController {
         self.collectionView.frame = frame
         
         if #available(iOS 11.0, *) {
-            self.pageTipsLabel.frame = .init(x: 0, y: self.view.bounds.height - self.view.safeAreaInsets.bottom - self.pageTipsLabel.font.lineHeight - 30, width: self.view.bounds.width, height: self.pageTipsLabel.font.lineHeight)
-        } else {
-            // Fallback on earlier versions
+            let safeArea = self.view.safeAreaInsets
+            self.pageTipsLabel.frame = .init(x: 0, y: self.view.bounds.height - safeArea.bottom - self.pageTipsLabel.font.lineHeight - 30,
+                                             width: self.view.bounds.width, height: self.pageTipsLabel.font.lineHeight)
         }
     }
     
     /// 设置下载图片方法
     ///
     /// - Parameter callback:
-    func setDownloadImageCallback(_ callback: @escaping PLPhotoBrowserDownloadCallback) {
+    func setDownloadImageCallback(_ callback: @escaping DownloadCallback) {
         self.downloadCallback = callback
     }
     
@@ -197,7 +199,6 @@ class PLPhotoBrowser: UIViewController {
         self.collectionView.setContentOffset(.init(x: CGFloat(pageIndex) * self.collectionView.frame.width, y: 0), animated: true)
     }
     
-    
     /// 获取当前浏览界面
     ///
     /// - Returns:
@@ -206,19 +207,39 @@ class PLPhotoBrowser: UIViewController {
         return cell.page
     }
     
-    /// 初始化配置
-    fileprivate func setup() {
-        self.collectionView.setContentOffset(.init(x: CGFloat(self.currentPageIndex) * self.collectionView.frame.width, y: 0), animated: true)
-        self.updatePageTips()
-    }
     
     /// 更新页数提示
     fileprivate func updatePageTips() {
         self.pageTipsLabel.text = "\(currentPageIndex + 1) / \(photos?.count ?? 0)"
     }
+    
+    // MARK: - StatusBar 保证状态栏显示正确
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .default
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag) {
+            let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+            if flag {
+                UIView.animate(withDuration: 0.25) {
+                    rootViewController?.setNeedsStatusBarAppearanceUpdate()
+                }
+            } else {
+                rootViewController?.setNeedsStatusBarAppearanceUpdate()
+            }
+            
+            completion?()
+        }
+    }
 }
 
 
+// MARK: - Class PLPhotoBrowserCell
 fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
     
     weak var browser: PLPhotoBrowser?
@@ -292,13 +313,15 @@ fileprivate class PLPhotoBrowserCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
         var bounds = self.contentView.bounds
-        bounds.size.width -= 10
+        bounds.size.width -= self.browser?.pageSpacing ?? 0
+        
         self.page.frame = bounds
         self.waitIndicator.center = .init(x: bounds.width / 2, y: bounds.height / 2)
     }
     
-    func loadPhoto(_ dataSource: PLPhotoDatasource, isThumb: Bool) {
+    func loadPhoto(_ dataSource: PLPhotoData, isThumb: Bool) {
         
         if let image = dataSource as? UIImage {
             self.page.image = image
@@ -386,41 +409,44 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         
         let containerView = transitionContext.containerView
         containerView.frame = UIScreen.main.bounds
+        
         // 获取view
-        var browser: PLPhotoBrowser?
-        var anotherView: UIView?
-        var browserView: UIView?
+        var browser: PLPhotoBrowser!
+        
+        var anotherView: UIView!
+        var browserView: UIView!
+        
         if self.isPresent {
             browser = transitionContext.viewController(forKey: .to) as? PLPhotoBrowser
-            
+
             anotherView = transitionContext.view(forKey: .from)
             browserView = transitionContext.view(forKey: .to)
         } else {
             browser = transitionContext.viewController(forKey: .from) as? PLPhotoBrowser
-            
+
             anotherView = transitionContext.view(forKey: .to)
             browserView = transitionContext.view(forKey: .from)
         }
-        
+
         // 添加view
         if self.isPresent {
             if let view = anotherView {
                 containerView.addSubview(view)
             }
-            
+
             if let view = browserView {
                 view.frame = containerView.bounds
                 containerView.addSubview(view)
             }
         }
-        
+
         // -- 动画
         let duration = self.transitionDuration(using: nil)
-        
-        // 没有fromview 或 截取失败 做简单的渐变动画
-        if browser?.fromView == nil || browser?.fromView?.image == nil {
+
+        // 没有fromImageView做简单的渐变动画
+        guard let fromImageView = browser.fromImageView else {
             if self.isPresent {
-                
+
                 browserView?.alpha = 0
                 UIView.animate(withDuration: duration, animations: {
                     browserView?.alpha = 1
@@ -437,34 +463,29 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             }
             return
         }
-        
-        guard let fromView = browser?.fromView else {
-            return
-        }
-        
-        
-        
+
+
         if self.isPresent {
-            let snapshotView = UIImageView.init(image: browser?.fromView?.image)
-            snapshotView.contentMode = browser?.fromView?.contentMode ?? .scaleToFill
+            let snapshotView = UIImageView.init(image: fromImageView.image)
+            snapshotView.contentMode = fromImageView.contentMode
             snapshotView.clipsToBounds = true
-            
-            let fromRect = fromView.superview?.convert(fromView.frame, to: browser!.view) ?? snapshotView.frame
+
+            let fromRect = fromImageView.superview?.convert(fromImageView.frame, to: browser.view) ?? snapshotView.frame
             snapshotView.frame = fromRect
             containerView.addSubview(snapshotView)
-            
-            
+
+
             let targetSize = browser!.view.frame.size
             var toRect = snapshotView.frame
-            toRect.size = PLPhotoBrowserPage.scale(fromSize: browser?.fromView?.image?.size ?? toRect.size, targetSize: targetSize)
-            
+            toRect.size = PLPhotoBrowserPage.scale(fromSize: fromImageView.image?.size ?? toRect.size, targetSize: targetSize)
+
             toRect.origin.x = (targetSize.width - toRect.width) / 2
             toRect.origin.y = (targetSize.height - toRect.height) / 2
-            
-            
+
+
             browser?.collectionView.isHidden = true
             browserView?.alpha = 0
-            
+
             UIView.animate(withDuration: duration, animations: {
                 snapshotView.frame = toRect
                 browserView?.alpha = 1
@@ -476,17 +497,19 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
             
         } else {
             
-            let imageView = browser?.currentBrowserPage().imageView
-            let snapshotView = UIImageView.init(image: imageView?.image)
-            snapshotView.contentMode = browser?.fromView?.contentMode ?? .scaleToFill
+            let page = browser.currentBrowserPage()
+            let imageView = page.imageView!
+            
+            let snapshotView = UIImageView.init(image: page.image)
+            snapshotView.contentMode = fromImageView.contentMode
             snapshotView.clipsToBounds = true
-            
-            let fromRect = browser?.currentBrowserPage().convert(imageView!.frame, to: browser!.view) ?? imageView!.frame
-            let toRect = fromView.superview?.convert(fromView.frame, to: browser!.view) ?? CGRect.zero
-            
+
+            let fromRect = page.convert(imageView.frame, to: browser.view)
+            let toRect = fromImageView.superview?.convert(fromImageView.frame, to: browser!.view) ?? CGRect.zero
+
             snapshotView.frame = fromRect
             containerView.addSubview(snapshotView)
-            
+
             browser?.collectionView.isHidden = true
             UIView.animate(withDuration: duration, animations: {
                 snapshotView.frame = toRect
@@ -500,6 +523,7 @@ class PLPhotoBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
     }
 }
 
+// MARK: - UIViewControllerTransitioningDelegate
 extension PLPhotoBrowser: UIViewControllerTransitioningDelegate {
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         

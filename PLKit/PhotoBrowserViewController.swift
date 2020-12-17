@@ -7,43 +7,50 @@
 //
 
 import UIKit
+import YYImage
 
 class PhotoBrowserViewController: UIViewController {
 
-    class BUTT: UIButton {
-        deinit {
-            print("BUTT")
-        }
-    }
-    var imageView: UIImageView!
+    
+    
     var imageCache = NSCache<NSString, UIImage>()
-    var index = 8
+    var urls = [String]()
+    var gridView: PLGridView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "PhotoBrowserViewController"
         
-        self.navigationItem.rightBarButtonItems = [
-            .init(title: "item", style: .plain, target: nil, action: nil),
-            .init(title: "item", style: .plain, target: nil, action: nil),
-            .init(customView: BUTT())]
         
-        imageView = UIImageView.init(frame: .init(x: 20, y: 100, width: 300, height: 199))
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        self.view.addSubview(self.imageView)
+        let plainText = try! String.init(contentsOfFile: Bundle.main.path(forResource: "imagesrc", ofType: "text")!)
+        self.urls = plainText.components(separatedBy: "\n").filter({ $0.count > 0 })
         
-        self.loadImage(url: "https://ss1.baidu.com/9vo3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=92afee66fd36afc3110c39658318eb85/908fa0ec08fa513db777cf78376d55fbb3fbd9b3.jpg")
+        self.gridView = PLGridView(self.urls.enumerated().map({[unowned self] in
+            let imageView = YYAnimatedImageView()
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
+            imageView.tag = $0.offset + 10
+            self.loadImage(url: $0.element) { (x) in
+                imageView.image = x
+            }
+            
+            let tap = UITapGestureRecognizer.init(target: self, action: #selector(self.imageViewTapGestureHandle(_:)))
+            imageView.addGestureRecognizer(tap)
+            imageView.isUserInteractionEnabled = true
+            
+            return imageView
+        }), direction: .horizontal, crossAxisCount: 4, mainAxisSpacing: 10, crossAxisSpacing: 10)
+        self.gridView.frame = .init(x: 20, y: 100, width: self.view.frame.width - 40, height: 0)
+        self.gridView.sizeToFit()
+        
+        self.view.addSubview(self.gridView)
     }
-    
-    deinit {
-        print(11)
-    }
-    
-    func loadImage(url: String) {
+
+    func loadImage(url: String, complete: ((UIImage?)->Void)?) {
         
         let key = url as NSString
         if let image = self.imageCache.object(forKey: key) {
-            imageView.image = image
+            complete?(image)
             return
         }
         
@@ -53,6 +60,15 @@ class PhotoBrowserViewController: UIViewController {
         
         URLSession.shared.downloadTask(with: uurl, completionHandler: {[weak self] (fileurl, response, error) in
             
+            var image: UIImage?
+            defer {
+                DispatchQueue.main.async {
+                    if let x = image {
+                        self?.imageCache.setObject(x, forKey: key)
+                    }
+                    complete?(image)
+                }
+            }
             guard error == nil else {
                 print(error!)
                 return
@@ -66,31 +82,29 @@ class PhotoBrowserViewController: UIViewController {
                 return
             }
             
-            guard let image = UIImage.init(data: data) else {
+            guard let x = YYImage.init(data: data) else {
                 return
             }
             
-            DispatchQueue.main.async {
-                self?.imageView.image = image
-                self?.imageCache.setObject(image, forKey: key)
-            }
-            
+            image = x
         }).resume()
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let plainText = try! String.init(contentsOfFile: Bundle.main.path(forResource: "imagesrc", ofType: "text")!)
+    @objc func imageViewTapGestureHandle(_ sender: UITapGestureRecognizer) {
+        guard let x = sender.view as? UIImageView else {
+            return
+        }
         
-        let urls = plainText.components(separatedBy: "\n") as [PLPhotoDatasource]
-        let photos = urls.map({ (el) -> PLPhoto in
-            let photo = PLPhoto.init(data: el, thumbnail: nil)
+        let mediaArray: [PLMedia] = self.urls.map({[unowned self] in
+            let photo = PLMedia.init(data: $0, thumbnail: nil)
+            photo.setImageDownloadCallback { (url, callback) in
+                self.loadImage(url: url.absoluteString, complete: callback)
+            }
             return photo
         })
-        
-        let browser = PLPhotoBrowser(photos: photos, initIndex: self.index, fromView: self.imageView)
-        browser.didChangePageCallback = { _, index in
-            self.loadImage(url: urls[index] as! String)
-            self.index = index
+        let browser = PLMediaBrowser.init(mediaArray: mediaArray, initIndex: x.tag - 10, fromImageView: x)
+        browser.didChangePageCallback = { browser, idx in
+            browser.fromImageView = self.gridView.viewWithTag(idx + 10) as? UIImageView
         }
         self.present(browser, animated: true, completion: nil)
     }

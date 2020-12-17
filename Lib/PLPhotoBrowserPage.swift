@@ -10,7 +10,7 @@ import UIKit
 import UIKit.UIGestureRecognizerSubclass
 import YYImage
 
-fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
+fileprivate class PLPhotoCloseGestureRecognizer: UIGestureRecognizer {
     
     private var beginPoint = CGPoint.zero
     private var point = CGPoint.zero
@@ -86,6 +86,7 @@ fileprivate class PLPhotoClosePanGestureRecognizer: UIGestureRecognizer {
 }
 
 class PLPhotoBrowserPage: UIScrollView {
+    
     typealias SingleTapCallback = (PLPhotoBrowserPage) -> Void
     typealias LongPressCallback = (PLPhotoBrowserPage) -> Void
     typealias PanCloseCallback = (PLPhotoBrowserPage, CGFloat) -> Void
@@ -104,7 +105,7 @@ class PLPhotoBrowserPage: UIScrollView {
     var panCloseCallback: PanCloseCallback?
     var closedCallback: ClosedCallback?
     
-    fileprivate var panGesture: PLPhotoClosePanGestureRecognizer!
+    fileprivate var closeGesture: PLPhotoCloseGestureRecognizer!
     private var panLastPoint: CGPoint = .zero
     private var panBeginPoint: CGPoint = .zero
     
@@ -132,9 +133,9 @@ class PLPhotoBrowserPage: UIScrollView {
         self.addGestureRecognizer(longPress)
         
         
-        panGesture = PLPhotoClosePanGestureRecognizer.init(target: self, action: #selector(panGestureHandle(_ :)))
-        panGesture.delegate = self
-        self.addGestureRecognizer(panGesture)
+        self.closeGesture = PLPhotoCloseGestureRecognizer.init(target: self, action: #selector(closeGestureHandle(_ :)))
+        self.closeGesture.delegate = self
+        self.addGestureRecognizer(self.closeGesture)
         
     }
     
@@ -218,7 +219,7 @@ class PLPhotoBrowserPage: UIScrollView {
         }
     }
     
-    @objc fileprivate func panGestureHandle(_ sender: PLPhotoClosePanGestureRecognizer) {
+    @objc fileprivate func closeGestureHandle(_ sender: PLPhotoCloseGestureRecognizer) {
         let point = sender.location(in: self)
         var progress: CGFloat = 0
         if sender.state == .began {
@@ -264,7 +265,7 @@ extension PLPhotoBrowserPage: UIScrollViewDelegate {
         self.setNeedsLayout()
         self.layoutIfNeeded()
         // 如果已经放大则不可以拖动关闭
-        self.panGesture.isEnabled = scrollView.zoomScale <= scrollView.minimumZoomScale
+        self.closeGesture.isEnabled = scrollView.zoomScale <= scrollView.minimumZoomScale
     }
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -278,14 +279,14 @@ extension PLPhotoBrowserPage: UIGestureRecognizerDelegate {
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
-        if gestureRecognizer == self.panGesture {
-            return !self.panGesture.isRunning
+        if gestureRecognizer == self.closeGesture {
+            return !self.closeGesture.isRunning
         }
         return false
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer != self.panGesture && self.panGesture.isRunning {
+        if gestureRecognizer != self.closeGesture && self.closeGesture.isRunning {
             return false
         }
         return true

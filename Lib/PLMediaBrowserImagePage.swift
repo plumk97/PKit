@@ -17,6 +17,7 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
     }
     
     var imageView: UIImageView!
+    var doubleTapGesture: UITapGestureRecognizer!
     
     override func commInit() {
         super.commInit()
@@ -25,11 +26,11 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
         self.contentView.addSubview(self.imageView)
         self.scrollView.maximumZoomScale = 5
         
-        let doubleTap = UITapGestureRecognizer.init(target: self, action: #selector(doubleTapGestureHandle(_ :)))
-        doubleTap.numberOfTapsRequired = 2
-        self.addGestureRecognizer(doubleTap)
+        self.doubleTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(doubleTapGestureHandle(_ :)))
+        self.doubleTapGesture.numberOfTapsRequired = 2
+        self.addGestureRecognizer(self.doubleTapGesture)
         
-        self.singleTapGesture.require(toFail: doubleTap)
+        self.singleTapGesture.require(toFail: self.doubleTapGesture)
     }
     
     override func singleTapGestureHandle(_ sender: UITapGestureRecognizer) {
@@ -64,57 +65,72 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
         }
         
         if let x = media.thumbnail {
-            self.parseData(data: x)
+            self._showLoading()
+            self.parseData(data: x) {[weak self] image in
+                self?._hideLoading()
+                if self?.imageView.image == nil, let image = image {
+                    self?.imageView.image = image
+                    self?.update()
+                }
+            }
         }
         
         if let x = media.data {
-            self.parseData(data: x)
+            self._showLoading()
+            self.parseData(data: x) {[weak self] image in
+                self?._hideLoading()
+                if let image = image {
+                    self?.imageView.image = image
+                    self?.update()
+                }
+            }
         }
     }
     
-    func parseData(data: PLMediaData) {
+    func parseData(data: PLMediaData, complete: ((UIImage?)->Void)?) {
         
         switch data {
         case let x as UIImage:
-            self.imageView.image = x
-            self.update()
+            complete?(x)
             
         case let x as URL:
-            self.parseURL(x)
+            self.parseURL(x, complete: complete)
         
         case let x as String:
             guard let url = URL.init(string: x) else {
+                complete?(nil)
                 return
             }
-            self.parseURL(url)
+            self.parseURL(url, complete: complete)
             
         case let x as Data:
-            self.imageView.image = YYImage.init(data: x)
-            self.update()
+            complete?(YYImage.init(data: x))
             
         case let x as PHAsset:
-            break
+            let op = PHImageRequestOptions()
+            op.deliveryMode = .highQualityFormat
+            PHImageManager.default().requestImage(for: x, targetSize: .zero, contentMode: .default, options: op) { (image, _) in
+                DispatchQueue.main.async {
+                    complete?(image)
+                }
+            }
             
         default:
             break
         }
     }
     
-    func parseURL(_ url: URL) {
+    func parseURL(_ url: URL, complete: ((UIImage?)->Void)?) {
         if url.isFileURL {
             guard let data = try? Data.init(contentsOf: url) else {
                 return
             }
-            self.imageView.image = YYImage.init(data: data)
-            self.update()
+            complete?(YYImage.init(data: data))
             return
         }
         
-        self.media?.imageDownloadCallback?(url, {[weak self] image in
-            if let x = image {
-                self?.imageView.image = x
-            }
-            self?.update()
+        self.media?.imageDownloadCallback?(url, {image in
+            complete?(image)
         })
     }
     

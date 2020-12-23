@@ -41,12 +41,15 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
     private(set) var scrollView: UIScrollView!
     private(set) var contentView: UIView!
     
+    private(set) var loadingIndicatorView: UIActivityIndicatorView!
+    private var loadingShowCount = 0
+    
     /// 封面图片 与消失过渡动画有关 不返回只是渐隐动画
     var coverImage: UIImage? {
         return nil
     }
     
-    init(media: PLMedia) {
+    required init(media: PLMedia) {
         super.init(frame: .zero)
         self.media = media
         self.commInit()
@@ -70,6 +73,8 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
         self.contentView = UIView()
         self.scrollView.addSubview(self.contentView)
         
+        self.loadingIndicatorView = UIActivityIndicatorView(style: .white)
+        self.addSubview(self.loadingIndicatorView)
 
         self.closeGesture = CloseGestureRecognizer.init(target: self, action: #selector(closeGestureHandle(_ :)))
         self.closeGesture.delegate = self
@@ -120,12 +125,35 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         self.scrollView.frame = self.bounds
+        self.loadingIndicatorView.sizeToFit()
+        
+        if #available(iOS 11.0, *) {
+            
+            self.loadingIndicatorView.frame.origin = .init(x: self.layoutMargins.left,
+                                                           y: self.layoutMargins.top)
+        }
+    }
+    
+    func _showLoading() {
+        self.loadingShowCount += 1
+        guard !self.loadingIndicatorView.isAnimating else {
+            return
+        }
+        self.loadingIndicatorView.startAnimating()
+    }
+    
+    func _hideLoading() {
+        self.loadingShowCount = max(0, self.loadingShowCount - 1)
+        guard self.loadingIndicatorView.isAnimating && self.loadingShowCount <= 0 else {
+            return
+        }
+        self.loadingIndicatorView.stopAnimating()
     }
     
     
     static func fitSize(_ size: CGSize, targetSize: CGSize) -> CGSize {
         let ratio = min(targetSize.width / size.width, targetSize.height / size.height)
-        let newSize = CGSize.init(width: size.width * ratio, height: size.height * ratio)
+        let newSize = CGSize.init(width: Int(size.width * ratio), height: Int(size.height * ratio))
         return newSize
     }
 }

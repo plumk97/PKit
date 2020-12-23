@@ -9,6 +9,20 @@
 import UIKit
 import YYImage
 
+class PLMediaBrowserConfig {
+    static let shared = PLMediaBrowserConfig()
+    
+    var pageClass = [PLMedia.MediaType: PLMediaBrowserPage.Type]()
+    static var pageClass: [PLMedia.MediaType: PLMediaBrowserPage.Type] {
+        return self.shared.pageClass
+    }
+    
+    init() {
+        self.pageClass[.image] = PLMediaBrowserImagePage.self
+        self.pageClass[.video] = PLMediaBrowserVideoPage.self
+    }
+}
+
 class PLMediaBrowser: UIViewController {
     
     /// 翻页Callback
@@ -114,6 +128,7 @@ class PLMediaBrowser: UIViewController {
         layout?.itemSize = frame.size
         
         self.collectionView.frame = frame
+        self.collectionView.setContentOffset(.init(x: CGFloat(self.currentPageIndex) * self.collectionView.frame.width, y: 0), animated: false)
         
         if #available(iOS 11.0, *) {
             let safeArea = self.view.safeAreaInsets
@@ -193,6 +208,12 @@ extension PLMediaBrowser: UICollectionViewDataSource, UICollectionViewDelegate {
             cell.media = self.mediaArray[indexPath.row]
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if let cell = cell as? PLMediaBrowserCell {
+            cell.media = nil
+        }
+    }
 }
 
 // MARK: - Class PLPhotoBrowserCell
@@ -223,8 +244,8 @@ fileprivate class PLMediaBrowserCell: UICollectionViewCell {
         guard let x = self.media else {
             return
         }
-        
-        let page = PLMediaBrowserImagePage(media: x)
+        let cls = PLMediaBrowserConfig.pageClass[x.mediaType]
+        let page = cls!.init(media: x)
         self.contentView.addSubview(page)
         
         page.closeProgressCallback = {[unowned self] _, progress in

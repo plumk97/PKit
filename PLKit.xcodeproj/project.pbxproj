@@ -107,6 +107,8 @@
 		985533CE258BA41900CFD39B /* PLMediaBrowserVideoPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985533CD258BA41900CFD39B /* PLMediaBrowserVideoPage.swift */; };
 		985533D3258BAC1B00CFD39B /* icon_play1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 985533D1258BAC1B00CFD39B /* icon_play1@2x.png */; };
 		985533D4258BAC1B00CFD39B /* icon_play1@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 985533D2258BAC1B00CFD39B /* icon_play1@3x.png */; };
+		9872E3BD259380AB00E501D2 /* BannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9872E3BC259380AB00E501D2 /* BannerViewController.swift */; };
+		9872E3C0259380EC00E501D2 /* PLBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9872E3BF259380EC00E501D2 /* PLBanner.swift */; };
 		FE0FD8BA2570A7C400948ED2 /* AudioRecorderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */; };
 		FE0FD8BD2570A7EB00948ED2 /* PLAudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */; };
 		FE9597E325343A8800CCB55C /* PLJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9597E225343A8800CCB55C /* PLJSON.swift */; };
@@ -222,6 +224,8 @@
 		985533CD258BA41900CFD39B /* PLMediaBrowserVideoPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLMediaBrowserVideoPage.swift; sourceTree = "<group>"; };
 		985533D1258BAC1B00CFD39B /* icon_play1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_play1@2x.png"; sourceTree = "<group>"; };
 		985533D2258BAC1B00CFD39B /* icon_play1@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_play1@3x.png"; sourceTree = "<group>"; };
+		9872E3BC259380AB00E501D2 /* BannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerViewController.swift; sourceTree = "<group>"; };
+		9872E3BF259380EC00E501D2 /* PLBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLBanner.swift; sourceTree = "<group>"; };
 		FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorderViewController.swift; sourceTree = "<group>"; };
 		FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLAudioRecorder.swift; sourceTree = "<group>"; };
 		FE9597E225343A8800CCB55C /* PLJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLJSON.swift; sourceTree = "<group>"; };
@@ -360,6 +364,7 @@
 				FE9598012534539800CCB55C /* JsonViewController.swift */,
 				5152869D2569586700AED246 /* GridViewController.swift */,
 				FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */,
+				9872E3BC259380AB00E501D2 /* BannerViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
 				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
@@ -397,6 +402,7 @@
 				FE9597E225343A8800CCB55C /* PLJSON.swift */,
 				5152869925694F9000AED246 /* PLGridView.swift */,
 				FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */,
+				9872E3BF259380EC00E501D2 /* PLBanner.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -612,12 +618,14 @@
 				812FBF45226EAF0000CA1831 /* PLRippleAnimate.swift in Sources */,
 				FEE598E3258B4B630091967F /* PLMediaBrowserImagePage.swift in Sources */,
 				51014EF322ACEBF80021641A /* PLBadgeView.swift in Sources */,
+				9872E3C0259380EC00E501D2 /* PLBanner.swift in Sources */,
 				8102CA7424655EAF00AE2278 /* PLNavigationController.swift in Sources */,
 				81E1ACC822FE6ED4007DB464 /* PLHUD.swift in Sources */,
 				FE0FD8BD2570A7EB00948ED2 /* PLAudioRecorder.swift in Sources */,
 				81948F562278236000868B88 /* PLPageScrollView.swift in Sources */,
 				812FBF47226EB77400CA1831 /* PLKit.swift in Sources */,
 				FE0FD8BA2570A7C400948ED2 /* AudioRecorderViewController.swift in Sources */,
+				9872E3BD259380AB00E501D2 /* BannerViewController.swift in Sources */,
 				81D912A02435E5AA00A433D8 /* PLArrangeView.swift in Sources */,
 				810FD77A22FAAFE3002EB244 /* TabBarViewController.swift in Sources */,
 				8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */,

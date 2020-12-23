@@ -49,9 +49,12 @@ class TabControlViewController: UIViewController {
         
         
         self.tabControl = PLTabControl.init(items: [item1, item2, item3])
+        self.tabControl.indicateHeight = 5
         self.tabControl.sizeToFit()
         self.tabControl.frame.origin = .init(x: 30, y: 100)
         self.view.addSubview(self.tabControl)
+        
+        self.tabControl.indicateColors = [.cyan, .red]
         
         self.tabControl.didChangeSelectedIndexBlock = { index in
             

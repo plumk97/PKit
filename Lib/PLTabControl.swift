@@ -33,9 +33,23 @@ class PLTabControl: UIView {
     var items: [Item]? { didSet { self.reload() }}
     
     /// 指示条颜色
-    var indicateColor: UIColor = .init(red: 1, green: 0, blue: 0, alpha: 1) {
+    var indicateColor: UIColor? {
+        set {
+            if newValue == nil {
+                self.indicateColors.removeAll()
+            } else {
+                self.indicateColors = [newValue!]
+            }
+        }
+        
+        get {
+            return self.indicateColors.first
+        }
+    }
+    
+    var indicateColors: [UIColor] = [.init(red: 1, green: 0, blue: 0, alpha: 1)] {
         didSet {
-            self.indicateBar?.backgroundColor = indicateColor.cgColor
+            self.reloadIndicateBarStyle()
         }
     }
     
@@ -80,15 +94,17 @@ class PLTabControl: UIView {
     fileprivate var interactionAnimationProgress: CGFloat = 0
     
     /// 底部指示条
-    private var indicateBar: CALayer!
+    private var indicateBar: CAGradientLayer!
     
     init(items: [Item], setup: ((PLTabControl)->Void)? = nil) {
         super.init(frame: .zero)
         
         setup?(self)
         
-        self.indicateBar = CALayer()
+        self.indicateBar = CAGradientLayer()
         self.indicateBar.contentsScale = UIScreen.main.scale
+        self.indicateBar.startPoint = .init(x: 0, y: 0.5)
+        self.indicateBar.endPoint = .init(x: 1, y: 0.5)
         self.reloadIndicateBar()
         self.layer.addSublayer(self.indicateBar)
         
@@ -157,10 +173,24 @@ class PLTabControl: UIView {
         }
         
         self.indicateBar.frame.size.height = self.indicateHeight
-        self.indicateBar.cornerRadius = self.indicateHeight / 2
-        self.indicateBar.backgroundColor = self.indicateColor.cgColor
-        
+        self.reloadIndicateBarStyle()
         self.invalidateIntrinsicContentSize()
+    }
+    
+    fileprivate func reloadIndicateBarStyle() {
+        
+        guard self.indicateBar != nil else {
+            return
+        }
+        self.indicateBar.cornerRadius = self.indicateHeight / 2
+        if self.indicateColors.count > 1 {
+            self.indicateBar.colors = self.indicateColors.map({ $0.cgColor })
+        } else if self.indicateColors.count > 0 {
+            self.indicateBar.colors = [self.indicateColors[0].cgColor, self.indicateColors[0].cgColor]
+        } else {
+            self.indicateBar.colors = nil
+        }
+        
     }
     
     /// 更新显示

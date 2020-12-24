@@ -40,6 +40,7 @@ class PLBanner<Model>: UIView {
             self.predownloadBothSideImage()
             self.pageControl.numberOfPages = self.models.count
             self.collectionView.reloadData()
+            self.reloadAutoplayTimer()
             self.setNeedsLayout()
         }
     }
@@ -90,7 +91,8 @@ class PLBanner<Model>: UIView {
         self.collectionViewLayout.minimumLineSpacing = 0
         self.collectionViewLayout.minimumInteritemSpacing = 0
         
-        self.collectionView = UICollectionView(frame: self.bounds, collectionViewLayout: self.collectionViewLayout)
+        self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.collectionViewLayout)
+        self.collectionView.backgroundColor = .clear
         self.collectionView.isPagingEnabled = true
         self.collectionView.bounces = false
         self.collectionView.showsVerticalScrollIndicator = false

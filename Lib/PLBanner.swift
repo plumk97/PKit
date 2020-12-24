@@ -176,15 +176,17 @@ class PLBanner<Model>: UIView {
     
     fileprivate func reloadAutoplayTimer() {
         
-        self.autoplayTimer?.invalidate()
-        self.autoplayTimer = nil
+        let isEnableTimer = self.superview != nil && self.autoplay && self.playDuration > 0 && self.models.count > 1
         
-        guard self.superview != nil && self.autoplay && self.playDuration > 0 && self.models.count > 1 else {
-            return
+        if isEnableTimer {
+            if self.autoplayTimer == nil {
+                self.autoplayTimer = Timer.init(timeInterval: self.playDuration, target: self, selector: #selector(autoplayTimerTick), userInfo: nil, repeats: true)
+                RunLoop.main.add(self.autoplayTimer!, forMode: .common)
+            }
+        } else {
+            self.autoplayTimer?.invalidate()
+            self.autoplayTimer = nil
         }
-        
-        self.autoplayTimer = Timer.init(timeInterval: self.playDuration, target: self, selector: #selector(autoplayTimerTick), userInfo: nil, repeats: true)
-        RunLoop.main.add(self.autoplayTimer!, forMode: .common)
     }
     
     @objc fileprivate func autoplayTimerTick() {

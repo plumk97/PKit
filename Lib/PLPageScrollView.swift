@@ -124,7 +124,9 @@ class PLPageScrollView: UIScrollView {
             let contentInset = scrollView.contentInset
             let contentSize = scrollView.contentSize
             
-            self.contentSize = .init(width: 0, height: contentSize.height + contentInset.bottom + self.headerHeight)
+            let contentHeight = max(self.bounds.height + self.headerHeight,
+                                    contentSize.height + contentInset.bottom + self.headerHeight)
+            self.contentSize = .init(width: 0, height: contentHeight)
         }
     }
     

@@ -15,10 +15,14 @@ class PLTable: UITableView {
 class PageScrollViewController: UIViewController {
 
     var pageScrollView: PLPageScrollView!
-    
+    var numberSet = [Int: Int]()
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        self.numberSet[1] = 50
+        self.numberSet[2] = 50
+        self.numberSet[3] = 50
         
         let headerView = UIView.init(frame: .init(x: 0, y: 0, width: self.view.frame.width, height: 200))
         headerView.backgroundColor = .blue
@@ -36,16 +40,11 @@ class PageScrollViewController: UIViewController {
         tableView3.tag = 3
         tableView3.dataSource = self
         
-        let bottom = self.navigationController?.navigationBar.frame.maxY ?? 0
+        let bottom = self.pl.navigationBar?.frame.maxY ?? 0
         
         self.pageScrollView = PLPageScrollView.init(frame: .init(x: 0, y: bottom, width: self.view.bounds.width, height: self.view.bounds.height - bottom))
-        if #available(iOS 11.0, *) {
-            self.pageScrollView.contentInsetAdjustmentBehavior = .never
-        } else {
-            // Fallback on earlier versions
-        }
-        self.pageScrollView.headerView = headerView
-        self.pageScrollView.contentScrollViews = [tableView1, tableView2, tableView3]
+        self.pageScrollView.setHeaderView(headerView)
+        self.pageScrollView.setScrollViews([tableView1, tableView2, tableView3])
         self.view.addSubview(self.pageScrollView)
 
         self.pageScrollView.mj_header = MJRefreshNormalHeader.init(refreshingBlock: {[unowned self] in
@@ -56,7 +55,9 @@ class PageScrollViewController: UIViewController {
         
         tableView1.mj_footer = MJRefreshBackNormalFooter.init(refreshingBlock: {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+                self.numberSet[1]! += 50
                 tableView1.mj_footer?.endRefreshing()
+                tableView1.reloadData()
             })
         })
         
@@ -65,7 +66,7 @@ class PageScrollViewController: UIViewController {
 
 extension PageScrollViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 50
+        return self.numberSet[tableView.tag]!
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,4 +82,12 @@ extension PageScrollViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(tableView.pl_pageScrollView)
     }
+    
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        print(scrollView.contentOffset)
+//    }
+//    
+//    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+//        print("scrollViewWillBeginDragging")
+//    }
 }

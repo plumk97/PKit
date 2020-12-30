@@ -7,97 +7,42 @@
 //
 
 import UIKit
-@objc protocol PLPageScrollViewDelegate: NSObjectProtocol {
-    
-    /// PageScrollView 本身滚动
-    ///
-    /// - Parameter scrollView:
-    @objc optional func pageScrollViewDidScroll(_ scrollView: PLPageScrollView)
-    
-    /// 分页ScrollView 滚动
-    ///
-    /// - Parameter scrollView:
-    @objc optional func pageScrollViewContentPageDidScroll(_ scrollView: PLPageScrollView)
-    
-    /// 分页ScrollView 开始拖动
-    ///
-    /// - Parameter scrollView:
-    @objc optional func pageScrollViewContentPageWillBeginDragging(_ scrollView: PLPageScrollView)
-    
-    /// 分页ScrollView 将要停止拖动
-    ///
-    /// - Parameters:
-    ///   - scrollView:
-    ///   - velocity:
-    ///   - targetContentOffset:
-    @objc optional func pageScrollViewContentPageWillEndDragging(_ scrollView: PLPageScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>)
-    
-    /// 切换分页
-    ///
-    /// - Parameters:
-    ///   - scrollView:
-    ///   - index:
-    @objc optional func pageScrollView(_ scrollView: PLPageScrollView, didChangeCurrentIndex index: Int)
-}
 
 class PLPageScrollView: UIScrollView {
     
-    var pldelegate: PLPageScrollViewDelegate?
-    var headerView: UIView? {
-        didSet {
-            oldValue?.removeFromSuperview()
-            if let unheaderView = headerView {
-                self.addSubview(unheaderView)
-            }
-            self.relayoutContentViews()
-        }
-    }
+    var pldelegate: UIScrollViewDelegate?
     
-    var contentScrollViews: [UIScrollView]? {
-        didSet {
-            oldValue?.forEach({
-                $0.removeFromSuperview()
-            })
-            
-            contentScrollViews?.forEach({
-                $0.pl_pageScrollView = self
-                
-                $0.panGestureRecognizer.require(toFail: self.panGestureRecognizer)
-                self.pageScrollView.addSubview($0)
-            })
-            
-            self.relayoutContentViews()
-        }
-    }
+    private(set) var headerView: UIView?
+    private(set) var scrollViews = [UIScrollView]()
     
     /// 当前显示Index
-    private(set) var currentScrollViewIndex: Int = 0
-    
-    /// 当前显示ScrollView
-    var currentScrollView: UIScrollView? {
-        return self.contentScrollViews?[self.currentScrollViewIndex]
-    }
+    private(set) var pageIndex: Int = 0
     
     /// 分页ScrollView
     private(set) var pageScrollView: UIScrollView!
     
-    /// headerViewBottom
-    fileprivate var headerViewBottom: CGFloat {
+    var currentScrollView: UIScrollView? {
+        return self.pageIndex >= 0 && self.pageIndex < self.scrollViews.count ? self.scrollViews[self.pageIndex] : nil
+    }
+    
+    fileprivate var headerHeight: CGFloat {
         return self.headerView?.frame.maxY ?? 0
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.alwaysBounceVertical = true
-        self.delegate = self
+        self.showsVerticalScrollIndicator = false
         
         self.pageScrollView = UIScrollView()
         self.pageScrollView.delegate = self
         self.pageScrollView.isPagingEnabled = true
         self.pageScrollView.bounces = false
+        self.pageScrollView.showsHorizontalScrollIndicator = false
         self.addSubview(self.pageScrollView)
         
         if #available(iOS 11.0, *) {
+            self.pageScrollView.contentInsetAdjustmentBehavior = .never
             self.contentInsetAdjustmentBehavior = .never
         }
         
@@ -108,21 +53,65 @@ class PLPageScrollView: UIScrollView {
         super.init(coder: aDecoder)
     }
     
-    /// 重新布局
-    fileprivate func relayoutContentViews() {
+    func setHeaderView(_ headerView: UIView) {
+        self.headerView = headerView
+        self.addSubview(headerView)
+        self.setNeedsLayout()
+    }
+    
+    func setScrollViews(_ scrollViews: [UIScrollView]) {
+        self.scrollViews.forEach({
+            $0.removeFromSuperview()
+        })
+        
+        self.scrollViews = scrollViews
+        
+        scrollViews.forEach({
+            $0.panGestureRecognizer.require(toFail: self.panGestureRecognizer)
+            self.pageScrollView.addSubview($0)
+        })
+        self.setNeedsLayout()
+    }
+    
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
         if let headerView = self.headerView {
             headerView.frame.origin = .init(x: (self.bounds.width - headerView.bounds.width) / 2, y: 0)
         }
         
-        self.pageScrollView.frame = .init(x: 0, y: self.headerViewBottom, width: self.bounds.width, height: self.bounds.height)
-        self.pageScrollView.contentSize = .init(width: self.bounds.width * CGFloat(self.contentScrollViews?.count ?? 0), height: 0)
+        self.pageScrollView.frame = .init(x: 0, y: self.headerHeight, width: self.bounds.width, height: self.bounds.height)
+        self.pageScrollView.contentSize = .init(width: CGFloat(self.scrollViews.count) * self.bounds.width, height: 0)
         
-        let rect = CGRect.init(x: 0, y: 0, width: self.bounds.width, height: self.bounds.height)
-        self.contentScrollViews?.enumerated().forEach({ (offset, element) in
-            element.frame = rect.offsetBy(dx: CGFloat(offset) * self.bounds.width, dy: 0)
-        })
+        if self.scrollViews.count > 0 {
+            for (i, scrollView) in self.scrollViews.enumerated() {
+                scrollView.frame = CGRect.init(x: CGFloat(i) * self.bounds.width, y: 0, width: self.pageScrollView.bounds.width, height: self.pageScrollView.bounds.height)
+            }
+        }
+        
+        self.updateContentSize()
+        self.updateOffset()
     }
     
+
+    /// 更新下标
+    fileprivate func updateCurrentPageIndex() {
+        let pageIndex = Int(round(self.pageScrollView.contentOffset.x / self.pageScrollView.frame.width))
+
+        if self.pageIndex != pageIndex {
+            self.pageIndex = pageIndex
+            
+            self.updateContentSize()
+            if let scrollView = self.currentScrollView {
+                if self.contentOffset.y >= self.headerHeight {
+                    self.contentOffset = .init(x: 0, y: scrollView.contentOffset.y + self.headerHeight)
+                }
+            }
+            
+            
+        }
+    }
     
     /// 根据当前显示的ScrollView 设置ContentSize
     fileprivate func updateContentSize() {
@@ -130,46 +119,37 @@ class PLPageScrollView: UIScrollView {
             return
         }
         
-        var contentSize = scrollView.contentSize
-        contentSize.height = max(self.frame.height, contentSize.height)
-        contentSize.height += self.headerViewBottom
-        if !self.contentSize.equalTo(contentSize) {
-            self.contentSize = contentSize
-        }
-        
-        var contentInset = scrollView.contentInset
-        if contentInset.bottom > 0 {
-            let bottom = scrollView.contentInset.bottom + scrollView.contentSize.height
-            // 等于44 判断为上拉加载
-            if bottom - self.bounds.height == 44 {
-                contentInset.bottom = 44
-            }
-        }
-        if !self.contentInset.equalTo(contentInset) {
-            self.contentInset = contentInset
+        if true {
+            // - 设置contentSize
+            let contentInset = scrollView.contentInset
+            let contentSize = scrollView.contentSize
+            
+            let contentHeight = max(self.bounds.height + self.headerHeight,
+                                    contentSize.height + contentInset.bottom + self.headerHeight)
+            self.contentSize = .init(width: 0, height: contentHeight)
         }
     }
     
-    /// 更新下标
-    fileprivate func updateCurrentPageIndex() {
-        let index = Int(self.pageScrollView.contentOffset.x / self.pageScrollView.frame.width)
-        
-        if self.currentScrollViewIndex != index {
-            self.currentScrollViewIndex = index
-            self.pldelegate?.pageScrollView?(self, didChangeCurrentIndex: index)
-        }
-    }
-    
-    /// 更新offset
-    fileprivate func updateContentOffset() {
-        
+    /// 根据当前显示的ScrollView 设置ContentOffset
+    fileprivate func updateOffset() {
         guard let scrollView = self.currentScrollView else {
             return
         }
         
-        if self.contentOffset.y >= self.headerViewBottom {
-            let offset = scrollView.contentOffset
-            self.setContentOffset(.init(x: 0, y: offset.y + self.headerViewBottom), animated: false)
+        if true {
+            // 计算偏移
+            let offset = self.contentOffset
+            if offset.y >= self.headerHeight {
+                self.pageScrollView.frame.origin = .init(x: 0, y: offset.y)
+                scrollView.setContentOffset(.init(x: 0, y: offset.y - self.headerHeight), animated: false)
+            } else {
+                self.scrollViews.forEach({
+                    if $0.contentOffset.y > 0 {
+                        $0.setContentOffset(.init(x: 0, y: 0), animated: false)
+                    }
+                })
+                self.pageScrollView.frame.origin = .init(x: 0, y: self.headerHeight)
+            }
         }
     }
     
@@ -183,63 +163,62 @@ class PLPageScrollView: UIScrollView {
     }
 }
 
+// MARK: - UIScrollViewDelegate
 extension PLPageScrollView: UIScrollViewDelegate {
     
+    @available(iOS 2.0, *)
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == self else {
-            self.pldelegate?.pageScrollViewContentPageDidScroll?(self)
-            return
-        }
-        self.updateContentSize()
-        var offset = scrollView.contentOffset
-        
-        /// 去掉 headerViewBottom
-        offset.y = max(0, offset.y - self.headerViewBottom)
-        
-        if scrollView.contentOffset.y < self.headerViewBottom {
-            // 当mainScrollView offset.y 小于最小高度时 设置全部 content scrollview
-            self.contentScrollViews?.forEach({ $0.contentOffset = offset })
-        } else {
-            self.currentScrollView?.contentOffset = offset
-        }
-        
-        self.pageScrollView.frame.origin = .init(x: 0, y: max(self.headerViewBottom, offset.y + self.headerViewBottom))
-        self.pldelegate?.pageScrollViewDidScroll?(self)
+        self.pldelegate?.scrollViewDidScroll?(scrollView)
     }
     
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard self.pageScrollView == scrollView else {
-            return
-        }
-        self.updateCurrentPageIndex()
-        self.updateContentOffset()
-    }
-    
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        guard self.pageScrollView == scrollView else {
-            return
-        }
-        
-        self.updateCurrentPageIndex()
-        self.updateContentOffset()
-    }
-    
-    
+    @available(iOS 2.0, *)
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard scrollView == self.pageScrollView else {
-            return
-        }
-        self.pldelegate?.pageScrollViewContentPageWillBeginDragging?(self)
+        self.pldelegate?.scrollViewWillBeginDragging?(scrollView)
     }
-    
+
+    @available(iOS 5.0, *)
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        guard scrollView == self.pageScrollView else {
-            return
+        self.pldelegate?.scrollViewWillEndDragging?(scrollView, withVelocity: velocity, targetContentOffset: targetContentOffset)
+    }
+
+    @available(iOS 2.0, *)
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        self.pldelegate?.scrollViewDidEndDragging?(scrollView, willDecelerate: decelerate)
+    }
+
+    
+    @available(iOS 2.0, *)
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        self.pldelegate?.scrollViewWillBeginDecelerating?(scrollView)
+    }
+
+    @available(iOS 2.0, *)
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.pldelegate?.scrollViewDidEndDecelerating?(scrollView)
+        switch scrollView {
+        case self.pageScrollView:
+            self.updateCurrentPageIndex()
+            
+        default:
+            break
         }
-        self.pldelegate?.pageScrollViewContentPageWillEndDragging?(self, withVelocity: velocity, targetContentOffset: targetContentOffset)
+    }
+
+    
+    @available(iOS 2.0, *)
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.pldelegate?.scrollViewDidEndScrollingAnimation?(scrollView)
+        switch scrollView {
+        case self.pageScrollView:
+            self.updateCurrentPageIndex()
+            
+        default:
+            break
+        }
     }
 }
 
+// MARK: - Exchange isDragging
 fileprivate var kPLPageScrollView = "kPLPageScrollView"
 fileprivate var isExchanged = false
 extension UIScrollView {
@@ -247,26 +226,20 @@ extension UIScrollView {
     static func exchange() {
         if isExchanged == false {
             let m1 = class_getInstanceMethod(self, #selector(getter: UIScrollView.isDragging))
-            let m2 = class_getInstanceMethod(self, Selector.init(("_isDragging")))
+            let m2 = class_getInstanceMethod(self, #selector(getter: self.PLPageScrollView_isDragging))
             method_exchangeImplementations(m1!, m2!)
             isExchanged = true
         }
     }
     
-    @objc var _isDragging: Bool {
+    @objc fileprivate var PLPageScrollView_isDragging: Bool {
         if self is PLPageScrollView {
-            return self._isDragging
+            return self.PLPageScrollView_isDragging
         }
-        return self.pl_pageScrollView?.isDragging ?? self._isDragging
+        return self.pl_pageScrollView?.isDragging ?? self.PLPageScrollView_isDragging
     }
     
     var pl_pageScrollView: PLPageScrollView? {
-        set {
-            objc_setAssociatedObject(self, &kPLPageScrollView, newValue, .OBJC_ASSOCIATION_ASSIGN)
-        }
-        
-        get {
-            return objc_getAssociatedObject(self, &kPLPageScrollView) as? PLPageScrollView
-        }
+        return self.superview?.superview as? PLPageScrollView
     }
 }

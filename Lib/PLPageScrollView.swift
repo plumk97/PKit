@@ -91,7 +91,7 @@ class PLPageScrollView: UIScrollView {
         }
         
         self.updateContentSize()
-        self.updateOffset()
+        self.updateChildOffset()
     }
     
 
@@ -130,8 +130,8 @@ class PLPageScrollView: UIScrollView {
         }
     }
     
-    /// 根据当前显示的ScrollView 设置ContentOffset
-    fileprivate func updateOffset() {
+    /// 根据当前的Offset设置child 的 offset
+    fileprivate func updateChildOffset() {
         guard let scrollView = self.currentScrollView else {
             return
         }
@@ -143,12 +143,15 @@ class PLPageScrollView: UIScrollView {
                 self.pageScrollView.frame.origin = .init(x: 0, y: offset.y)
                 scrollView.setContentOffset(.init(x: 0, y: offset.y - self.headerHeight), animated: false)
             } else {
-                self.scrollViews.forEach({
-                    if $0.contentOffset.y > 0 {
-                        $0.setContentOffset(.init(x: 0, y: 0), animated: false)
+                for scrollView in self.scrollViews {
+                    if scrollView.contentOffset.y > 0 {
+                        scrollView.setContentOffset(.init(x: 0, y: 0), animated: true)
                     }
-                })
-                self.pageScrollView.frame.origin = .init(x: 0, y: self.headerHeight)
+                }
+                
+                if self.pageScrollView.frame.minY > self.headerHeight {
+                    self.pageScrollView.frame.origin = .init(x: 0, y: self.headerHeight)
+                }
             }
         }
     }

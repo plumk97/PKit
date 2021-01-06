@@ -59,7 +59,7 @@ class PLMediaBrowser: UIViewController {
     
     // --
     fileprivate var collectionView: UICollectionView!
-    fileprivate var pageTipsLabel: UILabel!
+    fileprivate(set) var pageTipsLabel: UILabel!
     
     init(mediaArray: [PLMedia], initIndex: Int = 0, fromImageView: UIImageView? = nil) {
         super.init(nibName: nil, bundle: nil)
@@ -101,6 +101,7 @@ class PLMediaBrowser: UIViewController {
         self.collectionView.isPagingEnabled = true
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
+        self.collectionView.bounces = false
         self.collectionView.register(PLMediaBrowserCell.self, forCellWithReuseIdentifier: "PLMediaBrowserCell")
         self.view.addSubview(self.collectionView)
         
@@ -187,6 +188,17 @@ class PLMediaBrowser: UIViewController {
             
             completion?()
         }
+    }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+extension PLMediaBrowser: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive event: UIEvent) -> Bool {
+        guard let view = event.allTouches?.first?.view else {
+            return true
+        }
+        
+        return !view.isKind(of: UIControl.self)
     }
 }
 

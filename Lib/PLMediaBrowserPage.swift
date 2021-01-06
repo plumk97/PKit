@@ -176,6 +176,14 @@ extension PLMediaBrowserPage: UIGestureRecognizerDelegate {
         }
         return true
     }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive event: UIEvent) -> Bool {
+        guard let view = event.allTouches?.first?.view else {
+            return true
+        }
+        
+        return !view.isKind(of: UIControl.self)
+    }
 }
 
 // MARK: - Class CloseGestureRecognizer
@@ -189,6 +197,7 @@ extension PLMediaBrowserPage {
         
         override func reset() {
             super.reset()
+            
             self.firstTouch = nil
             self.isRunning = false
         }
@@ -234,6 +243,10 @@ extension PLMediaBrowserPage {
             point = self.firstTouch?.location(in: self.view) ?? .zero
             if self.state != .possible {
                 self.state = .ended
+            } else {
+                touches.forEach({
+                    self.ignore($0, for: event)
+                })
             }
         }
         
@@ -250,6 +263,10 @@ extension PLMediaBrowserPage {
             point = self.firstTouch?.location(in: self.view) ?? .zero
             if self.state != .possible {
                 self.state = .cancelled
+            } else {
+                touches.forEach({
+                    self.ignore($0, for: event)
+                })
             }
         }
     }

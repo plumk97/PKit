@@ -10,7 +10,7 @@ import UIKit
 
 class PLPageScrollView: UIScrollView {
     
-    var pldelegate: UIScrollViewDelegate?
+    weak var pldelegate: UIScrollViewDelegate?
     
     private(set) var headerView: UIView?
     private(set) var scrollViews = [UIScrollView]()

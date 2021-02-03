@@ -198,9 +198,14 @@ class PLAudioRecorder: NSObject, AVAudioRecorderDelegate {
             try? AVAudioSession.sharedInstance().setCategory(x)
             self.preCategory = nil
         }
-        
         self.model?.isRecording = false
         self.model?.completeCallback?(self.model!, flag ? .ok : .error(err: _Error.init(message: "录制失败")))
+        
+        if self.model?.isStopedClear ?? false {
+            self.model?.isStopedClear = false
+            _ = self.model?.clear()
+        }
+        
         self.model = nil
     }
     
@@ -218,6 +223,12 @@ class PLAudioRecorder: NSObject, AVAudioRecorderDelegate {
         } else {
             self.model?.completeCallback?(self.model!, .error(err: _Error.init(message: "录制失败")))
         }
+        
+        if self.model?.isStopedClear ?? false {
+            self.model?.isStopedClear = false
+            _ = self.model?.clear()
+        }
+        
         self.model = nil
     }
 }
@@ -239,6 +250,9 @@ extension PLAudioRecorder {
         
         /// 碰到权限申请时 如果授权之后是否继续录制
         fileprivate var recordIsContinue: Bool = false
+        
+        /// 是否停止之后清理
+        fileprivate var isStopedClear: Bool = false
         
         /// 录音保存路径
         private(set) var path: String!
@@ -283,7 +297,13 @@ extension PLAudioRecorder {
             PLAudioRecorder.shared.start(self)
         }
         
-        func stop() {
+        func stop(isClear: Bool = false) {
+            if isRecording {
+                self.isStopedClear = isClear
+            } else {
+                _ = self.clear()
+            }
+            
             self.recordIsContinue = false
             PLAudioRecorder.shared.stop(self)
         }

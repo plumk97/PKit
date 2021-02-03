@@ -219,12 +219,16 @@ extension PLBanner {
         }
         
         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return self.banner.models.count
+            guard let banner = self.banner else {
+                return 0
+            }
+            
+            return banner.models.count
         }
         
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! Cell
-            cell.imageView.contentMode = self.banner.contentMode
+            
             
             if indexPath.row == self.banner.models.count - 1 {
                 cell.imageView.image = self.banner.leftOverstepImageView.image
@@ -232,36 +236,47 @@ extension PLBanner {
                 cell.imageView.image = self.banner.rightOverstepImageView.image
             }
             
-            let model = self.banner.models[indexPath.row]
-            self.banner.imageDownloadCallback?(indexPath.row, model, {[weak cell, weak self] image in
-                guard let _banenr = self?.banner else {
-                    return
-                }
-                cell?.imageView.image = image
-                
-                if indexPath.row == 0 {
-                    _banenr.rightOverstepImageView.image = image
-                } else if indexPath.row == _banenr.models.count - 1 {
-                    _banenr.leftOverstepImageView.image = image
-                }
-            })
+            if let banner = self.banner {
+                cell.imageView.contentMode = banner.contentMode
+                let model = banner.models[indexPath.row]
+                banner.imageDownloadCallback?(indexPath.row, model, {[weak cell, weak self] image in
+                    guard let _banenr = self?.banner else {
+                        return
+                    }
+                    cell?.imageView.image = image
+                    
+                    if indexPath.row == 0 {
+                        _banenr.rightOverstepImageView.image = image
+                    } else if indexPath.row == _banenr.models.count - 1 {
+                        _banenr.leftOverstepImageView.image = image
+                    }
+                })
+            }
+            
             
             return cell
         }
         
         func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            guard let banner = self.banner else {
+                return
+            }
             let model = self.banner.models[indexPath.row]
-            self.banner.didClickCallback?(indexPath.row, model)
+            banner.didClickCallback?(indexPath.row, model)
         }
         
         
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            let page = Int(round(scrollView.contentOffset.x / scrollView.bounds.width))
-            guard page >= 0 && page < self.banner.models.count else {
+            guard let banner = self.banner else {
                 return
             }
-            self.banner.page = page
-            self.banner.updatePage()
+            
+            let page = Int(round(scrollView.contentOffset.x / scrollView.bounds.width))
+            guard page >= 0 && page < banner.models.count else {
+                return
+            }
+            banner.page = page
+            banner.updatePage()
         }
         
         func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -281,12 +296,18 @@ extension PLBanner {
         }
         
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-            self.banner.autoplayTimer?.invalidate()
-            self.banner.autoplayTimer = nil
+            guard let banner = self.banner else {
+                return
+            }
+            banner.autoplayTimer?.invalidate()
+            banner.autoplayTimer = nil
         }
         
         func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-            self.banner.reloadAutoplayTimer()
+            guard let banner = self.banner else {
+                return
+            }
+            banner.reloadAutoplayTimer()
         }
     }
 }

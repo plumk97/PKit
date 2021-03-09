@@ -75,21 +75,19 @@ class PLMediaBrowserVideoPage: PLMediaBrowserImagePage {
                                           y: (self.contentView.frame.height - self.playBtn.frame.height) / 2)
     }
     
-    override func reloadData() {
-        guard let media = self.media else {
-            return
-        }
+    override func loadResource() {
+        super.loadResource()
         
-        if let x = media.thumbnail {
-            self._showLoading()
+        if let x = media.pl_thumbnail {
+            self.showLoadingIndicator()
             self.parseData(data: x) {[weak self] image in
-                self?._hideLoading()
+                self?.hideLoadingIndicator()
                 self?.imageView.image = image
                 self?.update()
             }
         }
         
-        switch media.data {
+        switch media.pl_data {
         case let x as String:
             guard let url = URL.init(string: x) else {
                 return
@@ -103,7 +101,7 @@ class PLMediaBrowserVideoPage: PLMediaBrowserImagePage {
             self.replaceCurrentItem(item)
             
         case let x as PHAsset:
-            self._showLoading()
+            self.showLoadingIndicator()
             
             PHImageManager.default().requestAVAsset(forVideo: x, options: nil) {[weak self] (asset, _, _) in
                 guard let asset = asset as? AVURLAsset else {
@@ -111,7 +109,7 @@ class PLMediaBrowserVideoPage: PLMediaBrowserImagePage {
                 }
                 
                 DispatchQueue.main.async {
-                    self?._hideLoading()
+                    self?.hideLoadingIndicator()
                     let item = AVPlayerItem.init(url: asset.url)
                     self?.replaceCurrentItem(item)
                 }
@@ -119,11 +117,11 @@ class PLMediaBrowserVideoPage: PLMediaBrowserImagePage {
         default:
             break
         }
+        
     }
-    
-    
+
     func replaceCurrentItem(_ item: AVPlayerItem) {
-        self._showLoading()
+        self.showLoadingIndicator()
         item.addObserver(self, forKeyPath: "status", options: .new, context: nil)
         self.player.replaceCurrentItem(with: item)
     }
@@ -131,7 +129,7 @@ class PLMediaBrowserVideoPage: PLMediaBrowserImagePage {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         switch keyPath {
         case "status":
-            self._hideLoading()
+            self.hideLoadingIndicator()
             if self.player.currentItem?.status == .readyToPlay {
                 self.isReadyToPlay = true
             }

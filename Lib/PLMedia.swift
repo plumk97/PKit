@@ -17,32 +17,21 @@ extension Data: PLMediaData {}
 extension String: PLMediaData {}
 extension PHAsset: PLMediaData {}
 
-class PLMedia {
-    typealias ImageDownloadCallback = (URL, @escaping (UIImage?)->Void) -> Void
+
+protocol PLMedia {
     
-    enum MediaType {
-        case image
-        case video
-    }
+    /// 指定使用的Page类
+    var pl_pageClass: PLMediaBrowserPage.Type { get }
     
-    private(set) var data: PLMediaData?
-    private(set) var thumbnail: PLMediaData?
-    private(set) var mediaType: MediaType!
+    /// 数据源
+    var pl_data: PLMediaData? { get set }
     
-    private(set) var imageDownloadCallback: ImageDownloadCallback?
+    /// 缩略图
+    var pl_thumbnail: PLMediaData? { get set }
     
-    init(data: PLMediaData?, thumbnail: PLMediaData?, mediaType: MediaType = .image) {
-        self.data = data
-        self.thumbnail = thumbnail
-        
-        if let x = data as? PHAsset {
-            self.mediaType = x.mediaType == .image ? .image : .video
-        } else {
-            self.mediaType = mediaType
-        }
-    }
-    
-    func setImageDownloadCallback(_ callback: ImageDownloadCallback?) {
-        self.imageDownloadCallback = callback
-    }
+    /// 资源下载 自己实现
+    /// - Parameters:
+    ///   - url:
+    ///   - complete:
+    func pl_mediaDownload(_ url: URL, complete: @escaping (Any?)->Void)
 }

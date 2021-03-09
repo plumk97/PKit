@@ -9,19 +9,6 @@
 import UIKit
 import YYImage
 
-class PLMediaBrowserConfig {
-    static let shared = PLMediaBrowserConfig()
-    
-    var pageClass = [PLMedia.MediaType: PLMediaBrowserPage.Type]()
-    static var pageClass: [PLMedia.MediaType: PLMediaBrowserPage.Type] {
-        return self.shared.pageClass
-    }
-    
-    init() {
-        self.pageClass[.image] = PLMediaBrowserImagePage.self
-        self.pageClass[.video] = PLMediaBrowserVideoPage.self
-    }
-}
 
 class PLMediaBrowser: UIViewController {
     
@@ -217,54 +204,34 @@ extension PLMediaBrowser: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let cell = cell as? PLMediaBrowserCell {
-            cell.media = self.mediaArray[indexPath.row]
+            cell.willDisplay(media: self.mediaArray[indexPath.row])
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let cell = cell as? PLMediaBrowserCell {
-            cell.media = nil
+            cell.didEndDisplaying()
         }
     }
 }
 
 // MARK: - Class PLPhotoBrowserCell
 fileprivate class PLMediaBrowserCell: UICollectionViewCell {
-    
     weak var browser: PLMediaBrowser!
-    
     var page: PLMediaBrowserPage?
     
-    var media: PLMedia? {
-        didSet {
-            self.reloadData()
-        }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        var rect = self.contentView.bounds
-        rect.size.width -= self.browser.pageSpacing
-        
-        self.page?.frame = rect
-    }
-    
-    func reloadData() {
+    func willDisplay(media: PLMedia) {
         self.page?.removeFromSuperview()
         self.page = nil
-        guard let x = self.media else {
-            return
-        }
-        let cls = PLMediaBrowserConfig.pageClass[x.mediaType]
-        let page = cls!.init(media: x)
+        
+        let page = media.pl_pageClass.init(media: media)
         self.contentView.addSubview(page)
         
         page.closeProgressCallback = {[unowned self] _, progress in
             self.browser.pageTipsLabel.alpha = 1 - progress
             self.browser.view.backgroundColor = UIColor.black.withAlphaComponent(1 - progress)
         }
-        
+
         page.closedCallback = {[unowned self] _, isTapClose in
             if isTapClose {
                 if !self.browser.enableSingleTapClose {
@@ -276,8 +243,23 @@ fileprivate class PLMediaBrowserCell: UICollectionViewCell {
         }
         
         self.page = page
+        
         self.setNeedsLayout()
+        self.layoutIfNeeded()
     }
+    
+    func didEndDisplaying() {
+        
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        var rect = self.contentView.bounds
+        rect.size.width -= self.browser.pageSpacing
+        self.page?.frame = rect
+    }
+    
 }
 
 

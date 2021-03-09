@@ -58,16 +58,14 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
             }
         }
     }
-
-    override func reloadData() {
-        guard let media = self.media else {
-            return
-        }
+    
+    override func loadResource() {
+        super.loadResource()
         
-        if let x = media.thumbnail {
-            self._showLoading()
-            self.parseData(data: x) {[weak self] image in
-                self?._hideLoading()
+        if let x = self.media.pl_thumbnail {
+            self.showLoadingIndicator()
+            self.parseData(data: x) {[weak self] (image) in
+                self?.hideLoadingIndicator()
                 if self?.imageView.image == nil, let image = image {
                     self?.imageView.image = image
                     self?.update()
@@ -75,11 +73,11 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
             }
         }
         
-        if let x = media.data {
-            self._showLoading()
-            self.parseData(data: x) {[weak self] image in
-                self?._hideLoading()
-                if let image = image {
+        if let x = self.media.pl_data {
+            self.showLoadingIndicator()
+            self.parseData(data: x) {[weak self] (image) in
+                self?.hideLoadingIndicator()
+                if self?.imageView.image == nil, let image = image {
                     self?.imageView.image = image
                     self?.update()
                 }
@@ -128,10 +126,9 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
             complete?(YYImage.init(data: data))
             return
         }
-        
-        self.media?.imageDownloadCallback?(url, {image in
-            complete?(image)
-        })
+        self.media.pl_mediaDownload(url) { (obj) in
+            complete?(obj as? UIImage)
+        }
     }
     
     override func layoutSubviews() {

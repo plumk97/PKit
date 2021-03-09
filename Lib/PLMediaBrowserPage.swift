@@ -16,13 +16,6 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
     /// 关闭回调
     typealias ClosedCallback = (PLMediaBrowserPage, _ isTapClose: Bool) -> Void
     
-    
-    var media: PLMedia? {
-        didSet {
-            self.reloadData()
-        }
-    }
-    
     /// 手势关闭进度回调
     var closeProgressCallback: ClosePrgoressCallback?
     
@@ -34,6 +27,8 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
     
     /// 单击关闭手势
     var singleTapGesture: UITapGestureRecognizer!
+    
+    private(set) var media: PLMedia!
     
     private var panLastPoint: CGPoint = .zero
     private var panBeginPoint: CGPoint = .zero
@@ -53,7 +48,7 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
         super.init(frame: .zero)
         self.media = media
         self.commInit()
-        self.reloadData()
+        self.loadResource()
     }
     
     required init?(coder: NSCoder) {
@@ -84,10 +79,42 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
         self.addGestureRecognizer(self.singleTapGesture)
     }
     
-    func reloadData() {
+    
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.scrollView.frame = self.bounds
+        self.loadingIndicatorView.sizeToFit()
+        
+        if #available(iOS 11.0, *) {
+            self.loadingIndicatorView.frame.origin = .init(x: self.layoutMargins.left,
+                                                           y: self.layoutMargins.top)
+        }
+    }
+    
+    /// 加载资源 子类重写实现
+    func loadResource() {
         
     }
     
+    // MARK: - Loading Indicator
+    func showLoadingIndicator() {
+        self.loadingShowCount += 1
+        guard !self.loadingIndicatorView.isAnimating else {
+            return
+        }
+        self.loadingIndicatorView.startAnimating()
+    }
+    
+    func hideLoadingIndicator() {
+        self.loadingShowCount = max(0, self.loadingShowCount - 1)
+        guard self.loadingIndicatorView.isAnimating && self.loadingShowCount <= 0 else {
+            return
+        }
+        self.loadingIndicatorView.stopAnimating()
+    }
+    
+    // MARK: - Gesture
     @objc func singleTapGestureHandle(_ sender: UITapGestureRecognizer) {
         if sender.state == .ended {
             self.closedCallback?(self, true)
@@ -121,36 +148,12 @@ class PLMediaBrowserPage: UIView, UIScrollViewDelegate {
         self.panLastPoint = point
     }
     
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.scrollView.frame = self.bounds
-        self.loadingIndicatorView.sizeToFit()
-        
-        if #available(iOS 11.0, *) {
-            
-            self.loadingIndicatorView.frame.origin = .init(x: self.layoutMargins.left,
-                                                           y: self.layoutMargins.top)
-        }
-    }
-    
-    func _showLoading() {
-        self.loadingShowCount += 1
-        guard !self.loadingIndicatorView.isAnimating else {
-            return
-        }
-        self.loadingIndicatorView.startAnimating()
-    }
-    
-    func _hideLoading() {
-        self.loadingShowCount = max(0, self.loadingShowCount - 1)
-        guard self.loadingIndicatorView.isAnimating && self.loadingShowCount <= 0 else {
-            return
-        }
-        self.loadingIndicatorView.stopAnimating()
-    }
-    
-    
+    // MARK: - Static method
+    /// 缩放Size到目标Size
+    /// - Parameters:
+    ///   - size:
+    ///   - targetSize:
+    /// - Returns:
     static func fitSize(_ size: CGSize, targetSize: CGSize) -> CGSize {
         let ratio = min(targetSize.width / size.width, targetSize.height / size.height)
         let newSize = CGSize.init(width: Int(size.width * ratio), height: Int(size.height * ratio))

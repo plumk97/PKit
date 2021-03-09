@@ -12,6 +12,24 @@ import Photos
 
 class PhotoBrowserViewController: UIViewController {
 
+    struct Media: PLMedia {
+        let isImage: Bool
+        let vc: PhotoBrowserViewController
+        
+        var pl_pageClass: PLMediaBrowserPage.Type {
+            return self.isImage ? PLMediaBrowserImagePage.self : PLMediaBrowserVideoPage.self
+        }
+        
+        var pl_data: PLMediaData?
+        var pl_thumbnail: PLMediaData?
+        
+        func pl_mediaDownload(_ url: URL, complete: @escaping (Any?) -> Void) {
+            self.vc.loadImage(url: url.absoluteString) {
+                complete($0)
+            }
+        }
+        
+    }
     
     
     var imageCache = NSCache<NSString, UIImage>()
@@ -148,25 +166,15 @@ class PhotoBrowserViewController: UIViewController {
             return
         }
         
-        var mediaArray: [PLMedia] = self.urls.map({[unowned self] in
-            let photo = PLMedia.init(data: $0, thumbnail: nil)
-            photo.setImageDownloadCallback { (url, callback) in
-                self.loadImage(url: url.absoluteString, complete: callback)
-            }
-            return photo
+        var mediaArray: [PLMedia] = self.urls.map({
+            return Media.init(isImage: true, vc: self, pl_data: $0, pl_thumbnail: nil)
         })
         
-        let video = PLMedia.init(data: "https://vd2.bdstatic.com/mda-kj9yrgneyh6n01xy/sc/mda-kj9yrgneyh6n01xy.mp4",
-                                 thumbnail: "https://vdposter.bdstatic.com/edcea657acd4dd434601e51c0ec5b041.jpeg?x-bce-process=image/resize,m_fill,w_352,h_234/format,f_jpg/quality,Q_100",
-                                 mediaType: .video)
-        video.setImageDownloadCallback {[unowned self] (url, callback) in
-            self.loadImage(url: url.absoluteString, complete: callback)
-        }
-        mediaArray.append(video)
-        
+        let m = Media.init(isImage: false, vc: self, pl_data: "https://vd2.bdstatic.com/mda-kj9yrgneyh6n01xy/sc/mda-kj9yrgneyh6n01xy.mp4", pl_thumbnail: "https://vdposter.bdstatic.com/edcea657acd4dd434601e51c0ec5b041.jpeg?x-bce-process=image/resize,m_fill,w_352,h_234/format,f_jpg/quality,Q_100")
+        mediaArray.append(m)
+
         mediaArray.append(contentsOf: self.assets.map({
-            let m = PLMedia.init(data: $0, thumbnail: nil)
-            return m
+            return Media.init(isImage: $0.mediaType == .image, vc: self, pl_data: $0, pl_thumbnail: nil)
         }))
         
         let browser = PLMediaBrowser.init(mediaArray: mediaArray, initIndex: x.tag - 10, fromImageView: x)

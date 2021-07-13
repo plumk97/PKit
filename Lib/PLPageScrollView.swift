@@ -145,7 +145,7 @@ class PLPageScrollView: UIScrollView {
             } else {
                 for scrollView in self.scrollViews {
                     if scrollView.contentOffset.y > 0 {
-                        scrollView.setContentOffset(.init(x: 0, y: 0), animated: true)
+                        scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
                     }
                 }
                 

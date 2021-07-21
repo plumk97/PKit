@@ -12,6 +12,8 @@
 		51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */; };
 		5152869A25694F9000AED246 /* PLGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152869925694F9000AED246 /* PLGridView.swift */; };
 		5152869E2569586700AED246 /* GridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152869D2569586700AED246 /* GridViewController.swift */; };
+		58553D9C26A6BDF500A8E6E4 /* StackViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58553D9B26A6BDF500A8E6E4 /* StackViewController.swift */; };
+		58553D9E26A6BEFF00A8E6E4 /* PLStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58553D9D26A6BEFF00A8E6E4 /* PLStackView.swift */; };
 		8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102CA7124655A8F00AE2278 /* NavigationController.swift */; };
 		8102CA7424655EAF00AE2278 /* PLNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8102CA7324655EAF00AE2278 /* PLNavigationController.swift */; };
 		810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 810FD77722FAAE5F002EB244 /* PLTabBarController.swift */; };
@@ -126,6 +128,8 @@
 		51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeViewViewController.swift; sourceTree = "<group>"; };
 		5152869925694F9000AED246 /* PLGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLGridView.swift; sourceTree = "<group>"; };
 		5152869D2569586700AED246 /* GridViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridViewController.swift; sourceTree = "<group>"; };
+		58553D9B26A6BDF500A8E6E4 /* StackViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackViewController.swift; sourceTree = "<group>"; };
+		58553D9D26A6BEFF00A8E6E4 /* PLStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLStackView.swift; sourceTree = "<group>"; };
 		729449EF0AB8AD033B2E07A3 /* Pods-PLKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PLKit.debug.xcconfig"; path = "Target Support Files/Pods-PLKit/Pods-PLKit.debug.xcconfig"; sourceTree = "<group>"; };
 		8102CA7124655A8F00AE2278 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		8102CA7324655EAF00AE2278 /* PLNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PLNavigationController.swift; sourceTree = "<group>"; };
@@ -343,33 +347,34 @@
 		812FBF30226EAE8800CA1831 /* PLKit */ = {
 			isa = PBXGroup;
 			children = (
-				810FD7A722FAC13C002EB244 /* images */,
+				812FBF3D226EAE8A00CA1831 /* Info.plist */,
 				812FBF31226EAE8800CA1831 /* AppDelegate.swift */,
-				8173AC4E24669FDF0054DF13 /* TableViewController.swift */,
-				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
+				81D912A12435E9A200A433D8 /* ArrangeViewController.swift */,
+				FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */,
+				51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */,
+				9872E3BC259380AB00E501D2 /* BannerViewController.swift */,
+				81D91299243599A200A433D8 /* BubbleViewController.swift */,
 				81786D902272B095005B232D /* ButtonViewController.swift */,
+				81FE620F2302E25A00C9BD31 /* DotViewController.swift */,
+				5152869D2569586700AED246 /* GridViewController.swift */,
+				81E1ACC922FE71AC007DB464 /* HUDViewController.swift */,
+				FE9598012534539800CCB55C /* JsonViewController.swift */,
+				818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */,
+				8102CA7124655A8F00AE2278 /* NavigationController.swift */,
 				81948F572278237A00868B88 /* PageScrollViewController.swift */,
 				814972FB228D650300F63C96 /* PhotoBrowserViewController.swift */,
+				812FBF33226EAE8800CA1831 /* RippleAnimateViewController.swift */,
 				81F1962222CC8FB200EEFA06 /* SlideVerifyViewController.swift */,
-				51014EF422ACEF3B0021641A /* BadgeViewViewController.swift */,
 				818997A622DC5D4E0042A93F /* StackCardViewController.swift */,
 				810FD77922FAAFE3002EB244 /* TabBarViewController.swift */,
-				81E1ACC922FE71AC007DB464 /* HUDViewController.swift */,
-				81FE620F2302E25A00C9BD31 /* DotViewController.swift */,
-				818BF10E241A264C00D84B86 /* MultiMenuTableViewViewController.swift */,
-				81D91299243599A200A433D8 /* BubbleViewController.swift */,
-				81D912A12435E9A200A433D8 /* ArrangeViewController.swift */,
 				811F280D243EFBEB00276CBF /* TabControlViewController.swift */,
-				8102CA7124655A8F00AE2278 /* NavigationController.swift */,
-				FE9598012534539800CCB55C /* JsonViewController.swift */,
-				5152869D2569586700AED246 /* GridViewController.swift */,
-				FE0FD8B92570A7C400948ED2 /* AudioRecorderViewController.swift */,
-				9872E3BC259380AB00E501D2 /* BannerViewController.swift */,
+				8173AC4E24669FDF0054DF13 /* TableViewController.swift */,
+				58553D9B26A6BDF500A8E6E4 /* StackViewController.swift */,
 				81D5BA40228E964F00C9BF51 /* imagesrc.text */,
-				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 				812FBF38226EAE8A00CA1831 /* Assets.xcassets */,
+				810FD7A722FAC13C002EB244 /* images */,
 				812FBF3A226EAE8A00CA1831 /* LaunchScreen.storyboard */,
-				812FBF3D226EAE8A00CA1831 /* Info.plist */,
+				812FBF35226EAE8800CA1831 /* Main.storyboard */,
 			);
 			path = PLKit;
 			sourceTree = "<group>";
@@ -403,6 +408,7 @@
 				5152869925694F9000AED246 /* PLGridView.swift */,
 				FE0FD8BC2570A7EB00948ED2 /* PLAudioRecorder.swift */,
 				9872E3BF259380EC00E501D2 /* PLBanner.swift */,
+				58553D9D26A6BEFF00A8E6E4 /* PLStackView.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -599,6 +605,7 @@
 				81948F582278237A00868B88 /* PageScrollViewController.swift in Sources */,
 				51014EF522ACEF3B0021641A /* BadgeViewViewController.swift in Sources */,
 				811F2810243EFBFF00276CBF /* PLTabControl.swift in Sources */,
+				58553D9C26A6BDF500A8E6E4 /* StackViewController.swift in Sources */,
 				810FD77822FAAE5F002EB244 /* PLTabBarController.swift in Sources */,
 				818BF111241A26B300D84B86 /* PLMultimenuTableView.swift in Sources */,
 				81FE620E2302E24B00C9BD31 /* PLDot.swift in Sources */,
@@ -631,6 +638,7 @@
 				8102CA7224655A8F00AE2278 /* NavigationController.swift in Sources */,
 				985533CE258BA41900CFD39B /* PLMediaBrowserVideoPage.swift in Sources */,
 				814972FC228D650300F63C96 /* PhotoBrowserViewController.swift in Sources */,
+				58553D9E26A6BEFF00A8E6E4 /* PLStackView.swift in Sources */,
 				FEE598E0258B40460091967F /* PLMedia.swift in Sources */,
 				81786D912272B095005B232D /* ButtonViewController.swift in Sources */,
 				FEE598DA258B3FB60091967F /* PLMediaBrowserPage.swift in Sources */,
@@ -791,7 +799,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = PLKit/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -817,7 +825,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = PLKit/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

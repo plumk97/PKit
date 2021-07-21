@@ -68,7 +68,7 @@ struct PLKit {
             let b2 = b + (b1 - b) * progress
             let a2 = a + (a1 - a) * progress
             
-            return .init(red: r2, green: b2, blue: g2, alpha: a2)
+            return .init(red: r2, green: g2, blue: b2, alpha: a2)
         }
     }
 }

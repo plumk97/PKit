@@ -44,7 +44,7 @@ class PLGridView: UIView {
         }
     }
     
-    /// 宽高比率 横向 height / width 纵向 width / height
+    /// 宽高比率 横向 width / height 纵向 height / width
     var aspectRatio: CGFloat = 1
     
     var views = [UIView]() {

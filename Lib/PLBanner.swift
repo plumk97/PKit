@@ -46,7 +46,7 @@ class PLBanner<Model>: UIView {
     }
     
     /// 当前第几页
-    fileprivate(set) var page: Int = 0
+    @objc dynamic fileprivate(set) var page: Int = 0
     
     
     /// 是否自动滚动
@@ -71,9 +71,11 @@ class PLBanner<Model>: UIView {
         }
     }
 
+    private(set) var pageControl: UIPageControl!
+    
     private var collectionViewLayout: UICollectionViewFlowLayout!
     private var collectionView: UICollectionView!
-    private var pageControl: UIPageControl!
+    
     
     private var delegateRepeater: DelegateRepeater!
     

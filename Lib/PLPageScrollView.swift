@@ -54,6 +54,7 @@ class PLPageScrollView: UIScrollView {
     }
     
     func setHeaderView(_ headerView: UIView) {
+        self.headerView?.removeFromSuperview()
         self.headerView = headerView
         self.addSubview(headerView)
         self.setNeedsLayout()
@@ -197,7 +198,7 @@ extension PLPageScrollView: UIScrollViewDelegate {
 
     @available(iOS 2.0, *)
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        self.pldelegate?.scrollViewDidEndDecelerating?(scrollView)
+        
         switch scrollView {
         case self.pageScrollView:
             self.updateCurrentPageIndex()
@@ -205,12 +206,14 @@ extension PLPageScrollView: UIScrollViewDelegate {
         default:
             break
         }
+        
+        self.pldelegate?.scrollViewDidEndDecelerating?(scrollView)
     }
 
     
     @available(iOS 2.0, *)
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        self.pldelegate?.scrollViewDidEndScrollingAnimation?(scrollView)
+        
         switch scrollView {
         case self.pageScrollView:
             self.updateCurrentPageIndex()
@@ -218,6 +221,8 @@ extension PLPageScrollView: UIScrollViewDelegate {
         default:
             break
         }
+        
+        self.pldelegate?.scrollViewDidEndScrollingAnimation?(scrollView)
     }
 }
 

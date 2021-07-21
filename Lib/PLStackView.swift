@@ -140,7 +140,7 @@ class PLStackView: UIView {
             self.horizontalLayoutSubviews(wraps: wraps)
 
         case .vertical:
-            self.verticalLayoutSubviews()
+            self.verticalLayoutSubviews(wraps: wraps)
 
         @unknown default:
             break
@@ -321,7 +321,7 @@ class PLStackView: UIView {
     }
     
     /// 纵向布局
-    private func verticalLayoutSubviews() {
+    private func verticalLayoutSubviews(wraps: [Wrap]) {
         var constraints = [NSLayoutConstraint]()
         
         

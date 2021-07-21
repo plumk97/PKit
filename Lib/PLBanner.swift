@@ -273,7 +273,7 @@ extension PLBanner {
                 return
             }
             
-            let page = Int(round(scrollView.contentOffset.x / scrollView.bounds.width))
+            let page = Int(round(scrollView.contentOffset.x / max(1, scrollView.bounds.width)))
             guard page >= 0 && page < banner.models.count else {
                 return
             }

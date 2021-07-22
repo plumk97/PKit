@@ -23,7 +23,7 @@ class PLGridView: UIView {
         }
     }
     
-    /// 根据方向指示有多少 行/列 最小为1 0不显示
+    /// 横向代表多少列 纵向代表多少行
     var crossAxisCount: Int = 1 {
         didSet {
             self.setNeedsLayout()
@@ -44,7 +44,7 @@ class PLGridView: UIView {
         }
     }
     
-    /// 宽高比率 横向 width / height 纵向 height / width
+    /// 宽高比率 横向 height / width 纵向 width / height
     var aspectRatio: CGFloat = 1
     
     var views = [UIView]() {

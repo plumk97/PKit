@@ -61,7 +61,7 @@ class PhotoBrowserViewController: UIViewController {
             imageView.isUserInteractionEnabled = true
             
             return imageView
-        }), direction: .horizontal, crossAxisCount: 4, mainAxisSpacing: 10, crossAxisSpacing: 10)
+        }), crossAxisCount: 4, mainAxisSpacing: 10, crossAxisSpacing: 10)
         
         if true {
             // 加入视频
@@ -111,10 +111,11 @@ class PhotoBrowserViewController: UIViewController {
             }))
         }
         
-        self.gridView.frame = .init(x: 20, y: 100, width: self.view.frame.width - 40, height: 0)
-        self.gridView.sizeToFit()
-        
+        self.gridView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(self.gridView)
+        
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[view]-20-|", options: [], metrics: nil, views: ["view": self.gridView!]))
+        self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-100-[view]", options: [], metrics: nil, views: ["view": self.gridView!]))
     }
 
     func loadImage(url: String, complete: ((UIImage?)->Void)?) {

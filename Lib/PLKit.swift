@@ -79,3 +79,15 @@ extension UIEdgeInsets {
         return self.top == insets.top && self.left == insets.left && self.right == insets.right && self.bottom == insets.bottom
     }
 }
+
+
+class PLConstraint: NSLayoutConstraint {
+    
+    static func make(item view1: Any?, attribute attr1: NSLayoutConstraint.Attribute, relatedBy relation: NSLayoutConstraint.Relation, toItem view2: Any?, attribute attr2: NSLayoutConstraint.Attribute, multiplier: CGFloat, constant c: CGFloat, priority: UILayoutPriority = .required) -> PLConstraint {
+        let constraint = PLConstraint.init(item: view1!, attribute: attr1, relatedBy: relation, toItem: view2, attribute: attr2, multiplier: multiplier, constant: c)
+        constraint.priority = priority
+        
+        return constraint
+    }
+}
+

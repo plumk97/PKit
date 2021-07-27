@@ -11,45 +11,46 @@ import UIKit
 
 /// 根据方向 需要指定宽或高 否则不显示
 class PLGridView: UIView {
-    enum Axis {
-        case horizontal
-        case vertical
-    }
-    
+
     /// 布局方向
-    var direction = Axis.horizontal {
+    var axis = NSLayoutConstraint.Axis.horizontal {
         didSet {
-            self.setNeedsLayout()
+            self.setNeedsUpdateConstraints()
         }
     }
     
     /// 横向代表多少列 纵向代表多少行
     var crossAxisCount: Int = 1 {
         didSet {
-            self.setNeedsLayout()
+            self.setNeedsUpdateConstraints()
         }
     }
     
     /// 当前方向间距
     var mainAxisSpacing: CGFloat = 0 {
         didSet {
-            self.setNeedsLayout()
+            self.setNeedsUpdateConstraints()
         }
     }
     
     /// 反方向间距 横向则是纵向间距 纵向则是横向间距
     var crossAxisSpacing: CGFloat = 0 {
         didSet {
-            self.setNeedsLayout()
+            self.setNeedsUpdateConstraints()
         }
     }
     
     /// 宽高比率 横向 height / width 纵向 width / height
-    var aspectRatio: CGFloat = 1
+    var aspectRatio: CGFloat = 1 {
+        didSet {
+            self.setNeedsUpdateConstraints()
+        }
+    }
     
     var views = [UIView]() {
         didSet {
-            self.setNeedsLayout()
+            self.reloadViews(self.views, oldViews: oldValue)
+            self.setNeedsUpdateConstraints()
         }
     }
     
@@ -58,20 +59,20 @@ class PLGridView: UIView {
     override var frame: CGRect {
         didSet {
             if !frame.size.equalTo(oldValue.size) {
-                self.setNeedsLayout()
+                self.setNeedsUpdateConstraints()
             }
         }
     }
     
-    init(_ views: [UIView]? = nil, direction: Axis? = nil, crossAxisCount: Int? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil) {
+    init(_ views: [UIView]? = nil, axis: NSLayoutConstraint.Axis? = nil, crossAxisCount: Int? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil) {
         super.init(frame: .zero)
         
         if let x = views {
             self.views = x
         }
         
-        if let x = direction {
-            self.direction = x
+        if let x = axis {
+            self.axis = x
         }
         
         if let x = crossAxisCount {
@@ -97,111 +98,134 @@ class PLGridView: UIView {
     
     private func commInit() {
         self.clipsToBounds = true
+        self.setContentHuggingPriority(.required, for: .horizontal)
+        self.setContentHuggingPriority(.required, for: .vertical)
+        
+        self.reloadViews(self.views, oldViews: nil)
+        
+    }
+    
+    private func reloadViews(_ views: [UIView]?, oldViews: [UIView]?) {
+        oldViews?.forEach({ $0.removeFromSuperview() })
+        
+        if let views = views {
+            for view in views {
+                view.translatesAutoresizingMaskIntoConstraints = false
+                self.addSubview(view)
+            }
+        }
     }
      
-    private func relayoutViews() {
-        var tmpInnerContentSize: CGSize = .zero
-        defer {
-            if !self.innerContentSize.equalTo(tmpInnerContentSize) {
-                self.innerContentSize = tmpInnerContentSize
-                self.invalidateIntrinsicContentSize()
-            }
-        }
-        guard self.crossAxisCount > 0 else {
-            return
-        }
+    /// 移除旧的约束
+    private func removeOldConstraints() {
         
-        switch self.direction {
+        for view in self.views {
+            view.constraints.forEach({
+                if $0.isKind(of: PLConstraint.self) {
+                    view.removeConstraint($0)
+                }
+            })
+        }
+        self.constraints.forEach({
+            if $0.isKind(of: PLConstraint.self) {
+                self.removeConstraint($0)
+            }
+        })
+    }
+    
+    override func updateConstraints() {
+        super.updateConstraints()
+        
+        self.removeOldConstraints()
+        
+        switch self.axis {
         case .horizontal:
-            guard self.frame.width > 0 else {
-                return
-            }
-            tmpInnerContentSize.width = self.frame.width
-            
-            var size: CGSize = .zero
-            size.width = (self.frame.width - CGFloat(self.crossAxisCount - 1) * self.mainAxisSpacing) / CGFloat(self.crossAxisCount)
-            size.height = size.width * self.aspectRatio
-            
-            var origin: CGPoint = .zero
-            for i in 0 ..< self.views.count {
-                if i != 0 && i % self.crossAxisCount == 0 {
-                    origin.x = 0
-                    origin.y = origin.y + size.height + self.crossAxisSpacing
-                }
-                
-                let view = self.views[i]
-                
-                if view.superview != self {
-                    if view.superview != nil {
-                        view.removeFromSuperview()
-                    }
-                    self.addSubview(view)
-                }
-                
-                var rect: CGRect = .zero
-                rect.origin = origin
-                rect.size = size
-                view.frame = rect
-                
-                origin.x = rect.maxX + self.mainAxisSpacing
-            }
-            
-            tmpInnerContentSize.height = self.views.last?.frame.maxY ?? 0
+            self.horizontalLayout()
             
         case .vertical:
-            guard self.frame.height > 0 else {
-                return
-            }
-            tmpInnerContentSize.height = self.frame.height
+            self.verticalLayout()
             
-            var size: CGSize = .zero
-            size.height = (self.frame.height - CGFloat(self.crossAxisCount - 1) * self.mainAxisSpacing) / CGFloat(self.crossAxisCount)
-            size.width = size.height * self.aspectRatio
-            
-            var origin: CGPoint = .zero
-            for i in 0 ..< self.views.count {
-                if i != 0 && i % self.crossAxisCount == 0 {
-                    origin.x = origin.x + size.width + self.crossAxisSpacing
-                    origin.y = 0
-                }
-                
-                let view = self.views[i]
-                
-                if view.superview != self {
-                    if view.superview != nil {
-                        view.removeFromSuperview()
-                    }
-                    self.addSubview(view)
-                }
-                
-                var rect: CGRect = .zero
-                rect.origin = origin
-                rect.size = size
-                view.frame = rect
-                
-                origin.y = rect.maxY + self.mainAxisSpacing
-            }
-            
-            tmpInnerContentSize.width = self.views.last?.frame.maxX ?? 0
+        @unknown default:
+            break
         }
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.relayoutViews()
+    private func horizontalLayout() {
+        
+        var constraints = [NSLayoutConstraint]()
+        
+        for (idx, view) in self.views.enumerated() {
+            
+            let preRow = max(0, idx - 1) / self.crossAxisCount
+            let row = idx / self.crossAxisCount
+            let nextRow = (idx + 1) / self.crossAxisCount
+            if idx == 0 {
+                constraints.append(PLConstraint.make(item: view, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0))
+                constraints.append(PLConstraint.make(item: view, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0))
+                constraints.append(PLConstraint.make(item: view, attribute: .height, relatedBy: .equal, toItem: view, attribute: .width, multiplier: self.aspectRatio, constant: 0))
+            } else {
+                
+                let preView = self.views[idx - 1]
+
+                constraints.append(PLConstraint.make(item: view, attribute: .width, relatedBy: .equal, toItem: preView, attribute: .width, multiplier: 1, constant: 0))
+                constraints.append(PLConstraint.make(item: view, attribute: .height, relatedBy: .equal, toItem: preView, attribute: .height, multiplier: 1, constant: 0))
+
+                if row != preRow {
+                    constraints.append(PLConstraint.make(item: view, attribute: .top, relatedBy: .equal, toItem: preView, attribute: .bottom, multiplier: 1, constant: self.crossAxisSpacing))
+                    constraints.append(PLConstraint.make(item: view, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0))
+                } else {
+                    constraints.append(PLConstraint.make(item: view, attribute: .top, relatedBy: .equal, toItem: preView, attribute: .top, multiplier: 1, constant: 0))
+                    constraints.append(PLConstraint.make(item: view, attribute: .leading, relatedBy: .equal, toItem: preView, attribute: .trailing, multiplier: 1, constant: self.mainAxisSpacing))
+                }
+            }
+            
+            
+            if nextRow != row {
+                constraints.append(PLConstraint.make(item: view, attribute: .trailing, relatedBy: .equal, toItem: self, attribute: .trailing, multiplier: 1, constant:0))
+            }
+            
+        }
+        
+        constraints.append(PLConstraint.make(item: self, attribute: .bottom, relatedBy: .equal, toItem: views.last, attribute: .bottom, multiplier: 1, constant: 0, priority: .defaultLow))
+        self.addConstraints(constraints)
     }
     
-    override var intrinsicContentSize: CGSize {
-        return self.innerContentSize
+    private func verticalLayout() {
+        var constraints = [NSLayoutConstraint]()
+        
+        for (idx, view) in self.views.enumerated() {
+            
+            let preColumn = max(0, idx - 1) / self.crossAxisCount
+            let column = idx / self.crossAxisCount
+            let nextColumn = (idx + 1) / self.crossAxisCount
+            if idx == 0 {
+                constraints.append(PLConstraint.make(item: view, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0))
+                constraints.append(PLConstraint.make(item: view, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0))
+                constraints.append(PLConstraint.make(item: view, attribute: .width, relatedBy: .equal, toItem: view, attribute: .height, multiplier: self.aspectRatio, constant: 0))
+            } else {
+                
+                let preView = self.views[idx - 1]
+
+                constraints.append(PLConstraint.make(item: view, attribute: .width, relatedBy: .equal, toItem: preView, attribute: .width, multiplier: 1, constant: 0))
+                constraints.append(PLConstraint.make(item: view, attribute: .height, relatedBy: .equal, toItem: preView, attribute: .height, multiplier: 1, constant: 0))
+
+                if column != preColumn {
+                    constraints.append(PLConstraint.make(item: view, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0))
+                    constraints.append(PLConstraint.make(item: view, attribute: .leading, relatedBy: .equal, toItem: preView, attribute: .trailing, multiplier: 1, constant: self.crossAxisSpacing))
+                } else {
+                    constraints.append(PLConstraint.make(item: view, attribute: .top, relatedBy: .equal, toItem: preView, attribute: .bottom, multiplier: 1, constant: self.mainAxisSpacing))
+                    constraints.append(PLConstraint.make(item: view, attribute: .leading, relatedBy: .equal, toItem: preView, attribute: .leading, multiplier: 1, constant: 0))
+                }
+            }
+            
+            
+            if nextColumn != column {
+                constraints.append(PLConstraint.make(item: view, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant:0))
+            }
+            
+        }
+        
+        constraints.append(PLConstraint.make(item: self, attribute: .trailing, relatedBy: .equal, toItem: views.last, attribute: .trailing, multiplier: 1, constant: 0, priority: .defaultLow))
+        self.addConstraints(constraints)
     }
-    
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        return self.innerContentSize
-    }
-    
-    override func sizeToFit() {
-        self.layoutIfNeeded()
-        super.sizeToFit()
-    }
-    
 }

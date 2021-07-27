@@ -624,7 +624,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ehh-O7-eIl">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ehh-O7-eIl">
                                 <rect key="frame" x="35" y="188" width="344" height="10"/>
                                 <constraints>
                                     <constraint firstAttribute="height" priority="1" constant="10" id="CES-fn-s5l"/>
@@ -645,7 +645,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oaF-Mh-mpw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-865" y="935"/>
+            <point key="canvasLocation" x="-865.21739130434787" y="934.82142857142856"/>
         </scene>
         <!--Badge View View Controller-->
         <scene sceneID="dfF-fb-KTp">

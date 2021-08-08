@@ -49,11 +49,11 @@ class PLGridView: UIView {
     
     var views = [UIView]() {
         didSet {
-            self.reloadViews(self.views, oldViews: oldValue)
-            self.setNeedsUpdateConstraints()
+            self.resetPaddingViews()
         }
     }
     
+    private var paddingViews = [UIView]()
     private var innerContentSize: CGSize = .zero
     
     override var frame: CGRect {
@@ -101,25 +101,38 @@ class PLGridView: UIView {
         self.setContentHuggingPriority(.required, for: .horizontal)
         self.setContentHuggingPriority(.required, for: .vertical)
         
-        self.reloadViews(self.views, oldViews: nil)
-        
+        self.resetPaddingViews()
     }
     
-    private func reloadViews(_ views: [UIView]?, oldViews: [UIView]?) {
-        oldViews?.forEach({ $0.removeFromSuperview() })
+    
+    /// 判断是否需要填充视图
+    private func resetPaddingViews() {
+        self.paddingViews.forEach({ $0.removeFromSuperview() })
         
-        if let views = views {
-            for view in views {
-                view.translatesAutoresizingMaskIntoConstraints = false
-                self.addSubview(view)
+        
+        var views = self.views
+        
+        let paddingCount = self.crossAxisCount - (views.count % self.crossAxisCount)
+        if paddingCount != self.crossAxisCount {
+            for _ in 0 ..< paddingCount {
+                views.append(UIView())
             }
         }
+        
+        for view in views {
+            view.translatesAutoresizingMaskIntoConstraints = false
+            self.addSubview(view)
+        }
+        
+        self.paddingViews = views
+        
+        self.setNeedsUpdateConstraints()
     }
      
     /// 移除旧的约束
     private func removeOldConstraints() {
         
-        for view in self.views {
+        for view in self.paddingViews {
             view.constraints.forEach({
                 if $0.isKind(of: PLConstraint.self) {
                     view.removeConstraint($0)
@@ -137,6 +150,9 @@ class PLGridView: UIView {
         super.updateConstraints()
         
         self.removeOldConstraints()
+        guard self.paddingViews.count > 0 else {
+            return
+        }
         
         switch self.axis {
         case .horizontal:
@@ -154,7 +170,7 @@ class PLGridView: UIView {
         
         var constraints = [NSLayoutConstraint]()
         
-        for (idx, view) in self.views.enumerated() {
+        for (idx, view) in self.paddingViews.enumerated() {
             
             let preRow = max(0, idx - 1) / self.crossAxisCount
             let row = idx / self.crossAxisCount
@@ -165,7 +181,7 @@ class PLGridView: UIView {
                 constraints.append(PLConstraint.make(item: view, attribute: .height, relatedBy: .equal, toItem: view, attribute: .width, multiplier: self.aspectRatio, constant: 0))
             } else {
                 
-                let preView = self.views[idx - 1]
+                let preView = self.paddingViews[idx - 1]
 
                 constraints.append(PLConstraint.make(item: view, attribute: .width, relatedBy: .equal, toItem: preView, attribute: .width, multiplier: 1, constant: 0))
                 constraints.append(PLConstraint.make(item: view, attribute: .height, relatedBy: .equal, toItem: preView, attribute: .height, multiplier: 1, constant: 0))
@@ -186,14 +202,14 @@ class PLGridView: UIView {
             
         }
         
-        constraints.append(PLConstraint.make(item: self, attribute: .bottom, relatedBy: .equal, toItem: views.last, attribute: .bottom, multiplier: 1, constant: 0, priority: .defaultLow))
+        constraints.append(PLConstraint.make(item: self, attribute: .bottom, relatedBy: .equal, toItem: paddingViews.last, attribute: .bottom, multiplier: 1, constant: 0, priority: .defaultLow))
         self.addConstraints(constraints)
     }
     
     private func verticalLayout() {
         var constraints = [NSLayoutConstraint]()
         
-        for (idx, view) in self.views.enumerated() {
+        for (idx, view) in self.paddingViews.enumerated() {
             
             let preColumn = max(0, idx - 1) / self.crossAxisCount
             let column = idx / self.crossAxisCount
@@ -204,7 +220,7 @@ class PLGridView: UIView {
                 constraints.append(PLConstraint.make(item: view, attribute: .width, relatedBy: .equal, toItem: view, attribute: .height, multiplier: self.aspectRatio, constant: 0))
             } else {
                 
-                let preView = self.views[idx - 1]
+                let preView = self.paddingViews[idx - 1]
 
                 constraints.append(PLConstraint.make(item: view, attribute: .width, relatedBy: .equal, toItem: preView, attribute: .width, multiplier: 1, constant: 0))
                 constraints.append(PLConstraint.make(item: view, attribute: .height, relatedBy: .equal, toItem: preView, attribute: .height, multiplier: 1, constant: 0))
@@ -225,7 +241,7 @@ class PLGridView: UIView {
             
         }
         
-        constraints.append(PLConstraint.make(item: self, attribute: .trailing, relatedBy: .equal, toItem: views.last, attribute: .trailing, multiplier: 1, constant: 0, priority: .defaultLow))
+        constraints.append(PLConstraint.make(item: self, attribute: .trailing, relatedBy: .equal, toItem: paddingViews.last, attribute: .trailing, multiplier: 1, constant: 0, priority: .defaultLow))
         self.addConstraints(constraints)
     }
 }

@@ -24,10 +24,10 @@ protocol PLMedia {
     var pl_pageClass: PLMediaBrowserPage.Type { get }
     
     /// 数据源
-    var pl_data: PLMediaData? { get set }
+    var pl_data: PLMediaData? { get }
     
     /// 缩略图
-    var pl_thumbnail: PLMediaData? { get set }
+    var pl_thumbnail: PLMediaData? { get }
     
     /// 资源下载 自己实现
     /// - Parameters:

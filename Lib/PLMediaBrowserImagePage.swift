@@ -77,7 +77,7 @@ class PLMediaBrowserImagePage: PLMediaBrowserPage {
             self.showLoadingIndicator()
             self.parseData(data: x) {[weak self] (image) in
                 self?.hideLoadingIndicator()
-                if self?.imageView.image == nil, let image = image {
+                if let image = image {
                     self?.imageView.image = image
                     self?.update()
                 }

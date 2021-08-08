@@ -15,19 +15,23 @@ class PhotoBrowserViewController: UIViewController {
     struct Media: PLMedia {
         let isImage: Bool
         let vc: PhotoBrowserViewController
+        let src: String
+        let thumbnail: String
         
         var pl_pageClass: PLMediaBrowserPage.Type {
             return self.isImage ? PLMediaBrowserImagePage.self : PLMediaBrowserVideoPage.self
         }
         
-        var pl_data: PLMediaData?
-        var pl_thumbnail: PLMediaData?
+        var pl_data: PLMediaData? { self.src }
+        var pl_thumbnail: PLMediaData? { self.thumbnail }
         
         func pl_mediaDownload(_ url: URL, complete: @escaping (Any?) -> Void) {
             self.vc.loadImage(url: url.absoluteString) {
                 complete($0)
             }
         }
+        
+        
         
     }
     
@@ -171,7 +175,7 @@ class PhotoBrowserViewController: UIViewController {
             return Media.init(isImage: true, vc: self, pl_data: $0, pl_thumbnail: nil)
         })
         
-        let m = Media.init(isImage: false, vc: self, pl_data: "https://vd2.bdstatic.com/mda-kj9yrgneyh6n01xy/sc/mda-kj9yrgneyh6n01xy.mp4", pl_thumbnail: "https://vdposter.bdstatic.com/edcea657acd4dd434601e51c0ec5b041.jpeg?x-bce-process=image/resize,m_fill,w_352,h_234/format,f_jpg/quality,Q_100")
+        let m = Media.init(isImage: false, vc: self, src: "https://vd2.bdstatic.com/mda-kj9yrgneyh6n01xy/sc/mda-kj9yrgneyh6n01xy.mp4", thumbnail: "https://vdposter.bdstatic.com/edcea657acd4dd434601e51c0ec5b041.jpeg?x-bce-process=image/resize,m_fill,w_352,h_234/format,f_jpg/quality,Q_100")
         mediaArray.append(m)
 
         mediaArray.append(contentsOf: self.assets.map({

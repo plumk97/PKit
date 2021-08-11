@@ -15,8 +15,8 @@ class PhotoBrowserViewController: UIViewController {
     struct Media: PLMedia {
         let isImage: Bool
         let vc: PhotoBrowserViewController
-        let src: String
-        let thumbnail: String
+        let src: PLMediaData
+        let thumbnail: PLMediaData?
         
         var pl_pageClass: PLMediaBrowserPage.Type {
             return self.isImage ? PLMediaBrowserImagePage.self : PLMediaBrowserVideoPage.self
@@ -172,14 +172,14 @@ class PhotoBrowserViewController: UIViewController {
         }
         
         var mediaArray: [PLMedia] = self.urls.map({
-            return Media.init(isImage: true, vc: self, pl_data: $0, pl_thumbnail: nil)
+            return Media.init(isImage: true, vc: self, src: $0, thumbnail: nil)
         })
         
         let m = Media.init(isImage: false, vc: self, src: "https://vd2.bdstatic.com/mda-kj9yrgneyh6n01xy/sc/mda-kj9yrgneyh6n01xy.mp4", thumbnail: "https://vdposter.bdstatic.com/edcea657acd4dd434601e51c0ec5b041.jpeg?x-bce-process=image/resize,m_fill,w_352,h_234/format,f_jpg/quality,Q_100")
         mediaArray.append(m)
 
         mediaArray.append(contentsOf: self.assets.map({
-            return Media.init(isImage: $0.mediaType == .image, vc: self, pl_data: $0, pl_thumbnail: nil)
+            return Media.init(isImage: $0.mediaType == .image, vc: self, src: $0, thumbnail: nil)
         }))
         
         let browser = PLMediaBrowser.init(mediaArray: mediaArray, initIndex: x.tag - 10, fromImageView: x)

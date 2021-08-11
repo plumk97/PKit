@@ -29,6 +29,9 @@ class PLPageScrollView: UIScrollView {
         return self.headerView?.frame.maxY ?? 0
     }
     
+    fileprivate var prevBoundsSize: CGSize = .zero
+    fileprivate var prevContentOffset: CGPoint = .zero
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.alwaysBounceVertical = true
@@ -57,6 +60,7 @@ class PLPageScrollView: UIScrollView {
         self.headerView?.removeFromSuperview()
         self.headerView = headerView
         self.addSubview(headerView)
+        
         self.setNeedsLayout()
     }
     
@@ -74,27 +78,30 @@ class PLPageScrollView: UIScrollView {
         self.setNeedsLayout()
     }
     
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if let headerView = self.headerView {
-            headerView.frame.origin = .init(x: (self.bounds.width - headerView.bounds.width) / 2, y: 0)
-        }
-        
-        self.pageScrollView.frame = .init(x: 0, y: self.headerHeight, width: self.bounds.width, height: self.bounds.height)
-        self.pageScrollView.contentSize = .init(width: CGFloat(self.scrollViews.count) * self.bounds.width, height: 0)
-        
-        if self.scrollViews.count > 0 {
-            for (i, scrollView) in self.scrollViews.enumerated() {
-                scrollView.frame = CGRect.init(x: CGFloat(i) * self.bounds.width, y: 0, width: self.pageScrollView.bounds.width, height: self.pageScrollView.bounds.height)
+        if !self.prevBoundsSize.equalTo(self.bounds.size) {
+            self.prevBoundsSize = self.bounds.size
+            
+            if let headerView = self.headerView {
+                headerView.frame.origin = .init(x: (self.bounds.width - headerView.bounds.width) / 2, y: 0)
+            }
+
+            self.pageScrollView.frame = .init(x: 0, y: max(self.headerHeight, self.contentOffset.y), width: self.bounds.width, height: self.bounds.height)
+            self.pageScrollView.contentSize = .init(width: CGFloat(self.scrollViews.count) * self.bounds.width, height: 0)
+
+            if self.scrollViews.count > 0 {
+                for (i, scrollView) in self.scrollViews.enumerated() {
+                    scrollView.frame = CGRect.init(x: CGFloat(i) * self.bounds.width, y: 0, width: self.pageScrollView.bounds.width, height: self.pageScrollView.bounds.height)
+                }
             }
         }
+        
         
         self.updateContentSize()
         self.updateChildOffset()
     }
-    
 
     /// 更新下标
     fileprivate func updateCurrentPageIndex() {
@@ -127,7 +134,9 @@ class PLPageScrollView: UIScrollView {
             
             let contentHeight = max(self.bounds.height + self.headerHeight,
                                     contentSize.height + contentInset.bottom + self.headerHeight)
-            self.contentSize = .init(width: 0, height: contentHeight)
+            if contentHeight != self.contentSize.height {
+                self.contentSize = .init(width: 0, height: contentHeight)
+            }
         }
     }
     
@@ -137,9 +146,11 @@ class PLPageScrollView: UIScrollView {
             return
         }
         
-        if true {
+        if !self.prevContentOffset.equalTo(self.contentOffset) {
             // 计算偏移
             let offset = self.contentOffset
+            self.prevContentOffset = offset
+            
             if offset.y >= self.headerHeight {
                 self.pageScrollView.frame.origin = .init(x: 0, y: offset.y)
                 scrollView.setContentOffset(.init(x: 0, y: offset.y - self.headerHeight), animated: false)

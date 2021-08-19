@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import YYImage
 
 
 open class PLMediaBrowser: UIViewController {

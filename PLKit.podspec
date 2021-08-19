@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.1"
   spec.summary      = "A short description of PLKit."
 
-  spec.homepage     = "https://github.com/zx1262111739/PLKitt"
+  spec.homepage     = "https://github.com/zx1262111739/PLKit"
   spec.license      = "MIT"
   spec.author             = { "Plumk" => "plumk97@outlook.com" }
   spec.source       = { :git => "https://github.com/zx1262111739/PLKit.git", :tag => "#{spec.version}" }
@@ -22,8 +22,4 @@ Pod::Spec.new do |spec|
   spec.swift_version = "5.0"
 
   spec.source_files  = "Classes", "Classes/**/*.swift"
-  spec.dependency 'YYImage/WebP'
-
-  spec.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end

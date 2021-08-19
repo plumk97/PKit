@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import YYImage
 import Photos
 
 open class PLMediaBrowserImagePage: PLMediaBrowserPage {
@@ -22,7 +21,7 @@ open class PLMediaBrowserImagePage: PLMediaBrowserPage {
     open override func commInit() {
         super.commInit()
     
-        self.imageView = YYAnimatedImageView()
+        self.imageView = UIImageView()
         self.contentView.addSubview(self.imageView)
         self.scrollView.maximumZoomScale = 5
         
@@ -102,7 +101,7 @@ open class PLMediaBrowserImagePage: PLMediaBrowserPage {
             self.parseURL(url, complete: complete)
             
         case let x as Data:
-            complete?(YYImage.init(data: x))
+            complete?(UIImage.init(data: x))
             
         case let x as PHAsset:
             let op = PHImageRequestOptions()
@@ -123,7 +122,7 @@ open class PLMediaBrowserImagePage: PLMediaBrowserPage {
             guard let data = try? Data.init(contentsOf: url) else {
                 return
             }
-            complete?(YYImage.init(data: data))
+            complete?(UIImage.init(data: data))
             return
         }
         self.media.pl_mediaDownload(url) { (obj) in

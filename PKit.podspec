@@ -8,14 +8,14 @@
 
 Pod::Spec.new do |spec|
 
-  spec.name         = "PLKKit"
-  spec.version      = "0.0.2"
-  spec.summary      = "A short description of PKKit."
+  spec.name         = "PKit"
+  spec.version      = "0.0.1"
+  spec.summary      = "A short description of PKit."
 
-  spec.homepage     = "https://github.com/zx1262111739/PLKKit"
+  spec.homepage     = "https://github.com/zx1262111739/PKit"
   spec.license      = "MIT"
   spec.author             = { "Plumk" => "plumk97@outlook.com" }
-  spec.source       = { :git => "https://github.com/zx1262111739/PLKKit.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/zx1262111739/PKit.git", :tag => "#{spec.version}" }
 
   spec.platform     = :ios, "10.0"
   spec.ios.deployment_target = "10.0"

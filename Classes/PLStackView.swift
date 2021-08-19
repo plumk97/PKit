@@ -2,7 +2,7 @@
 //  PLStackView.swift
 //  PLKit
 //
-//  Created by macmini-jym on 2021/7/20.
+//  Created by Plumk on 2021/7/20.
 //  Copyright © 2021 Plumk. All rights reserved.
 //
 

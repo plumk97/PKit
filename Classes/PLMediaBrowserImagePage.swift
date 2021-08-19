@@ -2,7 +2,7 @@
 //  PLMediaBrowserImagePage.swift
 //  PLKit
 //
-//  Created by mini2019 on 2020/12/17.
+//  Created by Plumk on 2020/12/17.
 //  Copyright © 2020 Plumk. All rights reserved.
 //
 

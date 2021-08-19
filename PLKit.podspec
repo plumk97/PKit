@@ -17,10 +17,13 @@ Pod::Spec.new do |spec|
   spec.author             = { "Plumk" => "plumk97@outlook.com" }
   spec.source       = { :git => "https://github.com/zx1262111739/PLKit.git", :tag => "#{spec.version}" }
 
+  spec.platform     = :ios, "10.0"
   spec.ios.deployment_target = "10.0"
   spec.swift_version = "5.0"
 
   spec.source_files  = "Classes", "Classes/**/*.swift"
   spec.dependency 'YYImage/WebP'
 
+  spec.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end

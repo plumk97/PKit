@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |spec|
 
-  spec.name         = "PLKit"
+  spec.name         = "PLKKit"
   spec.version      = "0.0.1"
   spec.summary      = "A short description of PLKit."
 

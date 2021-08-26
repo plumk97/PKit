@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "PKit"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "A short description of PKit."
 
   spec.homepage     = "https://github.com/zx1262111739/PKit"
@@ -17,8 +17,8 @@ Pod::Spec.new do |spec|
   spec.author             = { "Plumk" => "plumk97@outlook.com" }
   spec.source       = { :git => "https://github.com/zx1262111739/PKit.git", :tag => "#{spec.version}" }
 
-  spec.platform     = :ios, "10.0"
-  spec.ios.deployment_target = "10.0"
+  spec.platform     = :ios, "9.0"
+  spec.ios.deployment_target = "9.0"
   spec.swift_version = "5.0"
 
   spec.source_files  = "Classes", "Classes/**/*.swift"

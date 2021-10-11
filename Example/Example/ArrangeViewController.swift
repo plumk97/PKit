@@ -20,14 +20,14 @@ class ArrangeViewController: UIViewController {
 
     func load1() {
         
-        let tags = ["和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐"]
+        let tags = ["和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐"]
         
         let arrange = PLArrangeView.init(tags.map({
             let label = UILabel()
             label.text = $0
             label.backgroundColor = .red
             return label
-        }), direction: .horizontal, mainAxisSpacing: 10, crossAxisSpacing: 10)
+        }), direction: .horizontal, mainAxisSpacing: 10, crossAxisSpacing: 10, lineNumber: 2)
         self.view.addSubview(arrange)
         
         arrange.translatesAutoresizingMaskIntoConstraints = false
@@ -45,7 +45,7 @@ class ArrangeViewController: UIViewController {
             label.text = $0
             label.backgroundColor = .red
             return label
-        }), direction: .vertical, mainAxisSpacing: 10, crossAxisSpacing: 10)
+        }), direction: .vertical, mainAxisSpacing: 10, crossAxisSpacing: 10, lineNumber: 1)
         self.view.addSubview(arrange)
 
         arrange.frame.origin = .init(x: 15, y: 300)

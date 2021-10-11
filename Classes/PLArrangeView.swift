@@ -34,6 +34,13 @@ open class PLArrangeView: UIView {
         }
     }
     
+    /// 限制多少行0不限制
+    open var lineNumber: UInt = 0 {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
     open var views = [UIView]() {
         didSet {
             self.setNeedsLayout()
@@ -42,7 +49,7 @@ open class PLArrangeView: UIView {
     
     private var innerContentSize: CGSize = .zero
     
-    public init(_ views: [UIView]? = nil, direction: Axis? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil) {
+    public init(_ views: [UIView]? = nil, direction: Axis? = nil, mainAxisSpacing: CGFloat? = nil, crossAxisSpacing: CGFloat? = nil, lineNumber: UInt? = nil) {
         super.init(frame: .zero)
         
         if let x = views {
@@ -61,6 +68,11 @@ open class PLArrangeView: UIView {
         if let x = crossAxisSpacing {
             self.crossAxisSpacing = x
         }
+        
+        if let x = lineNumber {
+            self.lineNumber = x
+        }
+        
         self.commInit()
     }
     
@@ -91,6 +103,7 @@ open class PLArrangeView: UIView {
             var origin: CGPoint = .zero
             var maxHeight: CGFloat = 0
             
+            var lines = 0
             for view in self.views {
                 if view.superview != self {
                     if view.superview != nil {
@@ -110,9 +123,13 @@ open class PLArrangeView: UIView {
                 
                 
                 if origin.x + view.frame.width > self.frame.width {
+                    lines += 1
+                    if lines >= self.lineNumber && self.lineNumber > 0 {
+                        break
+                    }
+                    
                     origin.y = origin.y + maxHeight + self.crossAxisSpacing
                     origin.x = 0
-                    
                 }
                 
                 
@@ -128,6 +145,7 @@ open class PLArrangeView: UIView {
             var origin: CGPoint = .zero
             var maxWidth: CGFloat = 0
             
+            var lines = 0
             for view in self.views {
                 if view.superview != self {
                     if view.superview != nil {
@@ -147,6 +165,11 @@ open class PLArrangeView: UIView {
                 
                 
                 if origin.y + view.frame.height > self.frame.height {
+                    lines += 1
+                    if lines >= self.lineNumber && self.lineNumber > 0 {
+                        break
+                    }
+                    
                     origin.x = origin.x + maxWidth + self.crossAxisSpacing
                     origin.y = 0
                 }

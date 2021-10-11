@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "PKit"
-  spec.version      = "0.0.2"
+  spec.version      = "0.0.3"
   spec.summary      = "A short description of PKit."
 
   spec.homepage     = "https://github.com/zx1262111739/PKit"

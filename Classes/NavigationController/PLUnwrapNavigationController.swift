@@ -108,43 +108,43 @@ open class PLUnwrapNavigationController: UINavigationController {
     
     // MARK: - Child
     open override var childForStatusBarStyle: UIViewController? {
-        return self.visibleViewController
+        return self.topViewController
     }
     
     open override var childForStatusBarHidden: UIViewController? {
-        return self.visibleViewController
+        return self.topViewController
     }
     
     open override var childForHomeIndicatorAutoHidden: UIViewController? {
-        return self.visibleViewController
+        return self.topViewController
     }
     
     open override var childForScreenEdgesDeferringSystemGestures: UIViewController? {
-        return self.visibleViewController
+        return self.topViewController
     }
     
     open override var prefersStatusBarHidden: Bool {
-        return self.visibleViewController?.prefersStatusBarHidden ?? false
+        return self.topViewController?.prefersStatusBarHidden ?? false
     }
     
     open override var preferredStatusBarStyle: UIStatusBarStyle {
-        return self.visibleViewController?.preferredStatusBarStyle ?? .default
+        return self.topViewController?.preferredStatusBarStyle ?? .default
     }
     
     open override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        return self.visibleViewController?.preferredStatusBarUpdateAnimation ?? .fade
+        return self.topViewController?.preferredStatusBarUpdateAnimation ?? .fade
     }
     
     open override var shouldAutorotate: Bool {
-        return self.visibleViewController?.shouldAutorotate ?? false
+        return self.topViewController?.shouldAutorotate ?? false
     }
     
     open override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-        return self.visibleViewController?.preferredInterfaceOrientationForPresentation ?? .portrait
+        return self.topViewController?.preferredInterfaceOrientationForPresentation ?? .portrait
     }
     
     open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return self.visibleViewController?.supportedInterfaceOrientations ?? .portrait
+        return self.topViewController?.supportedInterfaceOrientations ?? .portrait
     }
 }
 

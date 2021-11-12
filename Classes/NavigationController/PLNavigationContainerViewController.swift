@@ -117,7 +117,7 @@ open class PLNavigationContainerViewController: UIViewController {
         
         // 获取当前状态栏高度
         var statusBarHeight: CGFloat = 0
-        if UIApplication.shared.statusBarOrientation.isPortrait {
+        if self.view.frame.width < self.view.frame.height {
             // 只判断竖屏 横屏都是0
             if #available(iOS 11, *) {
                 if self.view.safeAreaInsets.bottom > 0 {

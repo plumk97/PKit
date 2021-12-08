@@ -35,21 +35,26 @@ open class PLButton: UIControl {
         }
     }
     open var backgroundImage: UIImage? {
-        didSet {
-            self.backgroundImageView.image = backgroundImage
-            self.setup(oldValue != backgroundImage)
+        get { self.getBackgroundImage(.normal) }
+        set {
+            self.setBackgroundImage(newValue, state: .normal)
+            self.setup(newValue != self.backgroundImage)
         }
     }
+    
+    
     open private(set) var leftIcon: Icon!
     open private(set) var topIcon: Icon!
     open private(set) var rightIcon: Icon!
     open private(set) var bottomIcon: Icon!
     
+    /// 图标与文字的距离
     open var spaceingTitleImage: CGFloat = 2 {
         didSet {
             self.setup(oldValue != spaceingTitleImage)
         }
     }
+    
     open var padding: UIEdgeInsets = .zero {
         didSet {
             self.invalidateIntrinsicContentSize()
@@ -57,13 +62,13 @@ open class PLButton: UIControl {
         }
     }
     
-    open var borderColor: UIColor = .clear{
+    open var borderColor: UIColor = .clear {
         didSet {
             self.setupLayer()
         }
     }
     
-    open var borderWidth: CGFloat = 0{
+    open var borderWidth: CGFloat = 0 {
         didSet {
             self.setupLayer()
         }
@@ -83,8 +88,12 @@ open class PLButton: UIControl {
     
     open var pointBoundsInset: UIEdgeInsets = .zero
     
+    /// 背景状态组
+    private var backgroundImageSet = [UIControl.State.RawValue: UIImage]()
+    
     private var contentSize: CGSize = .zero
     private var contentView: UIView!
+    
     open private(set) var titleLabel: UILabel!
     open private(set) var leftImageView: UIImageView!
     open private(set) var topImageView: UIImageView!
@@ -92,6 +101,8 @@ open class PLButton: UIControl {
     open private(set) var bottomImageView: UIImageView!
     
     open private(set) var backgroundImageView: UIImageView!
+    
+    fileprivate var prevState: State = .normal
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -156,9 +167,8 @@ open class PLButton: UIControl {
         CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
     }
     
-    fileprivate var prevState: State = .normal
-    fileprivate func renewAppearance() {
-        guard self.prevState != self.state else {
+    fileprivate func renewAppearance(isForce: Bool = false) {
+        guard self.prevState != self.state || isForce else {
             return
         }
         
@@ -166,6 +176,12 @@ open class PLButton: UIControl {
         self.topIcon.renewImageViewImage()
         self.rightIcon.renewImageViewImage()
         self.bottomIcon.renewImageViewImage()
+        
+        if let img = self.backgroundImageSet[self.state.rawValue] {
+            self.backgroundImageView.image = img
+        } else {
+            self.backgroundImageView.image = self.backgroundImage
+        }
         
         self.prevState = self.state
     }
@@ -185,10 +201,7 @@ open class PLButton: UIControl {
             self.titleLabel.font = self.font
         }
         
-        self.leftIcon.renewImageViewImage()
-        self.topIcon.renewImageViewImage()
-        self.rightIcon.renewImageViewImage()
-        self.bottomIcon.renewImageViewImage()
+        self.renewAppearance(isForce: true)
         
         if isRenewLayout {
             self.relayoutContentView()
@@ -332,6 +345,21 @@ open class PLButton: UIControl {
     }
 }
 
+// MARK: - Public
+extension PLButton {
+    
+    public func setBackgroundImage(_ image: UIImage?, state: UIControl.State) {
+        self.backgroundImageSet[state.rawValue] = image
+        self.renewAppearance(isForce: state == self.state)
+    }
+    
+    public func getBackgroundImage(_ state: UIControl.State) -> UIImage? {
+        return self.backgroundImageSet[state.rawValue]
+    }
+}
+
+
+// MARK: - Icon
 extension PLButton {
     
     open class Icon: NSObject {
@@ -375,19 +403,6 @@ extension PLButton {
             self.button = button
         }
         
-        open func setImage(_ image: UIImage?, state: UIControl.State) {
-            if image == nil {
-                self.imageSet.removeValue(forKey: state.rawValue)
-            } else {
-                self.imageSet[state.rawValue] = image
-            }
-        }
-        
-        open func getImage(state: UIControl.State) -> UIImage? {
-            return self.imageSet[state.rawValue]
-        }
-        
-        
         fileprivate func renewImageViewImage() {
             guard let imageView = self.relImageView else {
                 return
@@ -397,38 +412,31 @@ extension PLButton {
                 return
             }
             
-            switch btn.state {
-            case .normal:
-                imageView.image = self.getImage(state: .normal)
-                
-            case [.normal, .highlighted]:
-                if let img = self.getImage(state: [.normal, .highlighted]) {
-                    imageView.image = img
-                } else if let img = self.getImage(state: .highlighted) {
-                    imageView.image = img
-                } else {
-                    imageView.image = self.getImage(state: .normal)
-                }
-                
-            case .selected:
-                if let img = self.getImage(state: .selected) {
-                    imageView.image = img
-                }
-                
-            case [.selected, .highlighted]:
-                if let img = self.getImage(state: [.selected, .highlighted]) {
-                    imageView.image = img
-                } else if let img = self.getImage(state: .highlighted) {
-                    imageView.image = img
-                } else if let img = self.getImage(state: .selected) {
-                    imageView.image = img
-                }
-                
-            default:
-                if let img = self.getImage(state: btn.state) {
-                    imageView.image = img
-                }
+            if let img = self.getImage(state: btn.state) {
+                imageView.image = img
+            } else {
+                imageView.image = self.image
             }
         }
     }
 }
+
+
+
+// MARK: - Icon Public
+extension PLButton.Icon {
+    
+    open func setImage(_ image: UIImage?, state: UIControl.State) {
+        if image == nil {
+            self.imageSet.removeValue(forKey: state.rawValue)
+            self.button?.renewAppearance(isForce: state == self.button?.state)
+        } else {
+            self.imageSet[state.rawValue] = image
+        }
+    }
+    
+    open func getImage(state: UIControl.State) -> UIImage? {
+        return self.imageSet[state.rawValue]
+    }
+}
+

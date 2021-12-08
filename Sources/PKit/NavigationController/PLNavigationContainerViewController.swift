@@ -66,9 +66,15 @@ open class PLNavigationContainerViewController: UIViewController {
         }
         
         
+        /// - callback
         self.config.didChangeBackItemCallback = {[unowned self] in
             self.updateBackItemWithConfig()
         }
+        
+        self.config.didChangeBarHeightCallback = {[unowned self] in
+            self.view.setNeedsLayout()
+        }
+        
         self.updateBackItemWithConfig()
         
 
@@ -76,7 +82,7 @@ open class PLNavigationContainerViewController: UIViewController {
         self.view.layoutIfNeeded()
         self.view.addSubview(self.unwarpNavigationController.view)
         
-        self.containerBar.navigationBar.pushItem(self.content.navigationItem, animated: false)
+        self.containerBar.systemNavigationBar.pushItem(self.content.navigationItem, animated: false)
         self.view.addSubview(self.containerBar)
     }
     
@@ -109,7 +115,6 @@ open class PLNavigationContainerViewController: UIViewController {
         }
     }
     
-    
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
@@ -120,9 +125,10 @@ open class PLNavigationContainerViewController: UIViewController {
         if self.view.frame.width < self.view.frame.height {
             // 只判断竖屏 横屏都是0
             if #available(iOS 11, *) {
-                if self.view.safeAreaInsets.bottom > 0 {
+                let safeAreaInsets = UIApplication.shared.windows.first?.safeAreaInsets ?? .zero
+                if safeAreaInsets.bottom > 0 {
                     // 全面屏不会出现状态栏上移的问题 直接取safeAreaInsets.top
-                    statusBarHeight = self.view.safeAreaInsets.top
+                    statusBarHeight = safeAreaInsets.top
                 } else {
                     // 非全面屏固定20
                     statusBarHeight = 20
@@ -132,7 +138,12 @@ open class PLNavigationContainerViewController: UIViewController {
                 statusBarHeight = 20
             }
         }
-        navBarFrame.size.height = statusBarHeight + PLNavigationContainerBar.navigationBarHeight
+        
+        if UIApplication.shared.statusBarOrientation.isPortrait {
+            navBarFrame.size.height = statusBarHeight + self.config.navigationBarHeight
+        } else {
+            navBarFrame.size.height = statusBarHeight + self.config.landscapeNavigationBarHeight
+        }
         
         // -- 判断隐藏状态
         if self.isNavigationBarHidden {
@@ -241,8 +252,10 @@ extension PLNavigationContainerViewController {
     }
 }
 
-// MARK: - Extension UIViewController.PL.PLNavigationContainerViewController
+// MARK: - Extension UIViewController.PL.LHWrapNavigationContainerViewController
 extension PL where Base: UIViewController {
+    
+    /// 导航栏配置 只有当前vc 进入nav之后才有效
     public var navigationConfig: PLNavigationConfig? {
         
         if let container = self.base.navigationController?.parent as? PLNavigationContainerViewController {
@@ -260,6 +273,7 @@ extension PL where Base: UIViewController {
         return nil
     }
     
+    /// 获取解包之后的vc
     public var containerContentViewController: UIViewController {
         if let container = self.base as? PLNavigationContainerViewController {
             return container.content

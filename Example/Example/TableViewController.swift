@@ -19,6 +19,9 @@ class TableViewController: UITableViewController {
         } else {
             self.automaticallyAdjustsScrollViewInsets = false
         }
+        if #available(iOS 15.0, *) {
+            self.tableView.sectionHeaderTopPadding = 0
+        }
     }
     
     override func viewWillLayoutSubviews() {

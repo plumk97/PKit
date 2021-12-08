@@ -37,7 +37,7 @@ class ButtonViewController: UIViewController {
         
         let pdata = try! Data.init(contentsOf: URL.init(string: "http://e.hiphotos.baidu.com/image/pic/item/4610b912c8fcc3cef70d70409845d688d53f20f7.jpg")!)
         if let image = UIImage.init(data: pdata) {
-            btn.backgroundImageView.image = image
+            btn.backgroundImage = image
         }
         
         

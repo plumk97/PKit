@@ -168,11 +168,11 @@ open class PLBubble: UIView {
             // 垂直方向 计算x坐标
             switch direction {
             case .TL, .BL:
-                frame.origin.x = attachFrame.minX - borderRadius
+                frame.origin.x = attachFrame.minX - borderRadius / 2
             case .T, .B:
                 frame.origin.x = attachFrame.midX - frame.width / 2
             case .TR, .BR:
-                frame.origin.x = attachFrame.maxX - frame.width + borderRadius
+                frame.origin.x = attachFrame.maxX - frame.width + borderRadius / 2
             default:
                 break
             }
@@ -189,11 +189,11 @@ open class PLBubble: UIView {
             // 水平方向 计算y坐标
             switch direction {
             case .LT, .RT:
-                frame.origin.y = attachFrame.minY - borderRadius
+                frame.origin.y = attachFrame.minY - borderRadius / 2
             case .L, .R:
                 frame.origin.y = attachFrame.midY - frame.height / 2
             case .LB, .RB:
-                frame.origin.y = attachFrame.maxY - frame.height + borderRadius
+                frame.origin.y = attachFrame.maxY - frame.height + borderRadius / 2
             default:
                 break
             }

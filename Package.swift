@@ -10,7 +10,7 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(name: "PKit", type: .dynamic, targets: ["PKit"]),
+        .library(name: "PKit", targets: ["PKit"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

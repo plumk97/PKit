@@ -11,6 +11,18 @@ import PKit
 
 class BubbleViewController: UIViewController {
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .add, target: self, action: #selector(addBarButtonItemClick(_:event:)))
+    }
+    
+    @objc func addBarButtonItemClick(_ sender: UIBarButtonItem, event: UIEvent) {
+        let bubble = PLBubble.init(contentView: self.contentView())
+        bubble.popupDirection = .BR
+        bubble.show(attach: event.allTouches?.first?.view)
+    }
+    
     func contentView() -> UIView {
         let label = UILabel()
         label.text = "BubbleViewController\nBubbleViewController\nBubbleViewController"

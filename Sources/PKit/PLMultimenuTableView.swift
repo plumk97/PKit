@@ -17,6 +17,7 @@ fileprivate extension IndexPath {
     }
 }
 
+@IBDesignable
 open class PLMultimenuTableView: UITableView {
 
     public override init(frame: CGRect, style: UITableView.Style) {

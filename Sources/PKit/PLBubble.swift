@@ -70,6 +70,30 @@ open class PLBubble: UIView {
     // 边框圆角
     open var borderRadius: CGFloat = 10
     
+    // 遮罩颜色
+    open var coverColor: UIColor = .clear
+    
+    /// shapeLayer.fillColor
+    open var fillColor: UIColor = .white {
+        didSet {
+            self.updateShapeLayerColor()
+        }
+    }
+    
+    /// shapeLayer.strokeColor
+    open var strokeColor: UIColor = .init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1) {
+        didSet {
+            self.updateShapeLayerColor()
+        }
+    }
+    
+    /// shapeLayer.shadowColor
+    open var shadowColor: UIColor = .init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1) {
+        didSet {
+            self.updateShapeLayerColor()
+        }
+    }
+    
     private var isShowing: Bool = false
     // 点击关闭control
     private var coverControl: UIControl!
@@ -102,15 +126,20 @@ open class PLBubble: UIView {
     
     private func commInit() {
         self.shapeLayer = CAShapeLayer()
-        self.shapeLayer.fillColor = UIColor.white.cgColor
-        self.shapeLayer.strokeColor = UIColor.init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1).cgColor
         self.shapeLayer.shadowOpacity = 1
         self.shapeLayer.shadowOffset = .zero
-        self.shapeLayer.shadowColor = UIColor.init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1).cgColor
         self.shapeLayer.shadowRadius = 2
         self.layer.addSublayer(self.shapeLayer)
+        
+        self.updateShapeLayerColor()
     }
     
+    private func updateShapeLayerColor() {
+        
+        self.shapeLayer.fillColor = self.fillColor.cgColor
+        self.shapeLayer.strokeColor = self.strokeColor.cgColor
+        self.shapeLayer.shadowColor = self.shadowColor.cgColor
+    }
     
     private func redraw() {
         guard let contentView = self.contentView else {
@@ -161,7 +190,6 @@ open class PLBubble: UIView {
         }
         
        
-        
         var bubbleDrawPoint: CGFloat = 0
         if direction.isVertical {
 
@@ -343,13 +371,16 @@ open class PLBubble: UIView {
         
         inView.addSubview(self)
         
-        if animation{
+        if animation {
+            self.coverControl.backgroundColor = .clear
             UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .layoutSubviews, animations: {
+                self.coverControl.backgroundColor = self.coverColor
                 self.transform = transfrom
             }) { (_) in
                 
             }
         } else {
+            self.coverControl.backgroundColor = self.coverColor
             self.transform = transfrom
         }
         
@@ -385,11 +416,11 @@ open class PLBubble: UIView {
         }
     }
     
+    // MARK: - Bind
     /// 点击关闭
     @objc private func bindButtonClick() {
         self.hide()
     }
-    
     
     /// 绑定按钮点击关闭
     /// - Parameter button:
@@ -412,6 +443,11 @@ open class PLBubble: UIView {
         didSet {
             self.coverControl.isHidden = isHidden
         }
+    }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        self.updateShapeLayerColor()
     }
 }
 

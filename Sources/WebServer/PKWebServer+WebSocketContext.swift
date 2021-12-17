@@ -28,9 +28,12 @@ extension PKWebServer {
         public var receivedTextCallback: ReceivedTextCallback?
         public var receivedDataCallback: ReceivedDataCallback?
         
+        let remoteAddress: SocketAddress?
+        
         init(head: HTTPRequestHead, ctx: ChannelHandlerContext) {
             self.head = head
             self.ctx = ctx
+            self.remoteAddress = ctx.remoteAddress
         }
         
         public func sendText(_ text: String) {
@@ -60,8 +63,7 @@ extension PKWebServer {
         
         // MARK: - Hashable
         public func hash(into hasher: inout Hasher) {
-            hasher.combine(self.ctx.localAddress)
-            hasher.combine(self.ctx.remoteAddress)
+            hasher.combine(self.remoteAddress)
         }
         
         public static func == (lhs: PKWebServer.WebSocketContext, rhs: PKWebServer.WebSocketContext) -> Bool {

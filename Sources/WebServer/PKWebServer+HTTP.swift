@@ -50,14 +50,7 @@ extension PKWebServer {
                 
                 /// 先处理接口
                 if let callback = callback {
-                    
-                    if ctx.contentLength > 0 {
-                        /// - 带body的请求放到后面处理
-                        self.callback = callback
-                        return
-                    }
-                    
-                    callback(ctx)
+                    self.callback = callback
                     return
                 }
                 
@@ -90,14 +83,13 @@ extension PKWebServer {
                     ctx.response(status: .internalServerError)
                     return
                 }
-                ctx.handleBody(bytes)
-                
-                if ctx.body.count >= ctx.contentLength {
-                    self.callback?(ctx)
-                }
+                ctx.handleRequestBody(bytes)
                 
             case .end:
-                break
+                self.ctx?.handleRequestEnd()
+                if let callback = callback, let ctx = self.ctx {
+                    callback(ctx)
+                }
 
             }
             

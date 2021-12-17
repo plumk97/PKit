@@ -7,9 +7,7 @@
 //
 
 import Foundation
-#if SWIFT_PACKAGE
 import PKCore
-#endif
 
 public class PKMIMEType {
     

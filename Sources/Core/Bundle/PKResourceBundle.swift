@@ -51,7 +51,6 @@ public class PKResourceBundle {
             for subpath in subpaths {
                 if subpath.hasSuffix(".bundle") {
                     
-                    let fullPath = path + "/" + subpath
                     if let bundle = Bundle.init(path: path + "/" + subpath),
                        bundle.infoDictionary?["CFBundlePackageType"] as? String == "BNDL",
                        let bundleName = bundle.infoDictionary?["CFBundleName"] as? String{

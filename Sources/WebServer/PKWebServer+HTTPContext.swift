@@ -59,10 +59,13 @@ extension PKWebServer {
         }
         
         
-        // MARK: - Body
-        
-        func handleBody(_ data: [UInt8]) {
+        // MARK: - request
+        func handleRequestBody(_ data: [UInt8]) {
             self.body.append(contentsOf: data)
+        }
+        
+        func handleRequestEnd() {
+            
         }
         
         // MARK: - Response

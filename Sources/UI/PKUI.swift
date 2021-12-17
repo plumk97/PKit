@@ -90,9 +90,3 @@ class PKConstraint: NSLayoutConstraint {
         return constraint
     }
 }
-
-
-
-public func bundleTest() {
-    print(PKResourceBundle.current("PKUI")?.path(forResource: "mimetype_mapping", ofType: "json"))
-}

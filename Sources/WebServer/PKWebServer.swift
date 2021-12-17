@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import PKCore
 import NIO
 import NIOHTTP1
 import NIOWebSocket

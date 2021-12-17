@@ -22,7 +22,7 @@ class ArrangeViewController: UIViewController {
         
         let tags = ["和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐"]
         
-        let arrange = PLArrangeView.init(tags.map({
+        let arrange = PKUIArrangeView.init(tags.map({
             let label = UILabel()
             label.text = $0
             label.backgroundColor = .red
@@ -40,7 +40,7 @@ class ArrangeViewController: UIViewController {
         
         let tags = ["和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐", "和谐"]
         
-        let arrange = PLArrangeView.init(tags.map({
+        let arrange = PKUIArrangeView.init(tags.map({
             let label = UILabel()
             label.text = $0
             label.backgroundColor = .red

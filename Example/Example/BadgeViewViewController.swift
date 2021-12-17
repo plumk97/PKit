@@ -11,11 +11,11 @@ import PKit
 
 class BadgeViewViewController: UIViewController {
 
-    var badgeView: PLBadgeView!
+    var badgeView: PKUIBadgeView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        badgeView = PLBadgeView()
+        badgeView = PKUIBadgeView()
         badgeView.frame.origin = .init(x: 20, y: 100)
         self.view.addSubview(badgeView)
         

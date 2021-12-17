@@ -12,18 +12,18 @@ import PKit
 
 class PhotoBrowserViewController: UIViewController {
 
-    struct Media: PLMedia {
+    struct Media: PKUIMedia {
         let isImage: Bool
         let vc: PhotoBrowserViewController
-        let src: PLMediaData
-        let thumbnail: PLMediaData?
+        let src: PKUIMediaData
+        let thumbnail: PKUIMediaData?
         
-        var pl_pageClass: PLMediaBrowserPage.Type {
-            return self.isImage ? PLMediaBrowserImagePage.self : PLMediaBrowserVideoPage.self
+        var pl_pageClass: PKUIMediaBrowserPage.Type {
+            return self.isImage ? PKUIMediaBrowserImagePage.self : PKUIMediaBrowserVideoPage.self
         }
         
-        var pl_data: PLMediaData? { self.src }
-        var pl_thumbnail: PLMediaData? { self.thumbnail }
+        var pl_data: PKUIMediaData? { self.src }
+        var pl_thumbnail: PKUIMediaData? { self.thumbnail }
         
         func pl_mediaDownload(_ url: URL, complete: @escaping (Any?) -> Void) {
             self.vc.loadImage(url: url.absoluteString) {
@@ -40,7 +40,7 @@ class PhotoBrowserViewController: UIViewController {
     var urls = [String]()
     var assets = [PHAsset]()
     
-    var gridView: PLGridView!
+    var gridView: PKUIGridView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +51,7 @@ class PhotoBrowserViewController: UIViewController {
         let plainText = try! String.init(contentsOfFile: Bundle.main.path(forResource: "imagesrc", ofType: "text")!)
         self.urls = plainText.components(separatedBy: "\n").filter({ $0.count > 0 })
         
-        self.gridView = PLGridView(self.urls.enumerated().map({[unowned self] in
+        self.gridView = PKUIGridView(self.urls.enumerated().map({[unowned self] in
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
@@ -171,7 +171,7 @@ class PhotoBrowserViewController: UIViewController {
             return
         }
         
-        var mediaArray: [PLMedia] = self.urls.map({
+        var mediaArray: [PKUIMedia] = self.urls.map({
             return Media.init(isImage: true, vc: self, src: $0, thumbnail: nil)
         })
         
@@ -182,7 +182,7 @@ class PhotoBrowserViewController: UIViewController {
             return Media.init(isImage: $0.mediaType == .image, vc: self, src: $0, thumbnail: nil)
         }))
         
-        let browser = PLMediaBrowser.init(mediaArray: mediaArray, initIndex: x.tag - 10, fromImageView: x)
+        let browser = PKUIMediaBrowser.init(mediaArray: mediaArray, initIndex: x.tag - 10, fromImageView: x)
         browser.didChangePageCallback = { browser, idx in
             browser.fromImageView = self.gridView.viewWithTag(idx + 10) as? UIImageView
         }

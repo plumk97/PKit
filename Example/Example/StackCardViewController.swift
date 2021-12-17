@@ -9,14 +9,14 @@
 import UIKit
 import PKit
 
-class StackCardViewController: UIViewController, PLStackCardViewDelegate {
+class StackCardViewController: UIViewController, PKUIStackCardViewDelegate {
     
-    var stackCardView: PLStackCardView!
+    var stackCardView: PKUIStackCardView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
-        self.stackCardView = PLStackCardView.init(cardSize: .init(width: 330, height: 490), leakCount: 10)
+        self.stackCardView = PKUIStackCardView.init(cardSize: .init(width: 330, height: 490), leakCount: 10)
         self.stackCardView.sizeToFit()
         self.stackCardView.frame.origin = .init(x: (view.bounds.width - 331) / 2, y: 100)
         self.stackCardView.delegate = self
@@ -65,20 +65,20 @@ class StackCardViewController: UIViewController, PLStackCardViewDelegate {
     }
     
     
-    // MARK: - PLStackCardViewDelegate
-    func stackCardView(_ stackCardView: PLStackCardView, didDismiss card: PLStackCardView.CardView, direction: PLStackCardView.Direction) {
+    // MARK: - PKUIStackCardViewDelegate
+    func stackCardView(_ stackCardView: PKUIStackCardView, didDismiss card: PKUIStackCardView.CardView, direction: PKUIStackCardView.Direction) {
         print("didDismiss", card, direction.rawValue)
     }
     
-    func stackCardView(_ stackCardView: PLStackCardView, didAppear card: PLStackCardView.CardView, nextCard: PLStackCardView.CardView?) {
+    func stackCardView(_ stackCardView: PKUIStackCardView, didAppear card: PKUIStackCardView.CardView, nextCard: PKUIStackCardView.CardView?) {
         print("didAppear", card, nextCard)
     }
     
-    func stackCardView(_ stackCardView: PLStackCardView, didChangeProgress progress: CGFloat) {
+    func stackCardView(_ stackCardView: PKUIStackCardView, didChangeProgress progress: CGFloat) {
         print("didChangeProgress", progress)
     }
     
-    func stackCardView(_ stackCardView: PLStackCardView, canPop card: PLStackCardView.CardView) -> Bool {
+    func stackCardView(_ stackCardView: PKUIStackCardView, canPop card: PKUIStackCardView.CardView) -> Bool {
         return false
     }
 }

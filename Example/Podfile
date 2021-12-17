@@ -7,7 +7,10 @@ target 'Example' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-pod 'PKit', :path => '../'
+pod 'PKit/Core', :path => '../'
+pod 'PKit/UI', :path => '../'
+
+
 pod 'MJRefresh', '~> 3.2.0'
 pod 'SnapKit', '~> 4.2.0'
 

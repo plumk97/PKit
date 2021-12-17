@@ -18,11 +18,11 @@ class DotViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        self.btn1.pl.dot.position = .leftTop
-        self.btn1.pl.dot.image = UIImage.init(named: "icon_dot")
-        self.btn1.pl.dot.isHidden = false
+        self.btn1.pk.dot.position = .leftTop
+        self.btn1.pk.dot.image = UIImage.init(named: "icon_dot")
+        self.btn1.pk.dot.isHidden = false
         
-        self.btn2.layer.pl.dot.isHidden = false
+        self.btn2.layer.pk.dot.isHidden = false
     }
     
 }

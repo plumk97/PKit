@@ -11,7 +11,7 @@ import PKit
 
 class MultiMenuTableViewViewController: UIViewController {
 
-    @IBOutlet weak var tableView: PLMultimenuTableView!
+    @IBOutlet weak var tableView: PKUIMultimenuTableView!
     override func viewDidLoad() {
         super.viewDidLoad()
 

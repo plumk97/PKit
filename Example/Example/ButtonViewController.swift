@@ -17,7 +17,7 @@ class ButtonViewController: UIViewController {
         
         self.title = "Button \(self.navigationController?.viewControllers.count ?? 0)"
         
-        let btn = PLButton()
+        let btn = PKUIButton()
         btn.title = "123123123"
         btn.rightIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.rightIcon.setImage(UIImage.init(named: "icon_close"), state: .highlighted)
@@ -45,11 +45,11 @@ class ButtonViewController: UIViewController {
     }
     
     
-    @objc func btnClick(_ sender: PLButton) {
+    @objc func btnClick(_ sender: PKUIButton) {
         
         let vc = ButtonViewController()
-        if let nav = self.navigationController as? PLNavigationController {
-            nav.present(PLNavigationController.init(rootViewController: vc), animated: true, completion: nil)
+        if let nav = self.navigationController as? PKUINavigationController {
+            nav.present(PKUINavigationController.init(rootViewController: vc), animated: true, completion: nil)
 //            nav.pushViewController(vc, animated: true) {
 //                nav.removeViewController(self)
 //            }

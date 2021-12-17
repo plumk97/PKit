@@ -20,11 +20,11 @@ class NavigationController: UIViewController {
         self.title = "vc \(self.navigationController?.viewControllers.count ?? 0)"
         
         if self.isHideNavigationBar {
-            self.pl.navigationBar?.isHidden = true
+            self.pk.navigationBar?.isHidden = true
         }
         
         if self.isTransitionNavigationBar {
-            self.pl.navigationBar?.backgroundColor = .orange
+            self.pk.navigationBar?.backgroundColor = .orange
             
             let scrollView = UIScrollView.init(frame: self.view.bounds)
             scrollView.backgroundColor = .white
@@ -50,8 +50,8 @@ class NavigationController: UIViewController {
         guard let vc = self.storyboard?.instantiateViewController(withIdentifier: "NavigationController") else {
             return
         }
-        self.pl.navigationController?.pushViewController(vc, animated: true, complete: {
-            self.pl.navigationController?.removeViewController(self)
+        self.pk.navigationController?.pushViewController(vc, animated: true, complete: {
+            self.pk.navigationController?.removeViewController(self)
         })
     }
     
@@ -75,7 +75,7 @@ class NavigationController: UIViewController {
 extension NavigationController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        guard let navigationBar = self.pl.navigationBar else {
+        guard let navigationBar = self.pk.navigationBar else {
             return
         }
         let alpha = scrollView.contentOffset.y / navigationBar.frame.height

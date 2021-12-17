@@ -17,14 +17,14 @@ class StackViewController: UIViewController {
         
         self.title = "StackView"
         
-        self.createPLStackView()
+        self.createPKUIStackView()
         self.createUIStackView()
     }
     
-    func createPLStackView() {
+    func createPKUIStackView() {
         
         
-        let stackView = PLStackView()
+        let stackView = PKUIStackView()
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.distribution = .equalCentering

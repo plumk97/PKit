@@ -16,7 +16,7 @@ class GridViewController: UIViewController {
         super.viewDidLoad()
         
         
-        let gridView = PLGridView.init([Int](repeating: 0, count: 10).map({ _ in
+        let gridView = PKUIGridView.init([Int](repeating: 0, count: 10).map({ _ in
             let view = UIView()
             view.backgroundColor = .random
             return view
@@ -30,7 +30,7 @@ class GridViewController: UIViewController {
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[view]-0-|", options:[], metrics: nil, views: ["view": gridView]))
         
         
-        let gridView1 = PLGridView.init([Int](repeating: 0, count: 10).map({ _ in
+        let gridView1 = PKUIGridView.init([Int](repeating: 0, count: 10).map({ _ in
             let view = UIView()
             view.backgroundColor = .random
             return view

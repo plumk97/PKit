@@ -28,10 +28,10 @@ class TableViewController: UITableViewController {
         super.viewWillLayoutSubviews()
         
         if #available(iOS 11, *) {
-            self.tableView.contentInset.top = self.pl.navigationBar!.frame.height
+            self.tableView.contentInset.top = self.pk.navigationBar!.frame.height
             self.tableView.contentInset.bottom = self.view.safeAreaInsets.bottom
         } else {
-            self.tableView.contentInset.top = self.pl.navigationBar!.frame.height
+            self.tableView.contentInset.top = self.pk.navigationBar!.frame.height
         }
         self.tableView.scrollIndicatorInsets.top = self.tableView.contentInset.top
     }

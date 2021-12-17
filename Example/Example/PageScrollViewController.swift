@@ -15,7 +15,7 @@ class PLTable: UITableView {
 }
 class PageScrollViewController: UIViewController {
 
-    var pageScrollView: PLPageScrollView!
+    var pageScrollView: PKUIPageScrollView!
     var numberSet = [Int: Int]()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,9 +41,9 @@ class PageScrollViewController: UIViewController {
         tableView3.tag = 3
         tableView3.dataSource = self
         
-        let bottom = self.pl.navigationBar?.frame.maxY ?? 0
+        let bottom = self.pk.navigationBar?.frame.maxY ?? 0
         
-        self.pageScrollView = PLPageScrollView.init(frame: .init(x: 0, y: bottom, width: self.view.bounds.width, height: self.view.bounds.height - bottom))
+        self.pageScrollView = PKUIPageScrollView.init(frame: .init(x: 0, y: bottom, width: self.view.bounds.width, height: self.view.bounds.height - bottom))
         self.pageScrollView.setHeaderView(headerView)
         self.pageScrollView.setScrollViews([tableView1, tableView2, tableView3])
         self.view.addSubview(self.pageScrollView)

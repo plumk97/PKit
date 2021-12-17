@@ -1,5 +1,5 @@
 #
-#  Be sure to run `pod spec lint PLKit.podspec' to ensure this is a
+#  Be sure to run `pod spec lint PKit.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
 #
 #  To learn more about Podspec attributes see https://guides.cocoapods.org/syntax/podspec.html
@@ -19,7 +19,18 @@ Pod::Spec.new do |spec|
 
   spec.platform     = :ios, "9.0"
   spec.ios.deployment_target = "9.0"
+  
   spec.swift_version = "5.0"
 
-  spec.source_files  = "Classes", "Sources/PKit/**/*.swift"
+  spec.default_subspec = 'Core', 'UI'
+  
+  spec.subspec 'Core' do |s|
+    s.source_files = "Core", "Sources/Core/**/*.swift"
+  end
+  
+  spec.subspec 'UI' do |s|
+    s.source_files  = "Classes", "Sources/UI/**/*.swift"
+  end
+  
+  
 end

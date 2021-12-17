@@ -12,7 +12,7 @@ import PKit
 class RippleAnimateViewController: UIViewController {
 
     
-    var rippleAnimate: PLRippleAnimate!
+    var rippleAnimate: PKUIRippleAnimate!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -23,9 +23,9 @@ class RippleAnimateViewController: UIViewController {
         rippleView.backgroundColor = .red
         self.view.addSubview(rippleView)
         
-        rippleView.pl.rippleAnimate.fromScale = 0.8
-        rippleView.pl.rippleAnimate.toScale = 1.5
-        rippleView.pl.rippleAnimate.startAnimation()
+        rippleView.pk.rippleAnimate.fromScale = 0.8
+        rippleView.pk.rippleAnimate.toScale = 1.5
+        rippleView.pk.rippleAnimate.startAnimation()
 //        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 //            rippleView.pl.rippleAnimate.animateNumber = 2
 //        }

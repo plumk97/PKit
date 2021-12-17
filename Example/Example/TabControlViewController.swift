@@ -12,7 +12,7 @@ import PKit
 class TabControlViewController: UIViewController {
     
     
-    var tabControl: PLTabControl!
+    var tabControl: PKUITabControl!
     
     var scrollView: UIScrollView!
     var scrollViewBeginPoint: CGPoint = .zero
@@ -44,12 +44,12 @@ class TabControlViewController: UIViewController {
         self.scrollView.isPagingEnabled = true
         
         
-        let item1 = PLTabControl.Item.init(title: "个人主页", color: .init(red: 1, green: 1, blue: 1, alpha: 0.8), selectedColor: .white)
-        let item2 = PLTabControl.Item.init(title: "个人中心", color: .black, selectedColor: .white)
-        let item3 = PLTabControl.Item.init(title: "CP空间", color: .init(red: 0, green: 0, blue: 0, alpha: 0.8), selectedColor: .black)
+        let item1 = PKUITabControl.Item.init(title: "个人主页", color: .init(red: 1, green: 1, blue: 1, alpha: 0.8), selectedColor: .white)
+        let item2 = PKUITabControl.Item.init(title: "个人中心", color: .black, selectedColor: .white)
+        let item3 = PKUITabControl.Item.init(title: "CP空间", color: .init(red: 0, green: 0, blue: 0, alpha: 0.8), selectedColor: .black)
         
         
-        self.tabControl = PLTabControl.init(items: [item1, item2, item3])
+        self.tabControl = PKUITabControl.init(items: [item1, item2, item3])
         self.tabControl.indicateHeight = 5
         self.tabControl.sizeToFit()
         self.tabControl.frame.origin = .init(x: 30, y: 100)

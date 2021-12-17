@@ -1,4 +1,4 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 import PackageDescription
 
@@ -10,12 +10,29 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(name: "PKit", targets: ["PKit"]),
+        .library(name: "PKCore", targets: ["PKCore"]),
+        .library(name: "PKUI", targets: ["PKUI"]),
+        .library(name: "PKWebServer", targets: ["PKWebServer"])
+    ],
+    dependencies: [
+        .package(url: "https://gitee.com/mirrors/SwiftNIO", from: "2.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(name: "PKit", path: "Sources/PKit")
+        .target(name: "PKCore", path: "Sources/Core"),
+        .target(name: "PKUI", path: "Sources/UI"),
+        .target(
+            name: "PKWebServer",
+            dependencies: [
+                .target(name: "PKCore", condition: nil),
+                .productItem(name: "NIO", package: "SwiftNIO", condition: nil),
+                .productItem(name: "NIOHTTP1", package: "SwiftNIO", condition: nil),
+                .productItem(name: "NIOWebSocket", package: "SwiftNIO", condition: nil),
+            ],
+            path: "Sources/WebServer",
+            resources: [.process("Resources")]
+        )
     ],
     swiftLanguageVersions: [
         .v5

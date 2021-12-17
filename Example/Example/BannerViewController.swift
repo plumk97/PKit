@@ -19,7 +19,7 @@ class BannerViewController: UIViewController {
         super.viewDidLoad()
         self.title = "Banner"
         
-        let banner = PLBanner<Model>()
+        let banner = PKUIBanner<Model>()
         banner.frame = .init(x: 15, y: 200, width: self.view.frame.width - 30, height: 200)
         banner.backgroundColor = .black
         banner.contentMode = .scaleAspectFill
@@ -55,7 +55,7 @@ class BannerViewController: UIViewController {
         banner.autoplay = true
         
         
-        let banner1 = PLBanner<Model>()
+        let banner1 = PKUIBanner<Model>()
         banner1.frame = .init(x: 15, y: 450, width: self.view.frame.width - 30, height: 200)
         banner1.backgroundColor = .black
         banner1.contentMode = .scaleAspectFill

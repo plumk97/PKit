@@ -12,7 +12,7 @@ import PKit
 
 class AudioRecorderViewController: UIViewController {
 
-    let model: PLAudioRecorder.RecordModel = .init(format: .aac)
+    let model: PKAudioRecorder.RecordModel = .init(format: .aac)
     
     var isWatching = false
     @IBOutlet weak var recordBtn: UIButton!

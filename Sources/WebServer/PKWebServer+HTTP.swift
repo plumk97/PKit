@@ -48,6 +48,12 @@ extension PKWebServer {
                     break
                 }
                 
+                if ctx.contentLength > 1024 * 1024 * 20 {
+                    PKLog.log("携带数据不得超出20M")
+                    ctx.response(status: .notAcceptable)
+                    return
+                }
+                
                 /// 先处理接口
                 if let callback = callback {
                     self.callback = callback

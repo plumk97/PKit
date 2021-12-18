@@ -97,16 +97,15 @@ extension PKWebServer {
         
         public func responseStaticFile(_ filepath: String) {
             let url = URL(fileURLWithPath: filepath)
-            
+                
             self.response(status: .ok, headers: [
                 "Content-Type": PKMIMEType.createMIMEType(fileExtension: url.pathExtension),
                 "Cache-Control": "public, max-age=86400"
-            ], data: try? .init(contentsOf: url))
+            ], file: .init(forReadingAtPath: filepath))
         }
         
         
-        public func response(status: HTTPResponseStatus, headers: [String: String]? = nil, data: Data? = nil) {
-            let data = data == nil ? status.reasonPhrase.data(using: .utf8) : data
+        public func response(status: HTTPResponseStatus, headers: [String: String]? = nil, data: Data? = nil, file: FileHandle? = nil) {
             
             self.exec {[weak self] in
                 guard let unself = self else {
@@ -120,8 +119,18 @@ extension PKWebServer {
                     }
                 }
                 
+                let contentLength: UInt64
                 if let data = data {
-                    hs.replaceOrAdd(name: "Content-Length", value: "\(data.count)")
+                    contentLength = UInt64(data.count)
+                } else if let file = file {
+                    contentLength = file.seekToEndOfFile()
+                    file.seek(toFileOffset: 0)
+                } else {
+                    contentLength = 0
+                }
+                
+                if contentLength > 0 {
+                    hs.replaceOrAdd(name: "Content-Length", value: "\(contentLength)")
                 }
                 
                 let head = HTTPResponseHead(version: .http1_1,
@@ -129,13 +138,53 @@ extension PKWebServer {
                                             headers: hs)
                 
                 unself.context.write(NIOAny(HTTPServerResponsePart.head(head)), promise: nil)
+                
                 if let data = data {
                     unself.context.write(NIOAny(HTTPServerResponsePart.body(.byteBuffer(.init(bytes: data)))), promise: nil)
+                    
+                    unself.context.writeAndFlush(NIOAny(HTTPServerResponsePart.end(nil))).whenComplete { _ in
+                        self?.context.close(promise: nil)
+                    }
+                    
+                } else if let file = file {
+                    unself.responseFilePart(file)
+                    
+                } else {
+                    unself.context.writeAndFlush(NIOAny(HTTPServerResponsePart.end(nil))).whenComplete { _ in
+                        self?.context.close(promise: nil)
+                    }
                 }
                 
-                unself.context.writeAndFlush(NIOAny(HTTPServerResponsePart.end(nil))).whenComplete { _ in
+                
+            }
+        }
+        
+        
+        private func responseFilePart(_ file: FileHandle) {
+            
+            /// 每次发送20M
+            let data = file.readData(ofLength: 20 * 1024 * 1024)
+            if data.count <= 0 {
+                file.closeFile()
+                self.context.writeAndFlush(NIOAny(HTTPServerResponsePart.end(nil))).whenComplete {[weak self] _ in
+                    self?.context.close(promise: nil)
+                }
+                return
+            }
+            
+            self.context.writeAndFlush(NIOAny(HTTPServerResponsePart.body(.byteBuffer(.init(bytes: data))))).whenComplete {[weak self] ret in
+                
+                guard let unself = self else {
+                    return
+                }
+                switch ret {
+                case .success:
+                    unself.responseFilePart(file)
+                    
+                case .failure:
                     unself.context.close(promise: nil)
                 }
+                
             }
         }
     }

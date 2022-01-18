@@ -10,88 +10,83 @@ import Foundation
 
 
 public class PKEventScheduler {
-    public typealias Callback<T> = (T) -> Void
+    
+    public typealias Callback<T> = (T, AnyObject?) -> Void
     
     private static let shared = PKEventScheduler()
     private init() {}
     
-    /// 保存注册信息
-    fileprivate var registerObjects = [Int: WeakObjectSet]()
+    
+    /// 按事件分类接收者
+    fileprivate var receiverClassDict = [Int: ReceiverSet]()
     
     
     /// 注册事件 相同的对象注册同一个事件 只有第一个会生效
     /// - Parameter obj: 注册对象
     /// - Parameter event: 注册的事件
     /// - Parameter callback: 事件回调
-    public static func register<T: PKEventDefine>(_ obj: AnyObject, event: T, callback: Callback<T.Params?>?) {
+    @discardableResult
+    public static func register<T: PKEventDefine>(_ obj: AnyObject, event: T, queue: DispatchQueue? = nil, callback: Callback<T.Params?>?) -> PKEventReceiver? {
         guard let callback = callback else {
-            return
-        }
-        
-        let objSet: WeakObjectSet
-        if let x = self.shared.registerObjects[event.hashValue] {
-            objSet = x
-        } else {
-            objSet = WeakObjectSet()
-            self.shared.registerObjects[event.hashValue] = objSet
-        }
-
-        guard !objSet.objects.contains(where: { $0.obj === obj }) else {
-            /// 已经注册过
-            return
-        }
-        
-        let weakObj = WeakObject()
-        weakObj.obj = obj
-        weakObj.callback = callback
-        
-        objSet.objects.append(weakObj)
-    }
-    
-    
-    
-    /// 提取已经注册的事件
-    /// - Parameter hashValue:
-    /// - Returns:
-    fileprivate static func fetchObjects(_ hashValue: Int) -> [WeakObject]? {
-        guard let objSet = self.shared.registerObjects[hashValue] else {
             return nil
         }
         
-        var releaseIndexs = [Int]()
-        var weakObjects = [WeakObject]()
-        
-        /// 挑选当前有效的对象
-        for (idx, weakObj) in objSet.objects.enumerated() {
-            if weakObj.obj == nil {
-                releaseIndexs.append(idx)
-            } else {
-                weakObjects.append(weakObj)
-            }
+        let receiverSet: ReceiverSet
+        if let x = self.shared.receiverClassDict[event.hashValue] {
+            receiverSet = x
+        } else {
+            receiverSet = ReceiverSet()
+            self.shared.receiverClassDict[event.hashValue] = receiverSet
+        }
+
+        if let idx = receiverSet.receivers.firstIndex(where: { $0.obj === obj}) {
+            /// 已经注册过
+            return receiverSet.receivers[idx]
         }
         
-        /// 移除已经释放的对象
-        for i in releaseIndexs.reversed() {
-            objSet.objects.remove(at: i)
-        }
+        let receiver = PKEventReceiver()
+        receiver.obj = obj
+        receiver.callback = callback
+        receiver.queue = queue
         
-        
-        return weakObjects
+        receiverSet.receivers.append(receiver)
+        return receiver
     }
-}
-
-
-// MARK: - WeakObject
-extension PKEventScheduler {
     
-    /// 弱引用外部对象
-    fileprivate class WeakObject {
+    /// 取消注册事件
+    /// - Parameter receiver:
+    public static func unregister(_ receiver: PKEventReceiver?) {
+        guard let receiver = receiver else {
+            return
+        }
+
+        self.shared.receiverClassDict.forEach({
+            if let idx = $0.value.receivers.firstIndex(where: { $0.obj === receiver.obj }) {
+                $0.value.receivers.remove(at: idx)
+            }
+        })
         
-        /// 注册对象
-        weak var obj: AnyObject?
+    }
+    
+    
+    /// 提取事件对应的接收者
+    /// - Parameter hashValue: 事件hash值
+    /// - Returns:
+    static func fetchReceivers(_ hashValue: Int) -> [PKEventReceiver]? {
         
-        /// 事件执行回调
-        var callback: Any?
+        guard let receiverSet = self.shared.receiverClassDict[hashValue] else {
+            return nil
+        }
+        /// 过滤无效的接收者
+        let receivers = receiverSet.receivers.filter({ $0.isValid })
+        receiverSet.receivers = receivers
+        
+        /// 无接收者清理分类
+        if receivers.count <= 0 {
+            self.shared.receiverClassDict.removeValue(forKey: hashValue)
+        }
+        
+        return receivers
     }
 }
 
@@ -99,42 +94,7 @@ extension PKEventScheduler {
 extension PKEventScheduler {
     
     /// 引用Array 防止地址改变
-    fileprivate class WeakObjectSet {
-        var objects = [WeakObject]()
+    fileprivate class ReceiverSet {
+        var receivers = [PKEventReceiver]()
     }
 }
-
-
-
-
-// MARK: - PKEventDefine 事件定义协议
-
-public protocol PKEventDefine {
-    
-    /// 事件参数
-    associatedtype Params
-    
-    /// 事件哈希值 用于注册
-    var hashValue: Int { get }
-}
-
-extension PKEventDefine {
-    
-    /// 调用事件
-    /// - Parameter params:
-    public func call(_ params: Params? = nil) {
-        
-        guard let objects = PKEventScheduler.fetchObjects(self.hashValue) else {
-            return
-        }
-        
-        for object in objects {
-            
-            /// 转换为callback 调用
-            if let callback = object.callback as? PKEventScheduler.Callback<Params?> {
-                callback(params)
-            }
-        }
-    }
-}
-

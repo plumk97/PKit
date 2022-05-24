@@ -133,7 +133,7 @@ open class PKUIToast: UIView {
     }
     
     open func show(_ inView: UIView? = nil) {
-        if let view = inView ?? UIApplication.shared.delegate?.window! {
+        if let view = inView ?? PKUIWindowGetter.keyWindow {
             self.isUserInteractionEnabled = true
             self.inView = view
             self.setup()
@@ -163,6 +163,7 @@ open class PKUIToast: UIView {
     }
 }
 
+// MARK: - Style
 extension PKUIToast {
     public struct Style {
         
@@ -185,4 +186,22 @@ extension PKUIToast {
         // - show
         public var duration: TimeInterval = 1
     }
+}
+
+
+// MARK: -
+extension PKUIToast {
+    
+    public static func show(_ text: String?) {
+        guard let text = text else {
+            return
+        }
+
+        PKUIToast(text).show()
+    }
+    
+    public static func show(_ error: Error?) {
+        self.show(error?.localizedDescription)
+    }
+    
 }

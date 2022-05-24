@@ -334,7 +334,7 @@ open class PKUIBubble: UIView {
             return
         }
         
-        self.inView = inView ?? UIApplication.shared.delegate?.window!
+        self.inView = inView ?? PKUIWindowGetter.keyWindow
         guard let inView = self.inView else {
             return
         }

@@ -125,7 +125,7 @@ open class PKUINavigationContainerViewController: UIViewController {
         if self.view.frame.width < self.view.frame.height {
             // 只判断竖屏 横屏都是0
             if #available(iOS 11, *) {
-                let safeAreaInsets = UIApplication.shared.windows.first?.safeAreaInsets ?? .zero
+                let safeAreaInsets = PKUIWindowGetter.safeAreaInsets
                 if safeAreaInsets.bottom > 0 {
                     // 全面屏不会出现状态栏上移的问题 直接取safeAreaInsets.top
                     statusBarHeight = safeAreaInsets.top

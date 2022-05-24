@@ -28,7 +28,7 @@ class AudioRecorderViewController: UIViewController {
         
         
         if #available(iOS 11.0, *) {
-            let window = UIApplication.shared.delegate!.window!!
+            let window = PKUIWindowGetter.window!
             self.rootTopConstraint.constant = window.safeAreaInsets.top + 44 + 10
         } else {
             self.rootTopConstraint.constant = 20 + 44 + 10

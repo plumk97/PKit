@@ -32,7 +32,9 @@ let package = Package(
             ],
             path: "Sources/WebServer",
             resources: [.process("Resources")]
-        )
+        ),
+        .testTarget(name: "JSONTests",
+                    dependencies: ["PKCore"])
     ],
     swiftLanguageVersions: [
         .v5

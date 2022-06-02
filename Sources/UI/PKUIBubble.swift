@@ -366,8 +366,8 @@ open class PKUIBubble: UIView {
         self.frame.origin = .init(x: self.frame.minX + self.frame.width * (anchorPoint.x - 0.5),
                                   y: self.frame.minY + self.frame.height * (anchorPoint.y - 0.5))
         
-        let transfrom = self.transform
-        self.transform = transfrom.scaledBy(x: 0.1, y: 0.1)
+        let Transform = self.transform
+        self.transform = Transform.scaledBy(x: 0.1, y: 0.1)
         
         inView.addSubview(self)
         
@@ -375,13 +375,13 @@ open class PKUIBubble: UIView {
             self.coverControl.backgroundColor = .clear
             UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 1, options: .layoutSubviews, animations: {
                 self.coverControl.backgroundColor = self.coverColor
-                self.transform = transfrom
+                self.transform = Transform
             }) { (_) in
                 
             }
         } else {
             self.coverControl.backgroundColor = self.coverColor
-            self.transform = transfrom
+            self.transform = Transform
         }
         
     }

@@ -1,5 +1,5 @@
 //
-//  PKStringTransfrom.swift
+//  PKStringTransform.swift
 //
 //  Created by Plumk on 2022/6/2.
 //
@@ -7,10 +7,10 @@
 import Foundation
 
 
-protocol PKStringTransform: PKTransfrom { }
+protocol PKStringTransform: _PKJsonTransformable,  PKJsonTransformable { }
 
 extension PKStringTransform {
-    static func transform(from object: Any) -> String? {
+    static func _transform(from object: Any) -> String? {
         
         switch object {
         case let str as String:
@@ -28,8 +28,12 @@ extension PKStringTransform {
             return num.stringValue
             
         default:
-            return nil
+            return "\(object)"
         }
+    }
+    
+    func _plainValue() -> Any? {
+        return self
     }
 }
 

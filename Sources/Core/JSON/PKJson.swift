@@ -9,6 +9,16 @@ import Foundation
 
 public protocol PKJson {
     init()
+    
+    func willStartMapping()
+    func mapping()
+    func didFinishMapping()
+}
+
+public extension PKJson {
+    func willStartMapping() {}
+    func mapping() {}
+    func didFinishMapping() {}
 }
 
 
@@ -41,11 +51,13 @@ extension PKJson {
         
         var dict = [String: Any]()
         for (key, value) in properties {
+            
             let key = String(key[key.index(key.startIndex, offsetBy: 1)...])
             let value = value.getValue()
+            
             if let json = value as? PKJson {
                 dict[key] = json.toJson()
-            } else {
+            } else if let value = (value as? PKJsonTransformable)?._plainValue() {
                 dict[key] = value
             }
         }

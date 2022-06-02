@@ -51,15 +51,13 @@ protocol JsonKeyWrapper {
             return
         }
         
-        if let transform = Value.self as? PKTransfrom.Type, let value = transform.transform(from: value) as? Value {
+        
+        if let value = (Value.self as? PKJsonTransformable.Type)?._transform(from: value) as? Value {
             self.wrappedValue = value
-            return
+        } else if let value = value as? Value {
+            self.wrappedValue = value
         }
         
-
-        if let value = value as? Value {
-            self.wrappedValue = value
-        }
     }
     
     func getValue() -> Any {

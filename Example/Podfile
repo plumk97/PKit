@@ -18,5 +18,5 @@ end
 
 target 'Example-Command' do
   platform :osx, '11.0'
-  pod 'PKit/Core', :path => '../'
+  pod 'PKit/JSON', :path => '../'
 end

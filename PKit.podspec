@@ -35,6 +35,10 @@ Pod::Spec.new do |spec|
   spec.subspec 'Util' do |s|
     s.source_files  = "Classes", "Sources/Util/**/*.swift"
   end
+
+  spec.subspec 'JSON' do |s|
+    s.source_files = "JSON", "Sources/JSON/**/*.swift"
+  end
   
   
 end

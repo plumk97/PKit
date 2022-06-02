@@ -12,7 +12,8 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(name: "PKCore", targets: ["PKCore"]),
         .library(name: "PKUI", targets: ["PKUI"]),
-        .library(name: "PKWebServer", targets: ["PKWebServer"])
+        .library(name: "PKWebServer", targets: ["PKWebServer"]),
+        .library(name: "PKJSON", targets: ["PKJSON"])
     ],
     dependencies: [
         .package(url: "https://gitee.com/mirrors/SwiftNIO", from: "2.0.0"),
@@ -34,7 +35,8 @@ let package = Package(
             resources: [.process("Resources")]
         ),
         .testTarget(name: "JSONTests",
-                    dependencies: ["PKCore"])
+                    dependencies: ["PKCore"]),
+        .target(name: "PKJSON", path: "Sources/JSON"),
     ],
     swiftLanguageVersions: [
         .v5

@@ -19,7 +19,7 @@ struct Job: PKJson {
     @JsonKey var name = ""
     @JsonKey var salary = 0 {
         didSet {
-            PKLog.log("new value")
+            print("new value")
         }
     }
 }
@@ -69,9 +69,6 @@ let json = """
 let person = Person()
 person.update(from: json, designatedPath: "result")
 print(person)
-
-let jobs = [Job].decode(json, designatedPath: "result.job")
-print(jobs)
 
 if let jsonStr = person.toJsonString() {
     print(jsonStr)

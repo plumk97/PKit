@@ -17,8 +17,11 @@ protocol JsonKeyWrapper {
     
     public var wrappedValue: Value
     
-    public init(wrappedValue value: Value) {
+    var customTransform: PKCusomTransformable?
+    
+    public init(wrappedValue value: Value, transform: PKCusomTransformable? = nil) {
         self.wrappedValue = value
+        self.customTransform = transform
     }
     
     
@@ -51,8 +54,9 @@ protocol JsonKeyWrapper {
             return
         }
         
-        
-        if let value = (Value.self as? PKJsonTransformable.Type)?._transform(from: value) as? Value {
+        if let transform = self.customTransform, let value = transform.transformFromJSON(value) as? Value {
+            self.wrappedValue = value
+        } else if let value = (Value.self as? PKJsonTransformable.Type)?._transform(from: value) as? Value {
             self.wrappedValue = value
         } else if let value = value as? Value {
             self.wrappedValue = value
@@ -61,6 +65,11 @@ protocol JsonKeyWrapper {
     }
     
     func getValue() -> Any {
+        
+        if let transform = self.customTransform {
+            return transform.transformToJSON(self.wrappedValue)
+        }
+        
         return self.wrappedValue
     }
 }

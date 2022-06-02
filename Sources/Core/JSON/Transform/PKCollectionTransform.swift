@@ -21,6 +21,8 @@ extension Collection {
                 result.append(value)
             } else if let value = (Element.self as? PKJsonTransformable.Type)?._transform(from: $0) as? Element {
                 result.append(value)
+            } else if let value = (Element.self as? PKJson.Type)?.decode($0 as? PKJsonObject) as? Element {
+                result.append(value)
             }
         })
         
@@ -32,7 +34,9 @@ extension Collection {
         var values = [Any]()
         for obj in self {
             
-            if let value = (obj as? PKJsonTransformable)?._plainValue() {
+            if let value = obj as? PKJson {
+                values.append(value.toJson())
+            } else if let value = (obj as? PKJsonTransformable)?._plainValue() {
                 values.append(value)
             } else {
                 values.append(obj)

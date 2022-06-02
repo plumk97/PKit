@@ -11,13 +11,11 @@ public protocol PKJson {
     init()
     
     func willStartMapping()
-    func mapping()
     func didFinishMapping()
 }
 
 public extension PKJson {
     func willStartMapping() {}
-    func mapping() {}
     func didFinishMapping() {}
 }
 
@@ -76,9 +74,9 @@ extension PKJson {
 // MARK: - Decode
 extension PKJson {
     
-    public static func decode(_ jsonData: PKJsonData?) -> Self {
+    public static func decode(_ jsonObject: PKJsonObject?, designatedPath: String? = nil) -> Self {
         let model = Self.init()
-        model.update(from: jsonData)
+        model.update(from: jsonObject)
         return model
     }
 }
@@ -87,20 +85,99 @@ extension PKJson {
 // MARK: - Update
 extension PKJson {
     
-    public func update(from jsonData: PKJsonData?) {
+    public func update(from jsonObject: PKJsonObject?, designatedPath: String? = nil) {
 
-        guard let dict = jsonData?.toDict() else {
+        guard var dict = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
             return
         }
         
+        
         let properties = self.fetchProperties()
+        self.willStartMapping()
         
         for (key, value) in dict {
-            let obj = self as? NSObject
             
+            
+            guard let wrapper = properties["_" + key] else {
+                continue
+            }
+            
+            let obj = self as? NSObject
             obj?.willChangeValue(forKey: key)
-            properties["_" + key]?.setValue(value)
+            wrapper.setValue(value)
             obj?.didChangeValue(forKey: key)
         }
+        
+        self.didFinishMapping()
     }
+}
+
+// MARK: - Array
+extension Array where Element: PKJson {
+    
+    // MARK: - Decode
+    public static func decode(_ jsonObject: PKJsonObject?, designatedPath: String? = nil) -> Self? {
+        guard var dicts = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [[String: Any]] else {
+            return nil
+        }
+        
+        return self.decode(dicts)
+        
+    }
+    
+    public static func decode(_ jsonObjects: [PKJsonObject]?) -> Self? {
+        guard let jsonObjects = jsonObjects else {
+            return nil
+        }
+
+        var array = Self()
+        for jsonObject in jsonObjects {
+            array.append(.decode(jsonObject))
+        }
+        
+        return array
+    }
+    
+    
+    // MARK: - Encode
+    
+    public func toJson() -> [[String: Any]] {
+        
+        var dicts = [[String: Any]]()
+        for element in self {
+            dicts.append(element.toJson())
+        }
+        
+        return dicts
+    }
+    
+    public func toJsonString() -> String? {
+        guard let data = try? JSONSerialization.data(withJSONObject: self.toJson(), options: .fragmentsAllowed) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+}
+
+
+fileprivate func fetchDict(_ dict: [String: Any]?, designatedPath: String? = nil) -> Any? {
+    guard let dict = dict else {
+        return nil
+    }
+    
+    var obj: Any = dict
+    
+    if let designatedPath = designatedPath {
+        let paths = designatedPath.components(separatedBy: ".")
+        for path in paths {
+            
+            if let x = (obj as? [String: Any])?[path] {
+                obj = x
+            } else {
+                break
+            }
+        }
+    }
+    
+    return obj
 }

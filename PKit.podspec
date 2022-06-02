@@ -18,6 +18,7 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => "https://github.com/zx1262111739/PKit.git", :tag => "#{spec.version}" }
 
   spec.ios.deployment_target = "9.0"
+  spec.osx.deployment_target = "11.0"
   
   spec.swift_version = "5.0"
 

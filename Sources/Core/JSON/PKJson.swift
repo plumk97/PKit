@@ -12,10 +12,10 @@ public protocol PKJson {
 }
 
 
-// MARK: - Keys
+// MARK: - Properties
 extension PKJson {
-    
-    func fetchJsonKeys() -> [String: JsonKeyWrapper] {
+
+    func fetchProperties() -> [String: JsonKeyWrapper] {
         
         let mirror = Mirror(reflecting: self)
         
@@ -29,6 +29,36 @@ extension PKJson {
         return keys
     }
     
+}
+
+
+// MARK: - Encode
+extension PKJson {
+    
+    public func toJson() -> [String: Any] {
+        
+        let properties = self.fetchProperties()
+        
+        var dict = [String: Any]()
+        for (key, value) in properties {
+            let key = String(key[key.index(key.startIndex, offsetBy: 1)...])
+            let value = value.getValue()
+            if let json = value as? PKJson {
+                dict[key] = json.toJson()
+            } else {
+                dict[key] = value
+            }
+        }
+        
+        return dict
+    }
+    
+    public func toJsonString() -> String? {
+        guard let data = try? JSONSerialization.data(withJSONObject: self.toJson(), options: .fragmentsAllowed) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
 }
 
 // MARK: - Decode
@@ -51,11 +81,14 @@ extension PKJson {
             return
         }
         
-        let keys = self.fetchJsonKeys()
+        let properties = self.fetchProperties()
         
         for (key, value) in dict {
-            keys["_" + key]?.setValue(value)
+            let obj = self as? NSObject
+            
+            obj?.willChangeValue(forKey: key)
+            properties["_" + key]?.setValue(value)
+            obj?.didChangeValue(forKey: key)
         }
     }
-
 }

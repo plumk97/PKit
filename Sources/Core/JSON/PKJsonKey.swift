@@ -9,6 +9,7 @@ import Foundation
 
 protocol JsonKeyWrapper {
     func setValue(_ value: Any)
+    func getValue() -> Any
 }
 
 /// JSOS key包装器
@@ -50,9 +51,18 @@ protocol JsonKeyWrapper {
             return
         }
         
-        
-        if let x = value as? Value {
-            self.wrappedValue = x
+        if let transform = Value.self as? PKTransfrom.Type, let value = transform.transform(from: value) as? Value {
+            self.wrappedValue = value
+            return
         }
+        
+
+        if let value = value as? Value {
+            self.wrappedValue = value
+        }
+    }
+    
+    func getValue() -> Any {
+        return self.wrappedValue
     }
 }

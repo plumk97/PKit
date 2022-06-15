@@ -14,11 +14,11 @@ extension Optional: _PKJsonTransformable {
             return .some(value)
         }
         
-        if let cls = Wrapped.self as? DTJson.Type, let jsonObject = object as? DTJsonObject {
+        if let cls = Wrapped.self as? PKJson.Type, let jsonObject = object as? PKJsonObject {
             return .some(cls.decode(jsonObject) as? Wrapped)
         }
         
-        if let value = (Wrapped.self as? DTJsonTransformable.Type)?._transform(from: object) as? Wrapped {
+        if let value = (Wrapped.self as? PKJsonTransformable.Type)?._transform(from: object) as? Wrapped {
             return .some(value)
         }
         return .none

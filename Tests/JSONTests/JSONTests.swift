@@ -7,6 +7,7 @@
 
 import XCTest
 @testable import PKCore
+@testable import PKJSON
 
 
 struct Job: PKJson {
@@ -47,6 +48,6 @@ final class JSONTests: XCTestCase {
 """
         
         let person = Person.decode(json)
-        print(person)
+        print(person.toJson())
     }
 }

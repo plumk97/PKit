@@ -87,7 +87,7 @@ extension PKJson {
     
     public func update(from jsonObject: PKJsonObject?, designatedPath: String? = nil) {
 
-        guard var dict = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
+        guard let dict = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
             return
         }
         
@@ -117,7 +117,7 @@ extension Array where Element: PKJson {
     
     // MARK: - Decode
     public static func decode(_ jsonObject: PKJsonObject?, designatedPath: String? = nil) -> Self? {
-        guard var dicts = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [[String: Any]] else {
+        guard let dicts = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [[String: Any]] else {
             return nil
         }
         

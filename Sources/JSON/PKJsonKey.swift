@@ -35,7 +35,7 @@ protocol JsonKeyWrapper {
     // MARK: - JsonKeyWrapper
     func setValue(_ value: Any) {
         
-        if let obj = self.wrappedValue as? DTJson {
+        if let obj = self.wrappedValue as? PKJson {
             
             switch value {
             case let str as String:
@@ -58,7 +58,7 @@ protocol JsonKeyWrapper {
             self.wrappedValue = value
         } else if let transform = self.customTransform, let value = transform.transformFromJSON(value) as? Value {
             self.wrappedValue = value
-        } else if let value = (Value.self as? DTJsonTransformable.Type)?._transform(from: value) as? Value {
+        } else if let value = (Value.self as? PKJsonTransformable.Type)?._transform(from: value) as? Value {
             self.wrappedValue = value
         }
         
@@ -67,7 +67,7 @@ protocol JsonKeyWrapper {
     func getValue() -> Any {
         
         if let transform = self.customTransform {
-            return transform.transformToJSON(self.wrappedValue)
+            return transform.transformToJSON(self.wrappedValue) as Any
         }
         
         return self.wrappedValue

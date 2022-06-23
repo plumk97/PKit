@@ -37,6 +37,8 @@ let package = Package(
         .target(name: "PKJSON", path: "Sources/JSON"),
         .testTarget(name: "JSONTests",
                     dependencies: ["PKCore", "PKJSON"]),
+        .testTarget(name: "WebServerTests",
+                    dependencies: ["PKCore", "PKWebServer"]),
     ],
     swiftLanguageVersions: [
         .v5

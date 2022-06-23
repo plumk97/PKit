@@ -191,5 +191,6 @@
   "movie": "video/x-sgi-movie",
   "ice": "x-conference/x-cooltalk",
   "gdf": "image/x-ibm-gdf",
-  "qw": "application/x-qa-write"
+  "qw": "application/x-qa-write",
+  "json": "application/json"
 }

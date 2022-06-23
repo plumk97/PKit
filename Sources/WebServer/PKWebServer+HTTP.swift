@@ -62,21 +62,32 @@ extension PKWebServer {
                 
                 /// - 处理静态文件
                 let coms = path.components(separatedBy: "/")
-                for i in 0 ..< coms.count {
-                    let subpath = coms[0 ..< i].joined(separator: "/")
-                    if let directroy = PKWebServer.shared.StaticFiles[subpath] {
-                        let filepath: String
-                        if directroy.hasSuffix("/") {
-                            filepath = directroy + coms[i...].joined(separator: "/")
-                        } else {
-                            filepath = directroy + "/" + coms[i...].joined(separator: "/")
-                        }
-                        ctx.responseStaticFile(filepath)
-                        return
+                
+                var i = 0
+                var parent = ""
+                while i < coms.count - 1 {
+                    if parent.hasSuffix("/") {
+                        parent += coms[i]
+                    } else {
+                        parent += "/" + coms[i]
                     }
                     
+                    if let directory = PKWebServer.shared.StaticFiles[parent] {
+                        
+                        let absolutePath = directory + coms[(i+1)...].joined(separator: "/")
+                        var isDirectory: ObjCBool = .init(false)
+                        let isExist = FileManager.default.fileExists(atPath: absolutePath, isDirectory: &isDirectory)
+                        if isExist && !isDirectory.boolValue {
+                            ctx.responseStaticFile(absolutePath)
+                            return
+                        }
+                        
+                    }
+                    
+                    i += 1
                 }
-                
+
+                PKLog.log("notFound", path)
                 ctx.response(status: .notFound)
                 
                 

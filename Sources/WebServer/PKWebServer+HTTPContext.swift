@@ -71,7 +71,7 @@ extension PKWebServer {
         // MARK: - Response
         public func responseText(_ text: String) {
             self.response(status: .ok, headers: [
-                "Content-Type": "text/plain"
+                "Content-Type": "\(PKMIMEType["txt"]); charset=utf-8"
             ], data: text.data(using: .utf8))
         }
         
@@ -82,7 +82,7 @@ extension PKWebServer {
                 return
             }
             self.response(status: .ok, headers: [
-                "Content-Type": "application/json"
+                "Content-Type": "\(PKMIMEType["json"]); charset=utf-8"
             ], data: data)
         }
         
@@ -90,7 +90,7 @@ extension PKWebServer {
             let url = URL(fileURLWithPath: filepath)
             
             self.response(status: .ok, headers: [
-                "Content-Type": PKMIMEType.createMIMEType(fileExtension: url.pathExtension)
+                "Content-Type": "\(PKMIMEType[url.pathExtension]); charset=utf-8"
             ], data: try? .init(contentsOf: url))
         }
         
@@ -99,7 +99,7 @@ extension PKWebServer {
             let url = URL(fileURLWithPath: filepath)
                 
             self.response(status: .ok, headers: [
-                "Content-Type": PKMIMEType.createMIMEType(fileExtension: url.pathExtension),
+                "Content-Type": "\(PKMIMEType[url.pathExtension]); charset=utf-8",
                 "Cache-Control": "public, max-age=86400"
             ], file: .init(forReadingAtPath: filepath))
         }
@@ -112,10 +112,10 @@ extension PKWebServer {
                     return
                 }
                 
-                var hs = HTTPHeaders()
+                var httpHeaders = HTTPHeaders()
                 if let headers = headers {
                     for (key, value) in headers {
-                        hs.replaceOrAdd(name: key, value: value)
+                        httpHeaders.replaceOrAdd(name: key, value: value)
                     }
                 }
                 
@@ -130,12 +130,12 @@ extension PKWebServer {
                 }
                 
                 if contentLength > 0 {
-                    hs.replaceOrAdd(name: "Content-Length", value: "\(contentLength)")
+                    httpHeaders.replaceOrAdd(name: "Content-Length", value: "\(contentLength)")
                 }
                 
                 let head = HTTPResponseHead(version: .http1_1,
                                             status: status,
-                                            headers: hs)
+                                            headers: httpHeaders)
                 
                 unself.context.write(NIOAny(HTTPServerResponsePart.head(head)), promise: nil)
                 

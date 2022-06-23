@@ -82,7 +82,11 @@ public class PKWebServer {
 extension PKWebServer {
     
     public static func StaticFile(_ path: String, directory: String) {
-        self.shared.StaticFiles[path] = directory
+        if directory.hasSuffix("/") {
+            self.shared.StaticFiles[path] = directory
+        } else {
+            self.shared.StaticFiles[path] = directory + "/"
+        }
     }
     
     public static func GET(_ path: String, callback: @escaping HTTPReqeustCallback) {

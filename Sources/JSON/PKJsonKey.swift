@@ -67,7 +67,7 @@ protocol JsonKeyWrapper {
     func getValue() -> Any {
         
         if let transform = self.customTransform {
-            return transform.transformToJSON(self.wrappedValue)
+            return transform.transformToJSON(self.wrappedValue) as Any
         }
         
         return self.wrappedValue

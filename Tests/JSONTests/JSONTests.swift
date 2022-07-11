@@ -13,7 +13,7 @@ import XCTest
 struct Job: PKJson {
     
     @JsonKey var name = ""
-    @JsonKey var salary = 0 {
+    @JsonKey var salary: Double = 0 {
         didSet {
             PKLog.log("new value")
         }
@@ -42,7 +42,7 @@ final class JSONTests: XCTestCase {
     "name": "张三",
     "job": {
         "name": "工人",
-        "salary": 10000
+        "salary": "10000.5"
     }
 }
 """

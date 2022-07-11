@@ -11,6 +11,8 @@ import PKit
 
 class TableViewController: UITableViewController {
 
+    var isHiddenStatusBar: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,6 +24,17 @@ class TableViewController: UITableViewController {
         if #available(iOS 15.0, *) {
             self.tableView.sectionHeaderTopPadding = 0
         }
+        
+        self.navigationItem.rightBarButtonItem = .init(title: "Toggle StatusBar Hidden", style: .plain, target: self, action: #selector(toggleStatusBarHiddenItemClick))
+    }
+    
+    @objc func toggleStatusBarHiddenItemClick() {
+        self.isHiddenStatusBar = !self.isHiddenStatusBar
+        self.setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return self.isHiddenStatusBar
     }
     
     override func viewWillLayoutSubviews() {

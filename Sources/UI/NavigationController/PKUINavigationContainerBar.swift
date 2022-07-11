@@ -50,11 +50,15 @@ open class PKUINavigationContainerBar: UIView {
 /// 系统导航栏高度
 func SystemNavigationBarHeight() -> CGFloat {
     
+    if UIDevice.current.model == "iPad" {
+        return 50
+    }
+    
     if UIApplication.shared.statusBarOrientation.isPortrait {
         /// 竖屏高度
         return 44
     }
-    
+
     /// 屏幕宽度大于400 横屏导航栏高度为44
     if UIScreen.main.nativeBounds.width / UIScreen.main.nativeScale > 400 {
         return 44

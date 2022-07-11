@@ -122,22 +122,35 @@ open class PKUINavigationContainerViewController: UIViewController {
         
         // 获取当前状态栏高度
         var statusBarHeight: CGFloat = 0
-        if self.view.frame.width < self.view.frame.height {
-            // 只判断竖屏 横屏都是0
-            if #available(iOS 11, *) {
-                let safeAreaInsets = PKUIWindowGetter.safeAreaInsets
-                if safeAreaInsets.bottom > 0 {
-                    // 全面屏不会出现状态栏上移的问题 直接取safeAreaInsets.top
-                    statusBarHeight = safeAreaInsets.top
+        
+        if UIDevice.current.model == "iPad" {
+            
+            if !self.prefersStatusBarHidden {
+                
+                if #available(iOS 11, *) {
+                    statusBarHeight = PKUIWindowGetter.safeAreaInsets.top
                 } else {
-                    // 非全面屏固定20
                     statusBarHeight = 20
                 }
-            } else {
-                // iOS11以下固定20
-                statusBarHeight = 20
             }
+            
+        } else {
+            
+            // iPhone 只判断竖屏 横屏没有状态栏
+            if UIApplication.shared.statusBarOrientation.isPortrait {
+                let safeAreaInsets = PKUIWindowGetter.safeAreaInsets
+                if #available(iOS 11, *) {
+                    if safeAreaInsets.bottom > 0 || !self.prefersStatusBarHidden {
+                        statusBarHeight = PKUIWindowGetter.safeAreaInsets.top
+                    }
+                    
+                } else if !self.prefersStatusBarHidden {
+                    statusBarHeight = 20
+                }
+            }
+            
         }
+        
         
         if UIApplication.shared.statusBarOrientation.isPortrait {
             navBarFrame.size.height = statusBarHeight + self.config.navigationBarHeight
@@ -179,6 +192,11 @@ open class PKUINavigationContainerViewController: UIViewController {
     }
     
     // MARK: - Child
+    open override func setNeedsStatusBarAppearanceUpdate() {
+        super.setNeedsStatusBarAppearanceUpdate()
+        self.view.setNeedsLayout()
+        self.view.layoutIfNeeded()
+    }
     open override var childForStatusBarStyle: UIViewController? {
         return self.unwarpNavigationController
     }

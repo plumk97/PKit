@@ -67,11 +67,15 @@ public struct PKUIWindowGetter {
     @available(iOS 13.0, *)
     public static var windowScene: UIWindowScene? {
         
-        guard let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene else {
+        guard let scenes = UIApplication.shared.connectedScenes.filter({ $0 is UIWindowScene }) as? [UIWindowScene] else {
             return nil
         }
         
-        return windowScene
+        guard scenes.count > 1 else {
+            return scenes.first
+        }
+        
+        return scenes.filter({ $0.activationState == .foregroundActive }).first
     }
     
 }

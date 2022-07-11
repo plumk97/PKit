@@ -48,11 +48,17 @@ open class PKUINavigationConfig {
     
     init() {
         
-        /// 屏幕宽度大于400 横屏导航栏高度为44
-        if UIScreen.main.nativeBounds.width / UIScreen.main.nativeScale > 400 {
-            self.landscapeNavigationBarHeight = 44
+        if UIDevice.current.model == "iPad" {
+            self.landscapeNavigationBarHeight = 50
+            self.navigationBarHeight = 50
         } else {
-            self.landscapeNavigationBarHeight = 32
+            
+            /// 屏幕宽度大于400 横屏导航栏高度为44
+            if UIScreen.main.nativeBounds.width / UIScreen.main.nativeScale > 400 {
+                self.landscapeNavigationBarHeight = 44
+            } else {
+                self.landscapeNavigationBarHeight = 32
+            }
         }
         
     }

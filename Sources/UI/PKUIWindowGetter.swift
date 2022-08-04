@@ -5,7 +5,7 @@
 //  Created by Plumk on 2022/5/16.
 //
 
-import Foundation
+import UIKit
 
 
 public struct PKUIWindowGetter {

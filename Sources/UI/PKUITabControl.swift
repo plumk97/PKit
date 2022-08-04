@@ -97,14 +97,13 @@ open class PKUITabControl: UIView {
     fileprivate var interactionAnimationProgress: CGFloat = 0
     
     /// 底部指示条
-    private var indicateBar: CAGradientLayer!
+    private let indicateBar = CAGradientLayer()
     
     public init(items: [Item], setup: ((PKUITabControl)->Void)? = nil) {
         super.init(frame: .zero)
         
         setup?(self)
         
-        self.indicateBar = CAGradientLayer()
         self.indicateBar.contentsScale = UIScreen.main.scale
         self.indicateBar.startPoint = .init(x: 0, y: 0.5)
         self.indicateBar.endPoint = .init(x: 1, y: 0.5)
@@ -177,9 +176,6 @@ open class PKUITabControl: UIView {
     
     /// 重新加载指示器
     fileprivate func reloadIndicateBar() {
-        guard self.indicateBar != nil else {
-            return
-        }
         
         self.indicateBar.frame.size.height = self.indicateHeight
         self.reloadIndicateBarStyle()
@@ -188,9 +184,6 @@ open class PKUITabControl: UIView {
     
     fileprivate func reloadIndicateBarStyle() {
         
-        guard self.indicateBar != nil else {
-            return
-        }
         self.indicateBar.cornerRadius = self.indicateHeight / 2
         if self.indicateColors.count > 1 {
             self.indicateBar.colors = self.indicateColors.map({ $0.cgColor })

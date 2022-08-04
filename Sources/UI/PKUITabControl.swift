@@ -30,7 +30,10 @@ open class PKUITabControl: UIView {
     open var spacing: CGFloat = 30 { didSet { self.reload() }}
     
     /// items
-    open var items: [Item]? { didSet { self.reload() }}
+    open var items: [Item]? { didSet {
+        self.selectedIndex = max(0, min((self.items?.count ?? 1) - 1, self.selectedIndex))
+        self.reload()
+    }}
     
     /// 指示条颜色
     open var indicateColor: UIColor? {
@@ -119,12 +122,17 @@ open class PKUITabControl: UIView {
     
     /// 加载界面
     fileprivate func reload() {
-        guard let items = self.items else {
-            return
-        }
         self.labels.forEach({ $0.removeFromSuperlayer() })
         self.labels.removeAll()
         self.labelFrames.removeAll()
+        
+        guard let items = self.items else {
+            self.labelContentSize = .zero
+            self.invalidateIntrinsicContentSize()
+            self.indicateBar.isHidden = true
+            return
+        }
+        
         
         var right: CGFloat = 0
         var maxHeight: CGFloat = 0
@@ -159,6 +167,7 @@ open class PKUITabControl: UIView {
         
         self.labelContentSize = .init(width: right - self.spacing, height: maxHeight)
         self.invalidateIntrinsicContentSize()
+        self.indicateBar.isHidden = false
         
         transactionAnimation(duration: 0) {
             self.updateDisplay()
@@ -290,8 +299,10 @@ open class PKUITabControl: UIView {
         }
         
         guard self.selectedIndex < items.count else {
+            self.indicateBar.isHidden = true
             return
         }
+        self.indicateBar.isHidden = false
     
         let selectedItem = items[self.selectedIndex]
         for (idx, label) in self.labels.enumerated() {

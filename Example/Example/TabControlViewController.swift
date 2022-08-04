@@ -62,6 +62,22 @@ class TabControlViewController: UIViewController {
             let offset = CGPoint.init(x: self.scrollView.frame.width * CGFloat(index), y: 0)
             self.scrollView.setContentOffset(offset, animated: true)
         }
+        
+        self.navigationItem.rightBarButtonItems = [
+            .init(title: "Clear", style: .plain, target: self, action: #selector(clearItemClick)),
+            .init(title: "Reset", style: .plain, target: self, action: #selector(resetItemClick))
+        ]
+    }
+    
+    @objc func clearItemClick() {
+        self.tabControl.items = nil
+    }
+    
+    @objc func resetItemClick() {
+        let item1 = PKUITabControl.Item.init(title: "个人主页", color: .init(red: 1, green: 1, blue: 1, alpha: 0.8), selectedColor: .white)
+        let item2 = PKUITabControl.Item.init(title: "个人中心", color: .black, selectedColor: .white)
+        let item3 = PKUITabControl.Item.init(title: "CP空间", color: .init(red: 0, green: 0, blue: 0, alpha: 0.8), selectedColor: .black)
+        self.tabControl.items = [item1, item2, item3]
     }
 }
 

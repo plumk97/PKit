@@ -76,7 +76,7 @@ extension PKJson {
     
     public static func decode(_ jsonObject: PKJsonObject?, designatedPath: String? = nil) -> Self {
         let model = Self.init()
-        model.update(from: jsonObject)
+        model.update(from: jsonObject, designatedPath: designatedPath)
         return model
     }
 }
@@ -87,7 +87,7 @@ extension PKJson {
     
     public func update(from jsonObject: PKJsonObject?, designatedPath: String? = nil) {
 
-        guard let dict = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
+        guard let dict = fetchInnerDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
             return
         }
         
@@ -117,7 +117,7 @@ extension Array where Element: PKJson {
     
     // MARK: - Decode
     public static func decode(_ jsonObject: PKJsonObject?, designatedPath: String? = nil) -> Self? {
-        guard let dicts = fetchDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [[String: Any]] else {
+        guard let dicts = fetchInnerDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [[String: Any]] else {
             return nil
         }
         
@@ -160,7 +160,12 @@ extension Array where Element: PKJson {
 }
 
 
-fileprivate func fetchDict(_ dict: [String: Any]?, designatedPath: String? = nil) -> Any? {
+/// 获取dict内部指定路径的dict
+/// - Parameters:
+///   - dict:
+///   - designatedPath: 指定路径
+/// - Returns:
+public func fetchInnerDict(_ dict: [String: Any]?, designatedPath: String? = nil) -> Any? {
     guard let dict = dict else {
         return nil
     }

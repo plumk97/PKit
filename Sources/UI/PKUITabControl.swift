@@ -269,7 +269,7 @@ open class PKUITabControl: UIView {
                 let indicateFrame = CGRect.init(
                     x: minX,
                     y: nextLabelFrame.maxY + self.bothIndicateBarLabelSpacing,
-                    width: (maxX - minX - nextWidth) * abs(progress) + nextWidth,
+                    width: (maxX - minX - nextWidth) * abs(progress) + width,
                     height: self.indicateHeight)
                 
                 self.indicateBar.frame = indicateFrame

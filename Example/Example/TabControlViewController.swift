@@ -60,7 +60,7 @@ class TabControlViewController: UIViewController {
         self.tabControl.didChangeSelectedIndexBlock = { index in
             
             let offset = CGPoint.init(x: self.scrollView.frame.width * CGFloat(index), y: 0)
-            self.scrollView.setContentOffset(offset, animated: true)
+            self.scrollView.setContentOffset(offset, animated: false)
         }
         
         self.navigationItem.rightBarButtonItems = [

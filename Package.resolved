@@ -2,12 +2,21 @@
   "object": {
     "pins": [
       {
-        "package": "swift-nio",
-        "repositoryURL": "https://gitee.com/mirrors/SwiftNIO",
+        "package": "swift-atomics",
+        "repositoryURL": "https://github.com/apple/swift-atomics.git",
         "state": {
           "branch": null,
-          "revision": "213eb6887e526e0dfac526a2eae559a1893ebbac",
-          "version": "2.36.0"
+          "revision": "919eb1d83e02121cdb434c7bfc1f0c66ef17febe",
+          "version": "1.0.2"
+        }
+      },
+      {
+        "package": "swift-nio",
+        "repositoryURL": "https://github.com/apple/swift-nio.git",
+        "state": {
+          "branch": null,
+          "revision": "b4e0a274f7f34210e97e2f2c50ab02a10b549250",
+          "version": "2.41.1"
         }
       }
     ]

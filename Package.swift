@@ -16,7 +16,7 @@ let package = Package(
         .library(name: "PKJSON", targets: ["PKJSON"])
     ],
     dependencies: [
-        .package(url: "https://gitee.com/mirrors/SwiftNIO", from: "2.0.0"),
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -27,9 +27,9 @@ let package = Package(
             name: "PKWebServer",
             dependencies: [
                 .target(name: "PKCore", condition: nil),
-                .productItem(name: "NIO", package: "SwiftNIO", condition: nil),
-                .productItem(name: "NIOHTTP1", package: "SwiftNIO", condition: nil),
-                .productItem(name: "NIOWebSocket", package: "SwiftNIO", condition: nil),
+                .productItem(name: "NIO", package: "swift-nio", condition: nil),
+                .productItem(name: "NIOHTTP1", package: "swift-nio", condition: nil),
+                .productItem(name: "NIOWebSocket", package: "swift-nio", condition: nil),
             ],
             path: "Sources/WebServer",
             resources: [.process("Resources")]

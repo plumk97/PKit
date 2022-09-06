@@ -192,5 +192,6 @@
   "ice": "x-conference/x-cooltalk",
   "gdf": "image/x-ibm-gdf",
   "qw": "application/x-qa-write",
-  "json": "application/json"
+  "json": "application/json",
+  "svg": "image/svg+xml"
 }

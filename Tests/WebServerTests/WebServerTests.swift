@@ -20,7 +20,12 @@ final class WebServerTests: XCTestCase {
     func testWebServer() throws {
         
         PKWebServer.GET("/") { ctx in
-            ctx.responseJson(["aaa": 11])
+            
+            do {
+                try ctx.response.responseJson(["aaa": 11])
+            } catch {
+                print(error)
+            }
         }
         
         try PKWebServer.run()

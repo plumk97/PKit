@@ -17,16 +17,35 @@ public class PKWebServer {
     public typealias HTTPReqeustCallback = PKValueCallback<HTTPContext>
     public typealias WebSocketReceivedCallback = PKValueCallback<WebSocketContext>
     
+    /// 使用线程数量
+    public static var numberOfThreads = System.coreCount
+    
     static let shared = PKWebServer()
     
     ///
-    private let bootstrap: ServerBootstrap
+    private lazy var bootstrap: ServerBootstrap = self.createBootstrap()
     
     /// - HTTP 频道
     private var httpChannel: Channel?
     
+    /// 静态文件
+    private(set) var StaticFiles = [String: String]()
+    
+    /// GET接口
+    private(set) var GETs = [String: HTTPReqeustCallback]()
+    
+    /// POST接口
+    private(set) var POSTs = [String: HTTPReqeustCallback]()
+    
+    /// websocket 接受连接回调
+    private(set) var webSocketReceivedCallback: WebSocketReceivedCallback?
+    
     private init() {
-        let group = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
+        
+    }
+    
+    private func createBootstrap() -> ServerBootstrap {
+        let group = MultiThreadedEventLoopGroup(numberOfThreads: PKWebServer.numberOfThreads)
         
         let upgrader = NIOWebSocketServerUpgrader { channel, head in
             channel.eventLoop.makeSucceededFuture(HTTPHeaders())
@@ -35,7 +54,7 @@ public class PKWebServer {
             channel.pipeline.addHandler(WebSocketHandler(head: head))
         }
         
-        self.bootstrap = ServerBootstrap(group: group)
+        let bootstrap = ServerBootstrap(group: group)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
             .childChannelInitializer({ channel in
@@ -53,14 +72,9 @@ public class PKWebServer {
                     channel.pipeline.addHandler(httpHandler)
                 })
             })
+        
+        return bootstrap
     }
-    
-    private(set) var StaticFiles = [String: String]()
-    
-    private(set) var GETs = [String: HTTPReqeustCallback]()
-    private(set) var POSTs = [String: HTTPReqeustCallback]()
-    
-    private(set) var webSocketReceivedCallback: WebSocketReceivedCallback?
     
     private func run(port: Int) throws -> Bool {
         self.httpChannel = try self.bootstrap.bind(host: "0.0.0.0", port: port).wait()

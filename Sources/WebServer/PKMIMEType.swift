@@ -16,7 +16,6 @@ public class PKMIMEType {
     private var mimetypeMapping = [String: String]()
     
     private init() {
-        
         self.readMIMETypeMapping()
     }
     
@@ -53,11 +52,15 @@ public class PKMIMEType {
         return [String](self.shared.mimetypeMapping.values)
     }
     
-    public static func createMIMEType(fileExtension: String) -> String {
+    public static func setMIMEType(_ type: String, fileExtension: String) {
+        self.shared.mimetypeMapping[fileExtension] = type
+    }
+    
+    public static func getMIMEType(fileExtension: String) -> String {
         return self.shared.mimetypeMapping[fileExtension] ?? "*"
     }
     
     public static subscript(fileExtension: String) -> String {
-        return self.createMIMEType(fileExtension: fileExtension)
+        return self.getMIMEType(fileExtension: fileExtension)
     }
 }

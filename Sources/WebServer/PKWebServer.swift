@@ -14,16 +14,10 @@ import NIOWebSocket
 
 public class PKWebServer {
     
-    public typealias HTTPReqeustCallback = PKValueCallback<HTTPContext>
-    public typealias WebSocketReceivedCallback = PKValueCallback<WebSocketContext>
-    
-    /// 使用线程数量
-    public static var numberOfThreads = System.coreCount
+    public typealias HTTPHandleCallback = PKValueCallback<PKHTTPContext>
+    public typealias WebSocketEstablishedCallback = PKValueCallback<PKWebSocketContext>
     
     static let shared = PKWebServer()
-    
-    ///
-    private lazy var bootstrap: ServerBootstrap = self.createBootstrap()
     
     /// - HTTP 频道
     private var httpChannel: Channel?
@@ -32,62 +26,99 @@ public class PKWebServer {
     private(set) var StaticFiles = [String: String]()
     
     /// GET接口
-    private(set) var GETs = [String: HTTPReqeustCallback]()
+    private(set) var GETs = [String: HTTPHandleCallback]()
     
     /// POST接口
-    private(set) var POSTs = [String: HTTPReqeustCallback]()
+    private(set) var POSTs = [String: HTTPHandleCallback]()
     
     /// websocket 接受连接回调
-    private(set) var webSocketReceivedCallback: WebSocketReceivedCallback?
+    private(set) var webSocketEstablishedCallback: WebSocketEstablishedCallback?
+    
+    /// 是否启用webSocket
+    private var isEnableWebSocket: Bool {
+        return self.webSocketEstablishedCallback != nil
+    }
     
     private init() {
         
     }
     
-    private func createBootstrap() -> ServerBootstrap {
-        let group = MultiThreadedEventLoopGroup(numberOfThreads: PKWebServer.numberOfThreads)
+    
+    private func createWebSocketUpgrader() -> NIOWebSocketServerUpgrader? {
         
         let upgrader = NIOWebSocketServerUpgrader { channel, head in
             channel.eventLoop.makeSucceededFuture(HTTPHeaders())
             
         } upgradePipelineHandler: { channel, head in
-            channel.pipeline.addHandler(WebSocketHandler(head: head))
+            channel.pipeline.addHandler(PKWebSocketHandler(head: head, initedCallback: self.webSocketEstablishedCallback))
         }
         
-        let bootstrap = ServerBootstrap(group: group)
+        return upgrader
+    }
+    
+    private func createBootstrap(loopGroup: MultiThreadedEventLoopGroup) -> ServerBootstrap {
+        
+        let upgrader: NIOWebSocketServerUpgrader?
+        if self.isEnableWebSocket {
+            upgrader = self.createWebSocketUpgrader()
+        } else {
+            upgrader = nil
+        }
+        
+        let bootstrap = ServerBootstrap(group: loopGroup)
             .serverChannelOption(ChannelOptions.backlog, value: 256)
             .serverChannelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
             .childChannelInitializer({ channel in
                 
-                let httpHandler = HTTPHandler()
+                let httpHandler = PKHTTPHandler()
                 
-                let config: NIOHTTPServerUpgradeConfiguration = (
-                    upgraders: [ upgrader ],
-                    completionHandler: { _ in
-                        channel.pipeline.removeHandler(httpHandler, promise: nil)
+                if let upgrader = upgrader {
+                    let config: NIOHTTPServerUpgradeConfiguration = (
+                        upgraders: [ upgrader ],
+                        completionHandler: { _ in
+                            channel.pipeline.removeHandler(httpHandler, promise: nil)
+                        }
+                    )
+                    
+                    return channel.pipeline.configureHTTPServerPipeline(withServerUpgrade: config).flatMap({
+                        channel.pipeline.addHandler(httpHandler)
+                    })
+                } else {
+                    return channel.pipeline.configureHTTPServerPipeline().flatMap {
+                        channel.pipeline.addHandler(httpHandler)
                     }
-                )
+                }
                 
-                return channel.pipeline.configureHTTPServerPipeline(withServerUpgrade: config).flatMap({
-                    channel.pipeline.addHandler(httpHandler)
-                })
             })
         
         return bootstrap
     }
     
-    private func run(port: Int) throws -> Bool {
-        self.httpChannel = try self.bootstrap.bind(host: "0.0.0.0", port: port).wait()
-        return true
+    private func run(port: Int, loopGroup: MultiThreadedEventLoopGroup = .init(numberOfThreads: System.coreCount)) throws {
+        guard self.httpChannel == nil else {
+            return
+        }
+        
+        let bootstrap = self.createBootstrap(loopGroup: loopGroup)
+        self.httpChannel = try bootstrap.bind(host: "0.0.0.0", port: port).wait()
     }
     
-    @discardableResult
-    public static func run(port: Int = 8080) throws -> Bool {
-        return try self.shared.run(port: port)
+    private func stop() {
+        _ = self.httpChannel?.close()
+        self.httpChannel = nil
+    }
+
+    
+}
+
+// MARK: - Static
+extension PKWebServer {
+    public static func run(port: Int = 8080) throws {
+        try self.shared.run(port: port)
     }
     
     public static func stop() {
-        self.shared.httpChannel?.close(mode: .all, promise: nil)
+        self.shared.stop()
     }
 }
 
@@ -103,20 +134,15 @@ extension PKWebServer {
         }
     }
     
-    public static func GET(_ path: String, callback: @escaping HTTPReqeustCallback) {
+    public static func GET(_ path: String, callback: @escaping HTTPHandleCallback) {
         self.shared.GETs[path] = callback
     }
     
-    public static func POST(_ path: String, callback: @escaping HTTPReqeustCallback) {
+    public static func POST(_ path: String, callback: @escaping HTTPHandleCallback) {
         self.shared.POSTs[path] = callback
     }
-}
-
-
-// MARK: - Websocket
-extension PKWebServer {
     
-    public static func setWebSocketReceivedCallback(_ callback: @escaping WebSocketReceivedCallback) {
-        self.shared.webSocketReceivedCallback = callback
+    public static func WebSocketEstablished(_ callback: @escaping WebSocketEstablishedCallback) {
+        self.shared.webSocketEstablishedCallback = callback
     }
 }

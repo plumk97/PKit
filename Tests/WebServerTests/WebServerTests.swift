@@ -19,7 +19,7 @@ final class WebServerTests: XCTestCase {
     
     func testWebServer() throws {
         
-        PKWebServer.numberOfThreads = 1
+        
         PKWebServer.GET("/") { ctx in
             
             do {

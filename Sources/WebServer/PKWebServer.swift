@@ -94,7 +94,7 @@ public class PKWebServer {
         return bootstrap
     }
     
-    private func run(port: Int, loopGroup: MultiThreadedEventLoopGroup = .init(numberOfThreads: System.coreCount)) throws {
+    private func run(port: Int, loopGroup: MultiThreadedEventLoopGroup) throws {
         guard self.httpChannel == nil else {
             return
         }
@@ -113,8 +113,8 @@ public class PKWebServer {
 
 // MARK: - Static
 extension PKWebServer {
-    public static func run(port: Int = 8080) throws {
-        try self.shared.run(port: port)
+    public static func run(port: Int = 8080, loopGroup: MultiThreadedEventLoopGroup = .init(numberOfThreads: System.coreCount)) throws {
+        try self.shared.run(port: port, loopGroup: loopGroup)
     }
     
     public static func stop() {

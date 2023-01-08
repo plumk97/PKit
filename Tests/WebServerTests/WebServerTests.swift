@@ -29,7 +29,7 @@ final class WebServerTests: XCTestCase {
             }
         }
         
-        try PKWebServer.run()
+        try PKWebServer.run(loopGroup: .init(numberOfThreads: 1))
         print("web server started, port: 8080")
         
         RunLoop.main.run()

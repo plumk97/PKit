@@ -27,7 +27,7 @@ class StackViewController: UIViewController {
         let stackView = PKUIStackView()
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.distribution = .equalCentering
+        stackView.distribution = .fillProportionally
         stackView.backgroundColor = .black
         self.view.addSubview(stackView)
         
@@ -74,7 +74,7 @@ class StackViewController: UIViewController {
         stackView.spacing = 10
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.distribution = .equalCentering
+        stackView.distribution = .fillProportionally
         
         stackView.backgroundColor = .black
         self.view.addSubview(stackView)
@@ -103,17 +103,22 @@ class StackViewController: UIViewController {
         stackView.addArrangedSubview(view2)
         stackView.addArrangedSubview(view3)
         
+//        if #available(iOS 11.0, *) {
+//            stackView.setCustomSpacing(50, after: view2)
+//        } else {
+//            // Fallback on earlier versions
+//        }
 
         view1.snp.makeConstraints { maker in
             maker.width.equalTo(60).priority(.low)
             maker.height.equalTo(60).priority(.low)
         }
-        
+//
         view2.snp.makeConstraints { maker in
             maker.width.equalTo(30).priority(.low)
             maker.height.equalTo(30).priority(.low)
         }
-        
+//
         view3.snp.makeConstraints { maker in
             maker.width.equalTo(15).priority(.low)
             maker.height.equalTo(15).priority(.low)

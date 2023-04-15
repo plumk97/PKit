@@ -235,12 +235,6 @@ open class PKUIStackView: UIView {
 
         case .fillEqually:
             
-            let totalSpacing = spacings.reduce(0, +) - (spacings.last ?? 0)
-            var width = (self.bounds.width - totalSpacing) / CGFloat(wraps.count)
-            if width <= 0 {
-                width = wraps.filter({ $0.view.bounds.width > 0 }).last?.view.bounds.width ?? 0
-            }
-            
             for (idx, wrap) in wraps.enumerated() {
                 
                 if idx == 0 {
@@ -248,9 +242,9 @@ open class PKUIStackView: UIView {
                 } else {
                     let preWrap = wraps[idx - 1]
                     constraints.append(PKConstraint.make(item: wrap.view, attribute: .leading, relatedBy: .equal, toItem: preWrap.view, attribute: .trailing, multiplier: 1, constant: preWrap.spacing))
+                    constraints.append(PKConstraint.make(item: wrap.view, attribute: .width, relatedBy: .equal, toItem: wraps[0].view, attribute: .width, multiplier: 1, constant: 0))
                 }
   
-                constraints.append(PKConstraint.make(item: wrap.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: width))
                 
                 setAligmentConstraint(wrap.view)
             }
@@ -258,9 +252,15 @@ open class PKUIStackView: UIView {
             
             
         case .fillProportionally:
-            let totalSpacing = spacings.reduce(0, +) - (spacings.last ?? 0)
-            let width = wraps.map({ $0.view.bounds.width }).reduce(0, +) + totalSpacing
-
+            
+            let widths = wraps.map({
+                let width = $0.view.constraints.filter({ $0.firstAttribute == .width && $0.secondItem == nil}).first?.constant ?? 0
+                if (width <= 0) {
+                    return $0.view.intrinsicContentSize.width
+                }
+                return width
+            })
+            
             for (idx, wrap) in wraps.enumerated() {
   
                 if idx == 0 {
@@ -268,13 +268,10 @@ open class PKUIStackView: UIView {
                 } else {
                     let preWrap = wraps[idx - 1]
                     constraints.append(PKConstraint.make(item: wrap.view, attribute: .leading, relatedBy: .equal, toItem: preWrap.view, attribute: .trailing, multiplier: 1, constant: preWrap.spacing))
+                    constraints.append(PKConstraint.make(item: wrap.view, attribute: .width, relatedBy: .equal, toItem: wraps[0].view, attribute: .width, multiplier: widths[idx] / widths[0], constant: 0))
                 }
   
 
-                if idx < wraps.count - 1 {
-                    constraints.append(PKConstraint.make(item: wrap.view, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: (wrap.view.bounds.width / width), constant: 0))
-                }
-                
                 setAligmentConstraint(wrap.view)
             }
             
@@ -406,12 +403,6 @@ open class PKUIStackView: UIView {
 
         case .fillEqually:
             
-            let totalSpacing = spacings.reduce(0, +) - (spacings.last ?? 0)
-            var height = (self.bounds.height - totalSpacing) / CGFloat(wraps.count)
-            if height <= 0 {
-                height = wraps.filter({ $0.view.bounds.height > 0 }).last?.view.bounds.height ?? 0
-            }
-            
             for (idx, wrap) in wraps.enumerated() {
                 
                 if idx == 0 {
@@ -419,10 +410,8 @@ open class PKUIStackView: UIView {
                 } else {
                     let preWrap = wraps[idx - 1]
                     constraints.append(PKConstraint.make(item: wrap.view, attribute: .top, relatedBy: .equal, toItem: preWrap.view, attribute: .bottom, multiplier: 1, constant: preWrap.spacing))
+                    constraints.append(PKConstraint.make(item: wrap.view, attribute: .height, relatedBy: .equal, toItem: wraps[0].view, attribute: .height, multiplier: 1, constant: 0))
                 }
-  
-                constraints.append(PKConstraint.make(item: wrap.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: height))
-                
                 setAligmentConstraint(wrap.view)
             }
 
@@ -430,26 +419,28 @@ open class PKUIStackView: UIView {
             
         case .fillProportionally:
             
-            let totalSpacing = spacings.reduce(0, +) - (spacings.last ?? 0)
-            let height = wraps.map({ $0.view.bounds.height }).reduce(0, +) + totalSpacing
-
+            let heights = wraps.map({
+                let height = $0.view.constraints.filter({ $0.firstAttribute == .height && $0.secondItem == nil}).first?.constant ?? 0
+                if (height <= 0) {
+                    return $0.view.intrinsicContentSize.height
+                }
+                return height
+            })
+        
             for (idx, wrap) in wraps.enumerated() {
-  
+
                 if idx == 0 {
                     constraints.append(PKConstraint.make(item: wrap.view, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0))
+                    
                 } else {
                     let preWrap = wraps[idx - 1]
                     constraints.append(PKConstraint.make(item: wrap.view, attribute: .top, relatedBy: .equal, toItem: preWrap.view, attribute: .bottom, multiplier: 1, constant: preWrap.spacing))
+                    
+                    constraints.append(PKConstraint.make(item: wrap.view, attribute: .height, relatedBy: .equal, toItem: preWrap.view, attribute: .height, multiplier: heights[idx] / heights[0], constant: 0))
                 }
-  
-
-                if idx < wraps.count - 1 {
-                    constraints.append(PKConstraint.make(item: wrap.view, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: (wrap.view.bounds.height / height), constant: 0))
-                }
-                
                 setAligmentConstraint(wrap.view)
             }
-            
+
             
         case .equalSpacing:
             

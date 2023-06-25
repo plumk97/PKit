@@ -23,6 +23,9 @@ struct Job: PKJson {
 class Person: NSObject, PKJson {
     
     @JsonKey @objc dynamic var name = ""
+    @JsonKey
+    var date = Date()
+    
     @JsonKey var job = Job()
     
     required override init() {
@@ -40,6 +43,7 @@ final class JSONTests: XCTestCase {
         let json = """
 {
     "name": "张三",
+    "date": 1687690398,
     "job": {
         "name": "工人",
         "salary": "10000.5"

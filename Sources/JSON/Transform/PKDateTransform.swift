@@ -15,6 +15,7 @@ extension PKDateTransform {
         case let str as String:
             
             let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
             guard let date = formatter.date(from: str) else {
                 return nil
             }

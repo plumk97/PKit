@@ -43,7 +43,7 @@ final class JSONTests: XCTestCase {
         let json = """
 {
     "name": "张三",
-    "date": 1687690398,
+    "date": "2023-06-25T14:06:00.237+08:00",
     "job": {
         "name": "工人",
         "salary": "10000.5"
@@ -51,7 +51,14 @@ final class JSONTests: XCTestCase {
 }
 """
         
+        //2023-06-25T14:06:00.237+08:00
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        print(formatter.date(from: "2023-06-25T14:06:00.237+08:00"))
         let person = Person.decode(json)
         print(person.toJson())
+        
+        let person1 = Person.decode(json)
+        print(person1.toJson())
     }
 }

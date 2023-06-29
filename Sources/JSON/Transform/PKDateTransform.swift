@@ -6,22 +6,32 @@
 
 import Foundation
 
+fileprivate let fsFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return formatter
+}()
+
 fileprivate let formatter = {
     let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFullDate, .withTime, .withFractionalSeconds]
     return formatter
 }()
 
 protocol PKDateTransform: _PKJsonTransformable,  PKJsonTransformable { }
 
 extension PKDateTransform {
+    
+    private static func transformISO8601Date(dateStr: String) -> Date? {
+        return fsFormatter.date(from: dateStr) ?? formatter.date(from: dateStr)
+    }
+    
     static func _transform(from object: Any) -> Date? {
         
         switch object {
         case let str as String:
             
             
-            guard let date = formatter.date(from: str) else {
+            guard let date = transformISO8601Date(dateStr: str) else {
                 return nil
             }
             

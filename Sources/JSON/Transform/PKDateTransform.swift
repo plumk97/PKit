@@ -8,7 +8,7 @@ import Foundation
 
 fileprivate let formatter = {
     let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    formatter.formatOptions = [.withInternetDateTime, .withFullDate, .withTime, .withFractionalSeconds]
     return formatter
 }()
 

@@ -34,6 +34,7 @@ open class PKUINavigationContainerBar: UIView {
         self.backgroundColor = UIColor.white
         
         self.systemNavigationBar = UINavigationBar()
+        self.systemNavigationBar.isTranslucent
         self.systemNavigationBar.setBackgroundImage(UIImage(), for: .default)
         self.addSubview(self.systemNavigationBar)
     }

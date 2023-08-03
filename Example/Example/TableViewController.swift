@@ -15,12 +15,8 @@ class TableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        if #available(iOS 11.0, *) {
-            self.tableView.contentInsetAdjustmentBehavior = .never
-        } else {
-            self.automaticallyAdjustsScrollViewInsets = false
-        }
+        self.pk.navigationConfig?.isTranslucent = false
+        
         if #available(iOS 15.0, *) {
             self.tableView.sectionHeaderTopPadding = 0
         }
@@ -36,17 +32,4 @@ class TableViewController: UITableViewController {
     override var prefersStatusBarHidden: Bool {
         return self.isHiddenStatusBar
     }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        if #available(iOS 11, *) {
-            self.tableView.contentInset.top = self.pk.navigationBar!.frame.height
-            self.tableView.contentInset.bottom = self.view.safeAreaInsets.bottom
-        } else {
-            self.tableView.contentInset.top = self.pk.navigationBar!.frame.height
-        }
-        self.tableView.scrollIndicatorInsets.top = self.tableView.contentInset.top
-    }
-
 }

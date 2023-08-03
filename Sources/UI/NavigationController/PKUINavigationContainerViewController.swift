@@ -167,7 +167,12 @@ open class PKUINavigationContainerViewController: UIViewController {
         
         self.containerBar.statusBarHeight = statusBarHeight
         self.containerBar.frame = navBarFrame
-        self.unwarpNavigationController.view.frame = self.view.bounds
+        
+        if self.config.isTranslucent {
+            self.unwarpNavigationController.view.frame = self.view.bounds
+        } else {
+            self.unwarpNavigationController.view.frame = .init(x: 0, y: self.containerBar.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - self.containerBar.frame.maxY)
+        }
     }
     
     @objc fileprivate func backBarButtonItemClick() {

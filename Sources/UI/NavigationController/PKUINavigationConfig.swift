@@ -26,6 +26,13 @@ open class PKUINavigationConfig {
         }
     }
     
+    /// 是否透明
+    open var isTranslucent: Bool = true {
+        didSet {
+            self.didChangeBarHeightCallback?()
+        }
+    }
+    
     /// 导航栏高度
     open var navigationBarHeight: CGFloat = 44 {
         didSet {

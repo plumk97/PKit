@@ -1,9 +1,9 @@
 PODS:
   - MJRefresh (3.2.3)
-  - PKit/Core (0.1.2)
-  - PKit/JSON (0.1.2)
-  - PKit/UI (0.1.2)
-  - PKit/Util (0.1.2)
+  - PKit/Core (0.2.0)
+  - PKit/JSON (0.2.0)
+  - PKit/UI (0.2.0)
+  - PKit/Util (0.2.0)
   - SnapKit (4.2.0)
 
 DEPENDENCIES:
@@ -25,9 +25,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   MJRefresh: 2b1214a2dc8f4df4c5dcb028ea2ad4e245425fb7
-  PKit: 21933bc8a066962bdc0d1f9260a2ff5b98c45e15
+  PKit: fe4155728e6b141f906b59bea698bfe3a182fccd
   SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
 
-PODFILE CHECKSUM: d90d5b9e2bcedcb9faaa25a82e1383f55b4db6fc
+PODFILE CHECKSUM: ab26d010581696fa9781c26ceaf9d63758900071
 
 COCOAPODS: 1.11.3

@@ -168,7 +168,7 @@ open class PKUINavigationContainerViewController: UIViewController {
         self.containerBar.statusBarHeight = statusBarHeight
         self.containerBar.frame = navBarFrame
         
-        if self.config.isTranslucent {
+        if self.config.isTranslucent || self.containerBar.isHidden {
             self.unwarpNavigationController.view.frame = self.view.bounds
         } else {
             self.unwarpNavigationController.view.frame = .init(x: 0, y: self.containerBar.frame.maxY, width: self.view.frame.width, height: self.view.frame.height - self.containerBar.frame.maxY)

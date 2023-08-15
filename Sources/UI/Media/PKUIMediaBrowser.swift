@@ -44,8 +44,8 @@ open class PKUIMediaBrowser: UIViewController {
     }
     
     // --
-    fileprivate var collectionView: UICollectionView!
-    open fileprivate(set) var pageTipsLabel: UILabel!
+    var collectionView: UICollectionView!
+    open private(set) var pageTipsLabel: UILabel!
     
     public init(mediaArray: [PKUIMedia], initIndex: Int = 0, fromImageView: UIImageView? = nil) {
         super.init(nibName: nil, bundle: nil)
@@ -139,7 +139,7 @@ open class PKUIMediaBrowser: UIViewController {
     /// 获取当前浏览界面
     ///
     /// - Returns:
-    fileprivate func currentBrowserPage() -> PKUIMediaBrowserPage? {
+    func currentBrowserPage() -> PKUIMediaBrowserPage? {
         guard let cell = self.collectionView.cellForItem(at: IndexPath.init(row: self.currentPageIndex, section: 0)) as? PKUIMediaBrowserCell else {
             return nil
         }
@@ -148,7 +148,7 @@ open class PKUIMediaBrowser: UIViewController {
     
     
     /// 更新页数提示
-    fileprivate func updatePageTips() {
+    func updatePageTips() {
         self.pageTipsLabel.text = "\(self.currentPageIndex + 1) / \(self.mediaArray.count)"
     }
     
@@ -196,73 +196,81 @@ extension PKUIMediaBrowser: UICollectionViewDataSource, UICollectionViewDelegate
     }
     
     open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let media = self.mediaArray[indexPath.row]
+        
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PKUIMediaBrowserCell", for: indexPath) as! PKUIMediaBrowserCell
-        cell.browser = self
+        cell.pageSpacing = self.pageSpacing
+        
+        let page = media.pk_pageClass.init(media: media)
+        page.delegate = self
+        cell.page = page
+        
         return cell
-    }
-    
-    open func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let cell = cell as? PKUIMediaBrowserCell {
-            cell.willDisplay(media: self.mediaArray[indexPath.row])
-        }
-    }
-    
-    open func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let cell = cell as? PKUIMediaBrowserCell {
-            cell.didEndDisplaying()
-        }
     }
 }
 
-// MARK: - Class PLPhotoBrowserCell
-fileprivate class PKUIMediaBrowserCell: UICollectionViewCell {
-    weak var browser: PKUIMediaBrowser!
-    var page: PKUIMediaBrowserPage?
+// MARK: - PKUIMediaBrowserPageDelete
+extension PKUIMediaBrowser: PKUIMediaBrowserPageDelete {
     
-    func willDisplay(media: PKUIMedia) {
-        self.page?.removeFromSuperview()
-        self.page = nil
-        
-        let page = media.pl_pageClass.init(media: media)
-        self.contentView.addSubview(page)
-        
-        page.closeProgressCallback = {[unowned self] _, progress in
-            self.browser.pageTipsLabel.alpha = 1 - progress
-            self.browser.view.backgroundColor = UIColor.black.withAlphaComponent(1 - progress)
-        }
-
-        page.closedCallback = {[unowned self] _, isTapClose in
-            if isTapClose {
-                if !self.browser.enableSingleTapClose {
-                    return
-                }
-            }
-            self.browser.pageTipsLabel.alpha = 0
-            self.browser.dismiss(animated: true, completion: nil)
-        }
-        
-        self.page = page
-        
-        self.setNeedsLayout()
-        self.layoutIfNeeded()
+    
+    
+    public func browserFromView() -> UIView? {
+        return self.fromImageView
     }
     
-    func didEndDisplaying() {
+    public func pagePanCloseStart(_ page: PKUIMediaBrowserPage) {
         
+    }
+    
+    public func pagePanCloseProgressUpdate(_ page: PKUIMediaBrowserPage, progress: CGFloat) {
+        self.view.backgroundColor = UIColor.black.withAlphaComponent(1 - progress)
+        self.pageTipsLabel.alpha = 1 - progress
+    }
+    
+    public func pagePanCloseEnd(_ page: PKUIMediaBrowserPage, isClosed: Bool) {
+        if isClosed {
+            self.dismiss(animated: false)
+        }
+    }
+    
+    
+    public func pageDidClosed(_ page: PKUIMediaBrowserPage) {
+
+        UIView.animate(withDuration: 0.25, animations: {
+            self.view.alpha = 0
+        }, completion: { isOk in
+            self.dismiss(animated: false)
+        })
+
+    }
+}
+
+
+// MARK: - Class PLPhotoBrowserCell
+fileprivate class PKUIMediaBrowserCell: UICollectionViewCell {
+    
+    var pageSpacing: CGFloat = 0
+    var page: PKUIMediaBrowserPage? {
+        didSet {
+            oldValue?.removeFromSuperview()
+            if let page = self.page {
+                self.contentView.addSubview(page)
+            }
+        }
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        var rect = self.contentView.bounds
-        rect.size.width -= self.browser.pageSpacing
-        self.page?.frame = rect
+        if let page = self.page {
+            var rect = self.contentView.bounds
+            rect.size.width -= self.pageSpacing
+            page.frame = rect
+        }
     }
-    
 }
-
-
-
 
 // MARK: - UIScrollViewDelegate
 extension PKUIMediaBrowser: UIScrollViewDelegate {
@@ -273,145 +281,14 @@ extension PKUIMediaBrowser: UIScrollViewDelegate {
 }
 
 // MARK: - UIViewControllerTransitioningDelegate
-open class PKUIMediaBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
-    open var isPresent = false
-    
-    open func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.35
-    }
-    
-    open func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        
-        let containerView = transitionContext.containerView
-        containerView.frame = UIScreen.main.bounds
-        
-        // 获取view
-        var browser: PKUIMediaBrowser!
-        
-        var anotherView: UIView!
-        var browserView: UIView!
-        
-        if self.isPresent {
-            browser = transitionContext.viewController(forKey: .to) as? PKUIMediaBrowser
-
-            anotherView = transitionContext.view(forKey: .from)
-            browserView = transitionContext.view(forKey: .to)
-        } else {
-            browser = transitionContext.viewController(forKey: .from) as? PKUIMediaBrowser
-
-            anotherView = transitionContext.view(forKey: .to)
-            browserView = transitionContext.view(forKey: .from)
-        }
-
-        // 添加view
-        if self.isPresent {
-            if let view = anotherView {
-                containerView.addSubview(view)
-            }
-
-            if let view = browserView {
-                view.frame = containerView.bounds
-                containerView.addSubview(view)
-            }
-        }
-
-        // -- 动画
-        let duration = self.transitionDuration(using: nil)
-
-        if self.isPresent {
-            
-            guard let fromImageView = browser.fromImageView, fromImageView.image != nil else {
-                browserView.alpha = 0
-                UIView.animate(withDuration: duration, animations: {
-                    browserView.alpha = 1
-                }) { (_) in
-                    transitionContext.completeTransition(true)
-                }
-                return
-            }
-            
-            let snapshotView = UIImageView.init(image: fromImageView.image)
-            snapshotView.contentMode = fromImageView.contentMode
-            snapshotView.clipsToBounds = true
-
-            let fromRect = fromImageView.superview?.convert(fromImageView.frame, to: browser.view) ?? snapshotView.frame
-            snapshotView.frame = fromRect
-            containerView.addSubview(snapshotView)
-
-
-            let imageSize = fromImageView.image!.size
-            let targetSize = browser!.view.frame.size
-            var toRect = snapshotView.frame
-            
-            toRect.size = PKUIMediaBrowserPage.fitSize(imageSize, targetSize: targetSize)
-
-            toRect.origin.x = (targetSize.width - toRect.width) / 2
-            toRect.origin.y = (targetSize.height - toRect.height) / 2
-
-
-            browser?.collectionView.isHidden = true
-            browserView?.alpha = 0
-
-            UIView.animate(withDuration: duration, animations: {
-                snapshotView.frame = toRect
-                browserView?.alpha = 1
-            }) { (_) in
-                browser?.collectionView.isHidden = false
-                snapshotView.removeFromSuperview()
-                transitionContext.completeTransition(true)
-            }
-            
-        } else {
-            
-            guard let fromImageView = browser.fromImageView,
-                  let currentPage = browser.currentBrowserPage(),
-                  let coverImage = currentPage.coverImage else {
-                
-                UIView.animate(withDuration: duration, animations: {
-                    browserView.alpha = 0
-                }) { (_) in
-                    browserView.removeFromSuperview()
-                    transitionContext.completeTransition(true)
-                }
-                return
-            }
-            
-            let snapshotView = UIImageView.init(image: coverImage)
-            snapshotView.contentMode = fromImageView.contentMode
-            snapshotView.clipsToBounds = true
-
-            let fromRect = currentPage.convert(currentPage.contentView.frame, to: browser.view)
-            let toRect = fromImageView.superview?.convert(fromImageView.frame, to: browser!.view) ?? CGRect.zero
-
-            snapshotView.frame = fromRect
-            containerView.addSubview(snapshotView)
-
-            browser?.collectionView.isHidden = true
-            UIView.animate(withDuration: duration, animations: {
-                snapshotView.frame = toRect
-                browserView?.alpha = 0
-            }) { (_) in
-                browserView?.removeFromSuperview()
-                snapshotView.removeFromSuperview()
-                transitionContext.completeTransition(true)
-            }
-        }
-    }
-}
-
-// MARK: - UIViewControllerTransitioningDelegate
 extension PKUIMediaBrowser: UIViewControllerTransitioningDelegate {
     open func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
         let obj = PKUIMediaBrowserAnimatedTransitioning()
-        obj.isPresent = true
         return obj
     }
     
     open func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        
-        let obj = PKUIMediaBrowserAnimatedTransitioning()
-        obj.isPresent = false
-        return obj
+        return nil
     }
 }

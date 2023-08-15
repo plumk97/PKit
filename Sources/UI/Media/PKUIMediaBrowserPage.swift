@@ -8,173 +8,125 @@
 
 import UIKit
 
-open class PKUIMediaBrowserPage: UIView, UIScrollViewDelegate {
+open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
     
-    /// 手势关闭进度
-    public typealias ClosePrgoressCallback = (PKUIMediaBrowserPage, CGFloat) -> Void
+    weak var delegate: PKUIMediaBrowserPageDelete?
     
-    /// 关闭回调
-    public typealias ClosedCallback = (PKUIMediaBrowserPage, _ isTapClose: Bool) -> Void
+    public let media: PKUIMedia
     
-    /// 手势关闭进度回调
-    open var closeProgressCallback: ClosePrgoressCallback?
-    
-    /// 关闭回调
-    open var closedCallback: ClosedCallback?
-    
-    /// 关闭手势
-    open var closeGesture: CloseGestureRecognizer!
+    /// 滑动关闭手势
+    public let panCloseGesture = PKUIPanCloseGestureRecognizer()
     
     /// 单击关闭手势
-    open var singleTapGesture: UITapGestureRecognizer!
+    public let tapCloseGesture = UITapGestureRecognizer()
     
-    open private(set) var media: PKUIMedia!
+    /// 关闭手势开始位置
+    var closePanBeginPoint: CGPoint = .zero
     
-    private var panLastPoint: CGPoint = .zero
-    private var panBeginPoint: CGPoint = .zero
-    
-    open private(set) var scrollView: UIScrollView!
-    open private(set) var contentView: UIView!
-    
-    open private(set) var loadingIndicatorView: UIActivityIndicatorView!
-    private var loadingShowCount = 0
-    
-    /// 封面图片 与消失过渡动画有关 不返回只是渐隐动画
-    open var coverImage: UIImage? {
-        return nil
-    }
+    /// 关闭手势当前位置
+    var closePanPoint: CGPoint = .zero
     
     public required init(media: PKUIMedia) {
-        super.init(frame: .zero)
         self.media = media
+        super.init(frame: .zero)
+        
         self.commInit()
-        self.loadResource()
     }
     
     public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        self.commInit()
+        fatalError("init(coder:) has not been implemented")
     }
     
     open func commInit() {
         
-        self.scrollView = UIScrollView()
-        self.scrollView.delegate = self
-        self.scrollView.showsVerticalScrollIndicator = false
-        self.scrollView.showsHorizontalScrollIndicator = false
-        self.scrollView.minimumZoomScale = 1
-        self.addSubview(self.scrollView)
         
-        self.contentView = UIView()
-        self.scrollView.addSubview(self.contentView)
+        self.panCloseGesture.delegate = self
+        self.panCloseGesture.addTarget(self, action: #selector(panCloseGestureHandle))
+        self.addGestureRecognizer(self.panCloseGesture)
         
-        self.loadingIndicatorView = UIActivityIndicatorView(style: .white)
-        self.addSubview(self.loadingIndicatorView)
-
-        self.closeGesture = CloseGestureRecognizer.init(target: self, action: #selector(closeGestureHandle(_ :)))
-        self.closeGesture.delegate = self
-        self.addGestureRecognizer(self.closeGesture)
-        
-        self.singleTapGesture = UITapGestureRecognizer.init(target: self, action: #selector(singleTapGestureHandle(_ :)))
-        self.addGestureRecognizer(self.singleTapGesture)
+        self.tapCloseGesture.addTarget(self, action: #selector(tapCloseGestureHandle))
+        self.addGestureRecognizer(self.tapCloseGesture)   
     }
     
-    
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        self.scrollView.frame = self.bounds
-        self.loadingIndicatorView.sizeToFit()
-        
-        if #available(iOS 11.0, *) {
-            self.loadingIndicatorView.frame.origin = .init(x: self.layoutMargins.left,
-                                                           y: self.layoutMargins.top)
-        }
-    }
-    
-    /// 加载资源 子类重写实现
-    open func loadResource() {
-        
-    }
-    
-    // MARK: - Loading Indicator
-    open func showLoadingIndicator() {
-        self.loadingShowCount += 1
-        guard !self.loadingIndicatorView.isAnimating else {
-            return
-        }
-        self.loadingIndicatorView.startAnimating()
-    }
-    
-    open func hideLoadingIndicator() {
-        self.loadingShowCount = max(0, self.loadingShowCount - 1)
-        guard self.loadingIndicatorView.isAnimating && self.loadingShowCount <= 0 else {
-            return
-        }
-        self.loadingIndicatorView.stopAnimating()
-    }
-    
-    // MARK: - Gesture
-    @objc open func singleTapGestureHandle(_ sender: UITapGestureRecognizer) {
-        if sender.state == .ended {
-            self.closedCallback?(self, true)
-        }
-    }
-    
-    @objc fileprivate func closeGestureHandle(_ sender: CloseGestureRecognizer) {
+    @objc open func panCloseGestureHandle(_ sender: PKUIPanCloseGestureRecognizer) {
         let point = sender.location(in: self)
-        var progress: CGFloat = 0
+        defer {
+            self.closePanPoint = point
+        }
+        
         if sender.state == .began {
 
-            self.panBeginPoint = point
+            self.closePanBeginPoint = point
+            self.delegate?.pagePanCloseStart(self)
+            
         } else if sender.state == .changed {
 
-            progress = (point.y - self.panBeginPoint.y) / 200
-            let scale = min(1, max(0.6, 1 - progress))
-            self.contentView.transform = CGAffineTransform.identity.translatedBy(x: (point.x - self.panBeginPoint.x), y: point.y - self.panBeginPoint.y).scaledBy(x: scale, y: scale)
-            self.closeProgressCallback?(self, progress)
+            let progress = (point.y - self.closePanBeginPoint.y) / 200
+            self.delegate?.pagePanCloseProgressUpdate(self, progress: progress)
+            self.closePanProgressUpdate(progress: progress, beginPoint: self.closePanBeginPoint, offset: point)
+            
         } else {
 
-            progress = (point.y - self.panBeginPoint.y) / 200
+            let progress = (point.y - self.closePanBeginPoint.y) / 200
             if progress >= 0.2 {
-                self.closedCallback?(self, false)
+                
+                if let formView = self.delegate?.browserFromView() {
+                    self.delegate?.pagePanCloseProgressUpdate(self, progress: 1)
+                    self.closePanEnd(isClosed: true, fromView: self.delegate?.browserFromView()) {
+                        self.delegate?.pagePanCloseEnd(self, isClosed: true)
+                    }
+                } else {
+                    self.delegate?.pageDidClosed(self)
+                }
+                
             } else {
-                self.closeProgressCallback?(self, 0)
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.contentView.transform = .identity
-                })
+                self.delegate?.pagePanCloseProgressUpdate(self, progress: 0)
+                self.closePanEnd(isClosed: false, fromView: nil) {
+                    
+                }
             }
         }
-        self.panLastPoint = point
+        
     }
     
-    // MARK: - Static method
-    /// 缩放Size到目标Size
+    @objc open func tapCloseGestureHandle(_ sender: UITapGestureRecognizer) {
+     
+        if sender.state == .ended {
+            self.delegate?.pageDidClosed(self)
+        }
+    }
+    
+    /// 滑动关闭手势进度更新
     /// - Parameters:
-    ///   - size:
-    ///   - targetSize:
-    /// - Returns:
-    public static func fitSize(_ size: CGSize, targetSize: CGSize) -> CGSize {
-        let ratio = min(targetSize.width / size.width, targetSize.height / size.height)
-        let newSize = CGSize.init(width: Int(size.width * ratio), height: Int(size.height * ratio))
-        return newSize
+    ///   - progress:
+    ///   - beginPoint:
+    ///   - offset:
+    open func closePanProgressUpdate(progress: CGFloat, beginPoint: CGPoint, offset: CGPoint) {
+        
     }
-}
-
-
-// MARK: - UIGestureRecognizerDelegate
-extension PKUIMediaBrowserPage: UIGestureRecognizerDelegate {
     
+    /// 滑动关闭完成
+    /// - Parameters:
+    ///   - isClosed: 是否关闭
+    ///   - fromView:
+    open func closePanEnd(isClosed: Bool, fromView: UIView?, complete: @escaping () -> Void) {
+        complete()
+    }
+    
+    // MARK: - Internal
+    
+    
+    // MARK: - UIGestureRecognizerDelegate
     open func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
-        if gestureRecognizer == self.closeGesture {
-            return !self.closeGesture.isRunning
+        if gestureRecognizer == self.panCloseGesture {
+            return !self.panCloseGesture.isRunning
         }
         return false
     }
     
     open override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if gestureRecognizer != self.closeGesture && self.closeGesture.isRunning {
+        if gestureRecognizer != self.panCloseGesture && self.panCloseGesture.isRunning {
             return false
         }
         return true
@@ -189,88 +141,31 @@ extension PKUIMediaBrowserPage: UIGestureRecognizerDelegate {
     }
 }
 
-// MARK: - Class CloseGestureRecognizer
-extension PKUIMediaBrowserPage {
-    open class CloseGestureRecognizer: UIGestureRecognizer {
-        private var beginPoint = CGPoint.zero
-        private var point = CGPoint.zero
-        private weak var firstTouch: UITouch?
-        open  var isRunning = false
-        
-        
-        open override func reset() {
-            super.reset()
-            
-            self.firstTouch = nil
-            self.isRunning = false
-        }
-        
-        open override func location(in view: UIView?) -> CGPoint {
-            return self.point
-        }
-        
-        open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
-            guard self.firstTouch == nil else {
-                return
-            }
-            self.firstTouch = touches.first
-            self.isRunning = false
-            beginPoint = self.firstTouch?.location(in: self.view) ?? .zero
-            point = beginPoint
-        }
-        
-        open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
-            guard self.firstTouch?.phase == .moved else {
-                return
-            }
-            
-            point = self.firstTouch?.location(in: self.view) ?? .zero
-            if point.y - beginPoint.y > 20 ||  point.y - beginPoint.y < -20 {
-                if self.state != .began {
-                    self.state = .began
-                    self.isRunning = true
-                } else {
-                    self.state = .changed
-                }
-            }
-        }
-        
-        open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-            defer {
-                self.reset()
-            }
-            
-            guard self.firstTouch?.phase == .ended else {
-                return
-            }
-            point = self.firstTouch?.location(in: self.view) ?? .zero
-            if self.state != .possible {
-                self.state = .ended
-            } else {
-                touches.forEach({
-                    self.ignore($0, for: event)
-                })
-            }
-        }
-        
-        
-        open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
-            defer {
-                self.reset()
-            }
-            
-            guard self.firstTouch?.phase == .cancelled else {
-                return
-            }
-            
-            point = self.firstTouch?.location(in: self.view) ?? .zero
-            if self.state != .possible {
-                self.state = .cancelled
-            } else {
-                touches.forEach({
-                    self.ignore($0, for: event)
-                })
-            }
-        }
-    }
+
+// MARK: - PKUIMediaBrowserPageDelete
+@objc public protocol PKUIMediaBrowserPageDelete: NSObjectProtocol {
+    
+    /// 关闭
+    /// - Parameter page:
+    func pageDidClosed(_ page: PKUIMediaBrowserPage)
+    
+    /// 滑动关闭手势开始
+    /// - Parameter page:
+    func pagePanCloseStart(_ page: PKUIMediaBrowserPage)
+    
+    /// 滑动关闭进度更新
+    /// - Parameters:
+    ///   - page:
+    ///   - progress:
+    func pagePanCloseProgressUpdate(_ page: PKUIMediaBrowserPage, progress: CGFloat)
+    
+    /// 滑动关闭手势结束
+    /// - Parameters:
+    ///   - page:
+    ///   - isClosed:
+    func pagePanCloseEnd(_ page: PKUIMediaBrowserPage, isClosed: Bool)
+    
+    ///
+    /// - Returns: 
+    func browserFromView() -> UIView?
 }

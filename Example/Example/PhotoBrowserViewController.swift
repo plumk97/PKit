@@ -18,14 +18,15 @@ class PhotoBrowserViewController: UIViewController {
         let src: PKUIMediaData
         let thumbnail: PKUIMediaData?
         
-        var pl_pageClass: PKUIMediaBrowserPage.Type {
-            return self.isImage ? PKUIMediaBrowserImagePage.self : PKUIMediaBrowserVideoPage.self
+        var pk_pageClass: PKUIMediaBrowserPage.Type {
+            PKUIMediaBrowserImagePage.self
+//            return self.isImage ? PKUIMediaBrowserImagePage.self : PKUIMediaBrowserVideoPage.self
         }
         
-        var pl_data: PKUIMediaData? { self.src }
-        var pl_thumbnail: PKUIMediaData? { self.thumbnail }
+        var pk_data: PKUIMediaData? { self.src }
+        var pk_thumbnail: PKUIMediaData? { self.thumbnail }
         
-        func pl_mediaDownload(_ url: URL, complete: @escaping (Any?) -> Void) {
+        func pk_mediaDownload(_ url: URL, complete: @escaping (Any?) -> Void) {
             self.vc.loadImage(url: url.absoluteString) {
                 complete($0)
             }

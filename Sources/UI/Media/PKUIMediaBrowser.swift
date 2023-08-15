@@ -214,14 +214,8 @@ extension PKUIMediaBrowser: UICollectionViewDataSource, UICollectionViewDelegate
 // MARK: - PKUIMediaBrowserPageDelete
 extension PKUIMediaBrowser: PKUIMediaBrowserPageDelete {
     
-    
-    
     public func browserFromView() -> UIView? {
         return self.fromImageView
-    }
-    
-    public func pagePanCloseStart(_ page: PKUIMediaBrowserPage) {
-        
     }
     
     public func pagePanCloseProgressUpdate(_ page: PKUIMediaBrowserPage, progress: CGFloat) {
@@ -229,21 +223,8 @@ extension PKUIMediaBrowser: PKUIMediaBrowserPageDelete {
         self.pageTipsLabel.alpha = 1 - progress
     }
     
-    public func pagePanCloseEnd(_ page: PKUIMediaBrowserPage, isClosed: Bool) {
-        if isClosed {
-            self.dismiss(animated: false)
-        }
-    }
-    
-    
     public func pageDidClosed(_ page: PKUIMediaBrowserPage) {
-
-        UIView.animate(withDuration: 0.25, animations: {
-            self.view.alpha = 0
-        }, completion: { isOk in
-            self.dismiss(animated: false)
-        })
-
+        self.dismiss(animated: true)
     }
 }
 
@@ -284,11 +265,12 @@ extension PKUIMediaBrowser: UIScrollViewDelegate {
 extension PKUIMediaBrowser: UIViewControllerTransitioningDelegate {
     open func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        let obj = PKUIMediaBrowserAnimatedTransitioning()
+        let obj = PKUIMediaBrowserAnimatedTransitioning(isDismiss: false)
         return obj
     }
     
     open func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        return nil
+        let obj = PKUIMediaBrowserAnimatedTransitioning(isDismiss: true)
+        return obj
     }
 }

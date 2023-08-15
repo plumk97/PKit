@@ -26,13 +26,9 @@ class PhotoBrowserViewController: UIViewController {
         var pk_data: PKUIMediaData? { self.src }
         var pk_thumbnail: PKUIMediaData? { self.thumbnail }
         
-        func pk_mediaDownload(_ url: URL, complete: @escaping (Any?) -> Void) {
-            self.vc.loadImage(url: url.absoluteString) {
-                complete($0)
-            }
+        func pk_downloadImage(_ url: URL, complete: @escaping (UIImage?) -> Void) {
+            self.vc.loadImage(url: url.absoluteString, complete: complete)
         }
-        
-        
         
     }
     

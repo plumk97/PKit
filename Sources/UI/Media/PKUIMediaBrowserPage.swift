@@ -20,6 +20,11 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
     /// 单击关闭手势
     public let tapCloseGesture = UITapGestureRecognizer()
     
+    /// dismiss 过渡view
+    open var transitioningView: UIView? {
+        return nil
+    }
+        
     /// 关闭手势开始位置
     var closePanBeginPoint: CGPoint = .zero
     
@@ -39,7 +44,6 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
     
     open func commInit() {
         
-        
         self.panCloseGesture.delegate = self
         self.panCloseGesture.addTarget(self, action: #selector(panCloseGestureHandle))
         self.addGestureRecognizer(self.panCloseGesture)
@@ -57,33 +61,20 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
         if sender.state == .began {
 
             self.closePanBeginPoint = point
-            self.delegate?.pagePanCloseStart(self)
-            
         } else if sender.state == .changed {
 
             let progress = (point.y - self.closePanBeginPoint.y) / 200
             self.delegate?.pagePanCloseProgressUpdate(self, progress: progress)
             self.closePanProgressUpdate(progress: progress, beginPoint: self.closePanBeginPoint, offset: point)
-            
         } else {
 
             let progress = (point.y - self.closePanBeginPoint.y) / 200
             if progress >= 0.2 {
-                
-                if let formView = self.delegate?.browserFromView() {
-                    self.delegate?.pagePanCloseProgressUpdate(self, progress: 1)
-                    self.closePanEnd(isClosed: true, fromView: self.delegate?.browserFromView()) {
-                        self.delegate?.pagePanCloseEnd(self, isClosed: true)
-                    }
-                } else {
-                    self.delegate?.pageDidClosed(self)
-                }
-                
+                self.delegate?.pageDidClosed(self)
+
             } else {
                 self.delegate?.pagePanCloseProgressUpdate(self, progress: 0)
-                self.closePanEnd(isClosed: false, fromView: nil) {
-                    
-                }
+                self.closePanRestore()
             }
         }
         
@@ -96,6 +87,7 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
         }
     }
     
+
     /// 滑动关闭手势进度更新
     /// - Parameters:
     ///   - progress:
@@ -105,17 +97,12 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
         
     }
     
-    /// 滑动关闭完成
-    /// - Parameters:
-    ///   - isClosed: 是否关闭
-    ///   - fromView:
-    open func closePanEnd(isClosed: Bool, fromView: UIView?, complete: @escaping () -> Void) {
-        complete()
+    /// 滑动关闭恢复
+    open func closePanRestore() {
+        
     }
     
-    // MARK: - Internal
-    
-    
+
     // MARK: - UIGestureRecognizerDelegate
     open func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         
@@ -149,21 +136,11 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
     /// - Parameter page:
     func pageDidClosed(_ page: PKUIMediaBrowserPage)
     
-    /// 滑动关闭手势开始
-    /// - Parameter page:
-    func pagePanCloseStart(_ page: PKUIMediaBrowserPage)
-    
     /// 滑动关闭进度更新
     /// - Parameters:
     ///   - page:
     ///   - progress:
     func pagePanCloseProgressUpdate(_ page: PKUIMediaBrowserPage, progress: CGFloat)
-    
-    /// 滑动关闭手势结束
-    /// - Parameters:
-    ///   - page:
-    ///   - isClosed:
-    func pagePanCloseEnd(_ page: PKUIMediaBrowserPage, isClosed: Bool)
     
     ///
     /// - Returns: 

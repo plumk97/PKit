@@ -33,5 +33,56 @@ public protocol PKUIMedia {
     /// - Parameters:
     ///   - url:
     ///   - complete:
-    func pk_mediaDownload(_ url: URL, complete: @escaping (Any?)->Void)
+    func pk_downloadImage(_ url: URL, complete: @escaping (UIImage?) -> Void)
+}
+
+
+extension PKUIMedia {
+    
+    func parseImageData(data: PKUIMediaData, complete: @escaping (UIImage?) -> Void) {
+        switch data {
+        case let image as UIImage:
+            complete(image)
+            
+        case let url as URL:
+            self.parseImageURL(url: url, complete: complete)
+            
+        case let str as String:
+            guard let url = URL(string: str) else {
+                complete(nil)
+                return
+            }
+            self.parseImageURL(url: url, complete: complete)
+            
+        case let data as Data:
+            complete(UIImage(data: data))
+            
+        case let asset as PHAsset:
+            let options = PHImageRequestOptions()
+            options.deliveryMode = .highQualityFormat
+            PHImageManager.default().requestImage(for: asset, targetSize: .zero, contentMode: .default, options: options) { image, _ in
+                DispatchQueue.main.async {
+                    complete(image)
+                }
+            }
+            
+        default:
+            complete(nil)
+            
+        }
+    }
+    
+    func parseImageURL(url: URL, complete: @escaping (UIImage?) -> Void) {
+        if url.isFileURL {
+            guard let data = try? Data.init(contentsOf: url) else {
+                return
+            }
+            complete(UIImage.init(data: data))
+            return
+        }
+        
+        self.pk_downloadImage(url) { obj in
+            complete(obj as? UIImage)
+        }
+    }
 }

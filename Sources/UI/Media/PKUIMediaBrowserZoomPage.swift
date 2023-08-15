@@ -2,7 +2,7 @@
 //  PKUIMediaBrowserZoomPage.swift
 //  PKit
 //
-//  Created by 李铁柱 on 2023/8/15.
+//  Created by Plumk on 2023/8/15.
 //
 
 import UIKit
@@ -37,7 +37,7 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
     
     open override func tapCloseGestureHandle(_ sender: UITapGestureRecognizer) {
         if sender.state == .ended {
-            self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated: true)
+            self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated: false)
         }
         
         super.tapCloseGestureHandle(sender)
@@ -49,13 +49,13 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
             return
         }
         
-        if sender.state == .ended {
+        if sender.state == .ended, let zoomView = self.viewForZooming(in: self.scrollView) {
             guard self.scrollView.maximumZoomScale > self.scrollView.minimumZoomScale else {
                 return
             }
             
             if self.scrollView.zoomScale <= self.scrollView.minimumZoomScale {
-                self.scrollView.zoom(to: .init(origin: sender.location(in: self), size: .zero), animated: true)
+                self.scrollView.zoom(to: .init(origin: sender.location(in: zoomView), size: .zero), animated: true)
             } else {
                 self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated: true)
             }
@@ -64,6 +64,7 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
     
     open override func layoutSubviews() {
         super.layoutSubviews()
+
         self.scrollView.frame = self.bounds
         
         guard let zoomView = self.viewForZooming(in: self.scrollView) else {

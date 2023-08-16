@@ -64,7 +64,9 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-
+        guard !self.isClosed else {
+            return
+        }
         self.scrollView.frame = self.bounds
         
         guard let zoomView = self.viewForZooming(in: self.scrollView) else {

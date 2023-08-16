@@ -24,6 +24,8 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
     open var transitioningView: UIView? {
         return nil
     }
+    
+    public var isClosed: Bool = false
         
     /// 关闭手势开始位置
     var closePanBeginPoint: CGPoint = .zero
@@ -70,6 +72,7 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
 
             let progress = (point.y - self.closePanBeginPoint.y) / 200
             if progress >= 0.2 {
+                self.isClosed = true
                 self.delegate?.pageDidClosed(self)
 
             } else {
@@ -83,6 +86,7 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
     @objc open func tapCloseGestureHandle(_ sender: UITapGestureRecognizer) {
      
         if sender.state == .ended {
+            self.isClosed = true
             self.delegate?.pageDidClosed(self)
         }
     }
@@ -102,7 +106,21 @@ open class PKUIMediaBrowserPage: UIView, UIGestureRecognizerDelegate {
         
     }
     
-
+    /// dismiss 过渡动画
+    open func dismissTransitioningAnimation() {
+        
+    }
+    
+    /// 进入当前界面
+    open func didEnter() {
+        
+    }
+    
+    /// 离开当前界面
+    open func didLeave() {
+        
+    }
+    
     // MARK: - UIGestureRecognizerDelegate
     open func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         

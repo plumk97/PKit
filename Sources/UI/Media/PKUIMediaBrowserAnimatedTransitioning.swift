@@ -142,6 +142,8 @@ open class PKUIMediaBrowserAnimatedTransitioning: NSObject, UIViewControllerAnim
             
             browser.view.backgroundColor = UIColor.black.withAlphaComponent(0)
             browser.pageTipsLabel.alpha = 0
+            browser.currentBrowserPage()?.dismissTransitioningAnimation()
+            
             transitioningView.frame = toRect
             
         } completion: { _ in

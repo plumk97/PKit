@@ -47,6 +47,9 @@ open class PKUIMediaBrowser: UIViewController {
     var collectionView: UICollectionView!
     open private(set) var pageTipsLabel: UILabel!
     
+    /// 上一个cell
+    private var preCell: PKUIMediaBrowserCell?
+    
     public init(mediaArray: [PKUIMedia], initIndex: Int = 0, fromImageView: UIImageView? = nil) {
         super.init(nibName: nil, bundle: nil)
         
@@ -208,6 +211,40 @@ extension PKUIMediaBrowser: UICollectionViewDataSource, UICollectionViewDelegate
         cell.page = page
         
         return cell
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if self.preCell == nil {
+            // 第一次显示
+            if let cell = cell as? PKUIMediaBrowserCell {
+                cell.page?.didEnter()
+                self.preCell = cell
+            }
+        }
+    }
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard let indexPath = self.collectionView.indexPathForItem(at: scrollView.contentOffset) else {
+            return
+        }
+        
+        guard let cell = self.collectionView.cellForItem(at: indexPath) else {
+            return
+        }
+        
+        guard self.preCell != cell else {
+            return
+        }
+        
+        self.preCell?.page?.didLeave()
+        if let cell = cell as? PKUIMediaBrowserCell {
+            cell.page?.didEnter()
+            self.preCell = cell
+        }
+    }
+    
+    public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.scrollViewDidEndDecelerating(scrollView)
     }
 }
 

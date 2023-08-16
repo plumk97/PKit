@@ -19,8 +19,7 @@ class PhotoBrowserViewController: UIViewController {
         let thumbnail: PKUIMediaData?
         
         var pk_pageClass: PKUIMediaBrowserPage.Type {
-            PKUIMediaBrowserImagePage.self
-//            return self.isImage ? PKUIMediaBrowserImagePage.self : PKUIMediaBrowserVideoPage.self
+            return self.isImage ? PKUIMediaBrowserImagePage.self : PKUIMediaBrowserVideoPage.self
         }
         
         var pk_data: PKUIMediaData? { self.src }

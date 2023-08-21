@@ -15,11 +15,31 @@ open class PKUIMediaBrowserImagePage: PKUIMediaBrowserZoomPage {
     }
     
     ///
-    let imageView = UIImageView()
+    public let imageView = UIImageView()
+    
+    
+    ///
+    public let loadingIndicator = UIActivityIndicatorView(style: .white)
+    
+    /// 长按
+    public let longPressGesture = UILongPressGestureRecognizer()
     
     open override func commInit() {
         super.commInit()
+
+        self.scrollView.addSubview(self.imageView)
+
+        self.loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.loadingIndicator)
+        self.loadingIndicator.startAnimating()
+
+        self.addConstraints([
+            .init(item: self.loadingIndicator, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -10),
+            .init(item: self.loadingIndicator, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 10)
+        ])
         
+        self.longPressGesture.addTarget(self, action: #selector(longPressGestureHandle))
+        self.addGestureRecognizer(self.longPressGesture)
         
         if let thumbnail = self.media.pk_thumbnail {
             self.media.parseImageData(data: thumbnail) {[weak self] image in
@@ -34,13 +54,26 @@ open class PKUIMediaBrowserImagePage: PKUIMediaBrowserZoomPage {
             self.media.parseImageData(data: data) {[weak self] image in
                 self?.imageView.image = image
                 self?.setNeedsLayout()
+                
+                self?.loadingIndicator.stopAnimating()
             }
         }
-        
-
-        self.scrollView.addSubview(self.imageView)
     }
     
+    @objc open  func longPressGestureHandle(_ sender: UILongPressGestureRecognizer) {
+        if sender.state == .began && !self.loadingIndicator.isAnimating {
+            guard let image = self.imageView.image else {
+                return
+            }
+            let vc = UIActivityViewController(activityItems: [image], applicationActivities: nil)
+            
+            var presentVc = PKUIWindowGetter.keyWindow?.rootViewController
+            while presentVc?.presentedViewController != nil {
+                presentVc = presentVc?.presentedViewController
+            }
+            presentVc?.present(vc, animated: true)
+        }
+    }
 
     open override func closePanProgressUpdate(progress: CGFloat, beginPoint: CGPoint, offset: CGPoint) {
         let scale = min(1, max(0.6, 1 - progress))

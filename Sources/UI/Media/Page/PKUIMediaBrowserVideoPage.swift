@@ -16,17 +16,45 @@ open class PKUIMediaBrowserVideoPage: PKUIMediaBrowserPage {
     }
     
     /// 播放器
-    let playerView = PlayerView()
+    public let playerView = PlayerView()
+    
+    ///
+    public let loadingIndicator = UIActivityIndicatorView(style: .white)
+    
+    /// 当前是否显示中
+    public var isDisplaying: Bool = false
+    
+    /// 当前是否已经准备播放
+    public var isReadyToPlay: Bool = false
     
     open override func commInit() {
         super.commInit()
         
+    
+        /// 防止触发layout
         let wrapView = UIView()
         wrapView.addSubview(self.playerView)
         self.addSubview(wrapView)
         
+        self.loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(self.loadingIndicator)
+        self.loadingIndicator.startAnimating()
+        
+        self.addConstraints([
+            .init(item: self.loadingIndicator, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1.0, constant: -10),
+            .init(item: self.loadingIndicator, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1.0, constant: 10)
+        ])
+        
         self.parsePlayerItem {[weak self] item in
             self?.playerView.setPlayerItem(item)
+        }
+        
+        self.playerView.loadComplete = {[unowned self] in
+            self.isReadyToPlay = true
+            self.loadingIndicator.stopAnimating()
+            if self.isDisplaying {
+                self.playerView.player.play()
+            }
         }
     }
     
@@ -64,11 +92,25 @@ open class PKUIMediaBrowserVideoPage: PKUIMediaBrowserPage {
         }
     }
     
+    open override func tapCloseGestureHandle(_ sender: UITapGestureRecognizer) {
+        if self.isReadyToPlay {
+            if self.playerView.player.rate >= 1.0 {
+                self.playerView.player.pause()
+            } else {
+                self.playerView.player.play()
+            }
+        }
+    }
+    
     open override func didEnter() {
-        self.playerView.player.play()
+        self.isDisplaying = true
+        if self.isReadyToPlay {
+            self.playerView.player.play()
+        }
     }
     
     open override func didLeave() {
+        self.isDisplaying = false
         self.playerView.player.pause()
     }
     
@@ -105,31 +147,54 @@ open class PKUIMediaBrowserVideoPage: PKUIMediaBrowserPage {
 extension PKUIMediaBrowserVideoPage {
     open class PlayerView: UIView {
         
+        
+        /// 加载完成可以开始播放
+        public var loadComplete: (() -> Void)?
+        
+        /// 当前播放item
         public private(set) var playerItem: AVPlayerItem?
         
-        ///
+        /// 播放器
         public let player = AVPlayer()
         
         /// 预览界面
         public let previewImageView = UIImageView()
         
-        open override class var layerClass: AnyClass {
-            AVPlayerLayer.self
-        }
+        /// 时间观察者
+        public var timeObserver: Any?
+        
+        open override class var layerClass: AnyClass { AVPlayerLayer.self }
 
         public override init(frame: CGRect) {
             super.init(frame: frame)
-            
             
             if let layer = self.layer as? AVPlayerLayer {
                 
                 layer.videoGravity = .resizeAspect
                 layer.player = self.player
             }
+            self.player.pause()
             
             self.previewImageView.contentMode = .scaleAspectFill
             self.previewImageView.clipsToBounds = true
             self.addSubview(self.previewImageView)
+            
+            self.timeObserver = self.player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 1), queue: .main) {[unowned self] time in
+                guard let currentItem = self.player.currentItem else {
+                    return
+                }
+                
+                if time.seconds >= currentItem.duration.seconds {
+                    self.player.seek(to: .zero) { _ in
+                        self.player.play()
+                    }
+                }
+            }
+        }
+        
+        deinit {
+            self.player.removeTimeObserver(self.timeObserver)
+            self.playerItem?.removeObserver(self, forKeyPath: "status")
         }
         
         open override func layoutSubviews() {
@@ -142,8 +207,28 @@ extension PKUIMediaBrowserVideoPage {
         }
         
         open func setPlayerItem(_ item: AVPlayerItem?) {
+            self.playerItem?.removeObserver(self, forKeyPath: "status")
+            
             self.playerItem = item
             self.player.replaceCurrentItem(with: item)
+            
+            item?.addObserver(self, forKeyPath: "status", context: nil)
+        }
+        
+        open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+            
+            guard let status = self.playerItem?.status else {
+                return
+            }
+            
+            switch status {
+            case .readyToPlay:
+                self.loadComplete?()
+                
+            default:
+                break
+            }
+            
         }
     }
 }

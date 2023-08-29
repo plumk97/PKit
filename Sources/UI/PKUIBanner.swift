@@ -46,7 +46,11 @@ open class PKUIBanner<Model>: UIView {
     }
     
     /// 当前第几页
-    @objc dynamic fileprivate(set) open var page: Int = 0
+    @objc dynamic fileprivate(set) open var page: Int = 0 {
+        didSet {
+            self.pageControl.currentPage = page
+        }
+    }
     
     
     /// 是否自动滚动
@@ -75,7 +79,6 @@ open class PKUIBanner<Model>: UIView {
     
     private var collectionViewLayout: UICollectionViewFlowLayout!
     private var collectionView: UICollectionView!
-    
     
     private var delegateRepeater: DelegateRepeater!
     
@@ -155,14 +158,15 @@ open class PKUIBanner<Model>: UIView {
         }
         self.page = page
         self.collectionView.setContentOffset(.init(x: CGFloat(page) * self.collectionView.frame.width, y: 0), animated: animated)
-        self.updatePage()
     }
 
-    fileprivate func updatePage() {
-        self.pageControl.currentPage = self.page
+    open override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        self.reloadAutoplayTimer()
     }
     
-    fileprivate func predownloadBothSideImage() {
+    
+    private func predownloadBothSideImage() {
         guard self.models.count > 1 else {
             return
         }
@@ -176,7 +180,7 @@ open class PKUIBanner<Model>: UIView {
         })
     }
     
-    fileprivate func reloadAutoplayTimer() {
+    private func reloadAutoplayTimer() {
         
         let isEnableTimer = self.superview != nil && self.autoplay && self.playDuration > 0 && self.models.count > 1
         
@@ -191,28 +195,29 @@ open class PKUIBanner<Model>: UIView {
         }
     }
     
-    @objc fileprivate func autoplayTimerTick() {
+    @objc private func autoplayTimerTick() {
         guard self.models.count > 1 else {
             self.reloadAutoplayTimer()
             return
         }
         
-        var page = self.page + 1
-        if page >= self.models.count {
-            page = 0
-        }
-        self.setPage(page, animated: true)
+        var offset = self.collectionView.contentOffset
+        offset.x += self.collectionView.bounds.width
+        self.collectionView.setContentOffset(offset, animated: true)
     }
     
-    open override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        self.reloadAutoplayTimer()
+    private func calcCurrentPage() {
+        let page = Int(round(self.collectionView.contentOffset.x / max(1, self.collectionView.bounds.width)))
+        guard page >= 0 && page < self.models.count else {
+            return
+        }
+        self.page = page
     }
 }
 
 // MARK: - UICollectionViewDelegate & UICollectionViewDataSource
 extension PKUIBanner {
-    open class DelegateRepeater: NSObject, UICollectionViewDelegate, UICollectionViewDataSource {
+    class DelegateRepeater: NSObject, UICollectionViewDelegate, UICollectionViewDataSource {
         
         open weak var banner: PKUIBanner!
         public init(banner: PKUIBanner) {
@@ -267,26 +272,14 @@ extension PKUIBanner {
             banner.didClickCallback?(indexPath.row, model)
         }
         
-        
-        open func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            guard let banner = self.banner else {
-                return
-            }
-            
-            let page = Int(round(scrollView.contentOffset.x / max(1, scrollView.bounds.width)))
-            guard page >= 0 && page < banner.models.count else {
-                return
-            }
-            banner.page = page
-            banner.updatePage()
-        }
-        
         open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
             if scrollView.contentOffset.x <= -scrollView.bounds.width {
                 scrollView.setContentOffset(.init(x: scrollView.contentSize.width - scrollView.bounds.width, y: 0), animated: false)
             } else if scrollView.contentOffset.x >= scrollView.contentSize.width {
                 scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
             }
+            
+            self.banner?.calcCurrentPage()
         }
         
         open func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
@@ -295,6 +288,7 @@ extension PKUIBanner {
             } else if scrollView.contentOffset.x >= scrollView.contentSize.width {
                 scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
             }
+            self.banner?.calcCurrentPage()
         }
         
         open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

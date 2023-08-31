@@ -25,13 +25,17 @@ extension PKJson {
 
     func fetchProperties() -> [String: JsonKeyWrapper] {
         
-        let mirror = Mirror(reflecting: self)
+        var mirror: Mirror? = Mirror(reflecting: self)
         
         var keys = [String: JsonKeyWrapper]()
-        for child in mirror.children {
-            if let wrapper = child.value as? JsonKeyWrapper, let name = child.label {
-                keys[name] = wrapper
+        while mirror != nil {
+            for child in mirror!.children {
+                if let wrapper = child.value as? JsonKeyWrapper, let name = child.label {
+                    keys[name] = wrapper
+                }
             }
+            
+            mirror = mirror?.superclassMirror
         }
         
         return keys

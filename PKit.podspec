@@ -37,15 +37,11 @@ Pod::Spec.new do |spec|
   end
 
   spec.subspec 'JSON' do |s|
-    s.ios.deployment_target = "11.0"
-  	s.osx.deployment_target = "11.0"
     s.source_files = "JSON", "Sources/JSON/**/*.swift"
   end
 
   spec.subspec 'JSON_Rx' do |s|
-    s.ios.deployment_target = "11.0"
-    s.osx.deployment_target = "11.0"
-    s.source_files = "JSON", "Sources/JSON/**/*.swift"
+    s.source_files = "JSON_Rx", "Sources/JSON/**/*.swift"
     s.dependency "RxRelay"
   end
   

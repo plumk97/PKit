@@ -10,12 +10,12 @@ import Foundation
 public protocol PKJson {
     init()
     
-    func willStartMapping()
+    func willStartMapping(dict: inout [String: Any])
     func didFinishMapping()
 }
 
 public extension PKJson {
-    func willStartMapping() {}
+    func willStartMapping(dict: inout [String: Any]) {}
     func didFinishMapping() {}
 }
 
@@ -30,8 +30,11 @@ extension PKJson {
         var keys = [String: JsonKeyWrapper]()
         while mirror != nil {
             for child in mirror!.children {
-                if let wrapper = child.value as? JsonKeyWrapper, let name = child.label {
-                    keys[name] = wrapper
+                if let wrapper = child.value as? JsonKeyWrapper {
+                    
+                    if let name = wrapper.name ?? child.label {
+                        keys[name] = wrapper
+                    }
                 }
             }
             
@@ -54,7 +57,8 @@ extension PKJson {
         var dict = [String: Any]()
         for (key, value) in properties {
             
-            let key = String(key[key.index(key.startIndex, offsetBy: 1)...])
+            
+            let key = value.name ?? String(key[key.index(key.startIndex, offsetBy: 1)...])
             let value = value.getValue()
             
             if let json = value as? PKJson {
@@ -91,18 +95,17 @@ extension PKJson {
     
     public func update(from jsonObject: PKJsonObject?, designatedPath: String? = nil) {
 
-        guard let dict = fetchInnerDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
+        guard var dict = fetchInnerDict(jsonObject?.toDict(), designatedPath: designatedPath) as? [String: Any] else {
             return
         }
         
         
         let properties = self.fetchProperties()
-        self.willStartMapping()
+        self.willStartMapping(dict: &dict)
         
         for (key, value) in dict {
             
-            
-            guard let wrapper = properties["_" + key] else {
+            guard let wrapper = properties[key] ?? properties["_" + key] else {
                 continue
             }
             
@@ -144,7 +147,6 @@ extension Array where Element: PKJson {
     
     
     // MARK: - Encode
-    
     public func toJson() -> [[String: Any]] {
         
         var dicts = [[String: Any]]()

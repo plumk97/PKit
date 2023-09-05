@@ -1,64 +1,72 @@
 //
 //  JSONTests.swift
-//  
+//
 //
 //  Created by Plumk on 2022/5/25.
 //
 
 import XCTest
-@testable import PKCore
+#if canImport(RxRelay)
+import RxSwift
+import RxRelay
+#endif
 @testable import PKJSON
 
 
-struct Job: PKJson {
-    
-    @JsonKey var name = ""
-    @JsonKey var salary: Double = 0 {
-        didSet {
-            PKLog.log("new value")
-        }
+let json = """
+{
+"name": "张三",
+"date": "2023-07-28T16:06:26+08:00",
+"job": {
+    "name": "工人",
+    "salary": 10000.5
     }
 }
-
-class Person: NSObject, PKJson {
-    
-    @JsonKey @objc dynamic var name = ""
-    @JsonKey
-    var date = Date()
-    
-    @JsonKey var job = Job()
-    
-    required override init() {
-        super.init()
-    }
-}
+"""
 
 
 
 
 final class JSONTests: XCTestCase {
     
-    func testDecode() throws {
+    func testCoding() throws {
+    
+        struct Job: PKJson {
+            
+            @JsonKey var name = ""
+            @JsonKey var salary: Double = 0 {
+                didSet {
+                    print("new value")
+                }
+            }
+        }
+
+        struct Person: PKJson {
+            
+        #if canImport(RxRelay)
+            @JsonKey
+            var name: BehaviorRelay<String> = .init(value: "")
+        #else
+            @JsonKey
+            var name: String = ""
+        #endif
+            
+            @JsonKey
+            var date = Date()
+            
+            @JsonKey var job = Job()
+        }
         
-        let json = """
-{
-    "name": "张三",
-    "date": "2023-07-28T16:06:26+08:00",
-    "job": {
-        "name": "工人",
-        "salary": "10000.5"
+        
+        let person = Person()
+#if canImport(RxRelay)
+        let disposeBag = DisposeBag()
+        person.name.subscribe { name in
+            print(name)
+        }.disposed(by: disposeBag)
+#endif
+        person.update(from: json)
+        print(person)
     }
-}
-"""
-        
-        //2023-06-25T14:06:00.237+08:00
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFullDate, .withTime, .withFractionalSeconds]
-        print(formatter.date(from: "2023-07-28T16:06:26.444+08:00"))
-        let person = Person.decode(json)
-        print(person.toJson())
-        
-        let person1 = Person.decode(json)
-        print(person1.toJson())
-    }
+    
 }

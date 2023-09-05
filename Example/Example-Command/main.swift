@@ -8,6 +8,9 @@
 
 import Foundation
 import PKit
+#if canImport(RxRelay)
+import RxRelay
+#endif
 
 enum AnimalType: String, PKJsonEnum {
     case cat = "cat"
@@ -26,14 +29,17 @@ struct Job: PKJson {
 
 struct Person: PKJson {
     
+#if canImport(RxRelay)
+    @JsonKey var name: BehaviorRelay<String>?
+#else
     @JsonKey var name: String?
+#endif
     @JsonKey var age: Int?
     @JsonKey var tags: Set<Int>?
     @JsonKey var job: [Job]?
     @JsonKey var pet: [AnimalType?]?
     
-    @JsonKey(transform: PKDateTransform(format: "yyyy-MM-dd"))
-    var birthday: Date? = nil
+    @JsonKey var birthday: Date? = nil
     
 }
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class PKUIBanner<Model>: UIView {
+open class PKUIBanner<Model>: UIView, UICollectionViewDelegate, UICollectionViewDataSource {
     
     /// 图片下载完成回调
     public typealias ImageDownlaodCompleteCallback = (UIImage?) -> Void
@@ -80,7 +80,6 @@ open class PKUIBanner<Model>: UIView {
     private var collectionViewLayout: UICollectionViewFlowLayout!
     private var collectionView: UICollectionView!
     
-    private var delegateRepeater: DelegateRepeater!
     
     private var leftOverstepImageView: UIImageView!
     private var rightOverstepImageView: UIImageView!
@@ -89,7 +88,6 @@ open class PKUIBanner<Model>: UIView {
     
     private func commInit() {
         self.clipsToBounds = true
-        self.delegateRepeater = DelegateRepeater(banner: self)
         
         self.collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionViewLayout.scrollDirection = .horizontal
@@ -102,9 +100,9 @@ open class PKUIBanner<Model>: UIView {
         self.collectionView.bounces = false
         self.collectionView.showsVerticalScrollIndicator = false
         self.collectionView.showsHorizontalScrollIndicator = false
-        self.collectionView.delegate = self.delegateRepeater
-        self.collectionView.dataSource = self.delegateRepeater
-        self.collectionView.register(Cell.self, forCellWithReuseIdentifier: "cell")
+        self.collectionView.delegate = self
+        self.collectionView.dataSource = self
+        self.collectionView.register(PKUIBannerCell.self, forCellWithReuseIdentifier: "PKUIBannerCell")
         self.addSubview(self.collectionView)
         
         self.leftOverstepImageView = UIImageView()
@@ -213,126 +211,72 @@ open class PKUIBanner<Model>: UIView {
         }
         self.page = page
     }
-}
-
-// MARK: - UICollectionViewDelegate & UICollectionViewDataSource
-extension PKUIBanner {
-    class DelegateRepeater: NSObject, UICollectionViewDelegate, UICollectionViewDataSource {
-        
-        open weak var banner: PKUIBanner!
-        public init(banner: PKUIBanner) {
-            super.init()
-            self.banner = banner
-        }
-        
-        open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            guard let banner = self.banner else {
-                return 0
-            }
-            
-            return banner.models.count
-        }
-        
-        open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! Cell
-            
-            
-            if indexPath.row == self.banner.models.count - 1 {
-                cell.imageView.image = self.banner.leftOverstepImageView.image
-            } else if indexPath.row == 0 {
-                cell.imageView.image = self.banner.rightOverstepImageView.image
-            }
-            
-            if let banner = self.banner {
-                cell.imageView.contentMode = banner.contentMode
-                let model = banner.models[indexPath.row]
-                banner.imageDownloadCallback?(indexPath.row, model, {[weak cell, weak self] image in
-                    guard let _banenr = self?.banner else {
-                        return
-                    }
-                    cell?.imageView.image = image
-                    
-                    if indexPath.row == 0 {
-                        _banenr.rightOverstepImageView.image = image
-                    } else if indexPath.row == _banenr.models.count - 1 {
-                        _banenr.leftOverstepImageView.image = image
-                    }
-                })
-            }
-            
-            
-            return cell
-        }
-        
-        open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-            guard let banner = self.banner else {
-                return
-            }
-            let model = self.banner.models[indexPath.row]
-            banner.didClickCallback?(indexPath.row, model)
-        }
-        
-        open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-            if scrollView.contentOffset.x <= -scrollView.bounds.width {
-                scrollView.setContentOffset(.init(x: scrollView.contentSize.width - scrollView.bounds.width, y: 0), animated: false)
-            } else if scrollView.contentOffset.x >= scrollView.contentSize.width {
-                scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
-            }
-            
-            self.banner?.calcCurrentPage()
-        }
-        
-        open func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-            if scrollView.contentOffset.x <= -scrollView.bounds.width {
-                scrollView.setContentOffset(.init(x: scrollView.contentSize.width - scrollView.bounds.width, y: 0), animated: false)
-            } else if scrollView.contentOffset.x >= scrollView.contentSize.width {
-                scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
-            }
-            self.banner?.calcCurrentPage()
-        }
-        
-        open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-            guard let banner = self.banner else {
-                return
-            }
-            banner.autoplayTimer?.invalidate()
-            banner.autoplayTimer = nil
-        }
-        
-        open func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-            guard let banner = self.banner else {
-                return
-            }
-            banner.reloadAutoplayTimer()
-        }
+    
+    // MARK: - UICollectionViewDelegate & UICollectionViewDataSource
+    open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.models.count
     }
-}
+
+    open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PKUIBannerCell", for: indexPath) as! PKUIBannerCell
 
 
-// MARK: - PKUIBanner Cell
-extension PKUIBanner {
-    fileprivate class Cell: UICollectionViewCell {
-        
-        var imageView: UIImageView!
-        override init(frame: CGRect) {
-            super.init(frame: frame)
-            self.commInit()
+        if indexPath.row == self.models.count - 1 {
+            cell.imageView.image = self.leftOverstepImageView.image
+        } else if indexPath.row == 0 {
+            cell.imageView.image = self.rightOverstepImageView.image
         }
-        
-        required init?(coder: NSCoder) {
-            super.init(coder: coder)
-            self.commInit()
+
+        cell.imageView.contentMode = self.contentMode
+        let model = self.models[indexPath.row]
+        self.imageDownloadCallback?(indexPath.row, model, {[weak cell, weak self] image in
+            guard let self = self else {
+                return
+            }
+            
+            cell?.imageView.image = image
+
+            if indexPath.row == 0 {
+                self.rightOverstepImageView.image = image
+            } else if indexPath.row == self.models.count - 1 {
+                self.leftOverstepImageView.image = image
+            }
+        })
+
+        return cell
+    }
+
+    open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let model = self.models[indexPath.row]
+        self.didClickCallback?(indexPath.row, model)
+    }
+    
+    // MARK: - UIScrollViewDelegate
+    open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.x <= -scrollView.bounds.width {
+            scrollView.setContentOffset(.init(x: scrollView.contentSize.width - scrollView.bounds.width, y: 0), animated: false)
+        } else if scrollView.contentOffset.x >= scrollView.contentSize.width {
+            scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
         }
-        
-        func commInit() {
-            self.imageView = UIImageView()
-            self.imageView.clipsToBounds = true
-            self.contentView.addSubview(self.imageView)
+
+        self.calcCurrentPage()
+    }
+
+    open func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        if scrollView.contentOffset.x <= -scrollView.bounds.width {
+            scrollView.setContentOffset(.init(x: scrollView.contentSize.width - scrollView.bounds.width, y: 0), animated: false)
+        } else if scrollView.contentOffset.x >= scrollView.contentSize.width {
+            scrollView.setContentOffset(.init(x: 0, y: 0), animated: false)
         }
-        
-        override func layoutSubviews() {
-            super.layoutSubviews()
-            self.imageView.frame = self.contentView.bounds
-        }
+        self.calcCurrentPage()
+    }
+
+    open func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.autoplayTimer?.invalidate()
+        self.autoplayTimer = nil
+    }
+
+    open func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        self.reloadAutoplayTimer()
     }
 }

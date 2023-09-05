@@ -3,26 +3,25 @@
 import PackageDescription
 
 
-let package = Package(
-    name: "PKit",
-    platforms: [
-        .iOS(.v11)
-    ],
-    products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
+func products() -> [Product] {
+    var products: [Product] = [
         .library(name: "PKCore", targets: ["PKCore"]),
-        .library(name: "PKUI", targets: ["PKUI"]),
         .library(name: "PKWebServer", targets: ["PKWebServer"]),
         .library(name: "PKJSON", targets: ["PKJSON"])
-    ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
+    ]
+    
+#if os(iOS)
+    products.append(.library(name: "PKUI", targets: ["PKUI"]))
+#endif
+    
+    return products
+}
+
+
+func targets() -> [Target] {
+    
+    var targets: [Target] = [
         .target(name: "PKCore", path: "Sources/Core"),
-        .target(name: "PKUI", path: "Sources/UI"),
         .target(
             name: "PKWebServer",
             dependencies: [
@@ -34,12 +33,40 @@ let package = Package(
             path: "Sources/WebServer",
             resources: [.process("Resources")]
         ),
-        .target(name: "PKJSON", path: "Sources/JSON"),
+        .target(
+            name: "PKJSON",
+            dependencies: [
+                .productItem(name: "RxSwift", package: "RxSwift"),
+                .productItem(name: "RxRelay", package: "RxSwift")
+            ],
+            path: "Sources/JSON"),
         .testTarget(name: "JSONTests",
-                    dependencies: ["PKCore", "PKJSON"]),
+                    dependencies: [
+                        "PKJSON",
+                    ]),
         .testTarget(name: "WebServerTests",
-                    dependencies: ["PKCore", "PKWebServer"]),
+                    dependencies: ["PKCore", "PKWebServer"])
+    ]
+    
+#if os(iOS)
+    targets.append(.target(name: "PKUI", path: "Sources/UI"))
+#endif
+    
+    return targets
+}
+
+
+let package = Package(
+    name: "PKit",
+    platforms: [
+        .iOS(.v11)
     ],
+    products: products(),
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("6.6.0"))
+    ],
+    targets: targets(),
     swiftLanguageVersions: [
         .v5
     ]

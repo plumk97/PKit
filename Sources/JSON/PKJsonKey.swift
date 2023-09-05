@@ -8,6 +8,7 @@
 import Foundation
 
 protocol JsonKeyWrapper {
+    var name: String? { get }
     func setValue(_ value: Any)
     func getValue() -> Any
 }
@@ -17,18 +18,20 @@ protocol JsonKeyWrapper {
     
     public var wrappedValue: Value
     
-    var customTransform: PKCusomTransformable?
+    let customTransform: PKCusomTransformable?
+    let name: String?
     
-    public init(wrappedValue value: Value, transform: PKCusomTransformable? = nil) {
+    public init(wrappedValue value: Value, transform: PKCusomTransformable? = nil, name: String? = nil) {
         self.wrappedValue = value
         self.customTransform = transform
+        self.name = name
     }
     
     
     // MARK: - CustomStringConvertible
     public var description: String {
         var output = ""
-        print(self.wrappedValue, separator: "", terminator: "", to: &output)
+        print(self.getValue(), separator: "", terminator: "", to: &output)
         return output
     }
     
@@ -54,6 +57,12 @@ protocol JsonKeyWrapper {
             return
         }
         
+        if let obj = self.wrappedValue as? RxTransformable {
+            obj.transform(from: value)
+            return
+        }
+        
+        
         if let value = value as? Value {
             self.wrappedValue = value
         } else if let transform = self.customTransform, let value = transform.transformFromJSON(value) as? Value {
@@ -68,6 +77,10 @@ protocol JsonKeyWrapper {
         
         if let transform = self.customTransform {
             return transform.transformToJSON(self.wrappedValue) as Any
+        }
+        
+        if let transform = self.wrappedValue as? RxTransformable {
+            return transform.plainValue() as Any
         }
         
         return self.wrappedValue

@@ -19,6 +19,7 @@ class ButtonViewController: UIViewController {
         
         let btn = PKUIButton()
         btn.title = "123123123"
+        btn.setTitle("333", state: .highlighted)
         btn.rightIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.rightIcon.setImage(UIImage.init(named: "icon_close"), state: .highlighted)
         btn.leftIcon.image = UIImage.init(named: "arrow_bottom_small")
@@ -42,6 +43,8 @@ class ButtonViewController: UIViewController {
         
         
         btn.addTarget(self, action: #selector(btnClick(_:)), for: .touchUpInside)
+    
+        
     }
     
     

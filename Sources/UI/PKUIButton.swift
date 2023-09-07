@@ -11,50 +11,42 @@ import UIKit
 @IBDesignable
 open class PKUIButton: UIControl {
     
+    /// 状态改变回调
+    public var stateChangedCallback: PKValueCallback<UIControl.State>?
+    
     open var title: String? {
-        didSet {
-            self.setup(oldValue != title)
-        }
+        set { self.setTitle(newValue, state: .normal) }
+        get { self.getTitle(.normal) }
     }
     
     open var attributedTitle: NSAttributedString? {
-        didSet {
-            self.setup(oldValue != attributedTitle)
-        }
+        set { self.setAttributedTitle(newValue, state: .normal) }
+        get { self.getAttributedTitle(.normal) }
     }
     
-    open var titleColor: UIColor = .black {
-        didSet {
-            self.setup(false)
-        }
+    open var titleColor: UIColor? {
+        set { self.setTitleColor(newValue, state: .normal) }
+        get { self.getTitleColor(.normal) }
     }
     
     open var font: UIFont = UIFont.systemFont(ofSize: 15) {
         didSet {
-            self.setup(oldValue != font)
+            self.titleLabel.font = self.font
+            self.update(isUpdateAppearance: false)
         }
     }
+    
     open var backgroundImage: UIImage? {
+        set { self.setBackgroundImage(newValue, state: .normal) }
         get { self.getBackgroundImage(.normal) }
-        set {
-            self.setBackgroundImage(newValue, state: .normal)
-            self.setup(newValue != self.backgroundImage)
-        }
     }
-    
-    
-    open private(set) var leftIcon: Icon!
-    open private(set) var topIcon: Icon!
-    open private(set) var rightIcon: Icon!
-    open private(set) var bottomIcon: Icon!
     
     /// 图标与文字的距离
     open var spaceingTitleImage: CGFloat = 2 {
-        didSet {
-            self.setup(oldValue != spaceingTitleImage)
-        }
+        didSet { self.update(isUpdateLayout: oldValue != spaceingTitleImage) }
     }
     
+    /// 与内容距离
     open var padding: UIEdgeInsets = .zero {
         didSet {
             self.invalidateIntrinsicContentSize()
@@ -64,45 +56,57 @@ open class PKUIButton: UIControl {
     
     open var borderColor: UIColor = .clear {
         didSet {
-            self.setupLayer()
+            self.updateLayer()
         }
     }
     
     open var borderWidth: CGFloat = 0 {
         didSet {
-            self.setupLayer()
+            self.updateLayer()
         }
     }
     
+    /// 是否总是保持高度一半的圆角
     open var alwayHalfRadius: Bool = false {
         didSet {
             self.setNeedsLayout()
         }
     }
     
+    /// 圆角
     open var cornerRadius: CGFloat = 0 {
         didSet {
-            self.setupLayer()
+            self.updateLayer()
         }
     }
     
+    /// 点击范围扩大
     open var pointBoundsInset: UIEdgeInsets = .zero
+    
+    public let titleLabel = UILabel()
+    public let leftIcon = Icon()
+    public let topIcon = Icon()
+    public let rightIcon = Icon()
+    public let bottomIcon = Icon()
+    
+    
+    public let lImageView = UIImageView()
+    public let tImageView = UIImageView()
+    public let rImageView = UIImageView()
+    public let bImageView = UIImageView()
+    
+    public let backgroundImageView = UIImageView()
+    
+    private var contentSize: CGSize = .zero
+    private let contentView = UIView()
+    private var prevState: State = .normal
+    
+    private var titleSet = [UIControl.State.RawValue: String]()
+    private var titleColorSet = [UIControl.State.RawValue: UIColor]()
+    private var attributedTitleSet = [UIControl.State.RawValue: NSAttributedString]()
     
     /// 背景状态组
     private var backgroundImageSet = [UIControl.State.RawValue: UIImage]()
-    
-    private var contentSize: CGSize = .zero
-    private var contentView: UIView!
-    
-    open private(set) var titleLabel: UILabel!
-    open private(set) var leftImageView: UIImageView!
-    open private(set) var topImageView: UIImageView!
-    open private(set) var rightImageView: UIImageView!
-    open private(set) var bottomImageView: UIImageView!
-    
-    open private(set) var backgroundImageView: UIImageView!
-    
-    fileprivate var prevState: State = .normal
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -115,41 +119,35 @@ open class PKUIButton: UIControl {
     }
     
     private func commInit() {
-        
         self.clipsToBounds = true
         self.prevState = self.state
-        self.leftIcon = Icon.init(button: self)
-        self.topIcon = Icon.init(button: self)
-        self.rightIcon = Icon.init(button: self)
-        self.bottomIcon = Icon.init(button: self)
         
-        self.backgroundImageView = UIImageView()
         self.addSubview(self.backgroundImageView)
         
-        self.contentView = UIView()
         self.contentView.isUserInteractionEnabled = false
         self.addSubview(self.contentView)
         
-        self.titleLabel = UILabel()
+        self.titleLabel.font = self.font
         self.contentView.addSubview(self.titleLabel)
+        self.contentView.addSubview(self.lImageView)
+        self.contentView.addSubview(self.tImageView)
+        self.contentView.addSubview(self.rImageView)
+        self.contentView.addSubview(self.bImageView)
         
-        self.leftImageView = UIImageView()
-        self.leftIcon.relImageView = self.leftImageView
-        self.contentView.addSubview(self.leftImageView)
+        self.leftIcon.imageChangedCallback = {[unowned self] in
+            self.update(isUpdateLayout: $0 == .normal)
+        }
+        self.topIcon.imageChangedCallback = {[unowned self] in
+            self.update(isUpdateLayout: $0 == .normal)
+        }
+        self.rightIcon.imageChangedCallback = {[unowned self] in
+            self.update(isUpdateLayout: $0 == .normal)
+        }
+        self.bottomIcon.imageChangedCallback = {[unowned self] in
+            self.update(isUpdateLayout: $0 == .normal)
+        }
         
-        self.topImageView = UIImageView()
-        self.topIcon.relImageView = self.topImageView
-        self.contentView.addSubview(self.topImageView)
         
-        self.rightImageView = UIImageView()
-        self.rightIcon.relImageView = self.rightImageView
-        self.contentView.addSubview(self.rightImageView)
-        
-        self.bottomImageView = UIImageView()
-        self.bottomIcon.relImageView = self.bottomImageView
-        self.contentView.addSubview(self.bottomImageView)
-        
-        self.setup()
         self.addLoopObserve()
     }
     
@@ -161,55 +159,62 @@ open class PKUIButton: UIControl {
                 return
             }
             if activity.rawValue == CFRunLoopActivity.beforeWaiting.rawValue {
-                self?.renewAppearance()
+                self?.updateAppearance()
             }
         }
         CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
     }
     
-    fileprivate func renewAppearance(isForce: Bool = false) {
+    
+    // MARK: - Update
+    private func updateAppearance(isForce: Bool = false) {
         guard self.prevState != self.state || isForce else {
             return
         }
-        
-        self.leftIcon.renewImageViewImage()
-        self.topIcon.renewImageViewImage()
-        self.rightIcon.renewImageViewImage()
-        self.bottomIcon.renewImageViewImage()
-        
-        if let img = self.backgroundImageSet[self.state.rawValue] {
-            self.backgroundImageView.image = img
-        } else {
-            self.backgroundImageView.image = self.backgroundImage
+        if self.state != self.prevState {
+            self.stateChangedCallback?(self.state)
         }
         
         self.prevState = self.state
+        
+        self.lImageView.image = self.leftIcon.getImage(state: self.state) ?? self.leftIcon.image
+        self.tImageView.image = self.topIcon.getImage(state: self.state) ?? self.topIcon.image
+        self.rImageView.image = self.rightIcon.getImage(state: self.state) ?? self.rightIcon.image
+        self.bImageView.image = self.bottomIcon.getImage(state: self.state) ?? self.bottomIcon.image
+        
+        self.backgroundImageView.image = self.backgroundImageSet[self.state.rawValue] ?? self.backgroundImage
+        
+        if let attributedTitle = self.attributedTitleSet[self.state.rawValue] ?? self.attributedTitle {
+            self.titleLabel.attributedText = attributedTitle
+        } else {
+            self.titleLabel.textColor = self.titleColorSet[self.state.rawValue] ?? self.titleColor
+            
+            let title = self.titleSet[self.state.rawValue] ?? self.title
+            let isUpdate = self.titleLabel.text != title
+            self.titleLabel.text = title
+            
+            if isUpdate {
+                self.layoutContentView()
+            }
+        }
     }
     
-    fileprivate func setupLayer() {
+    private func updateLayer() {
         self.layer.cornerRadius = self.cornerRadius
         self.layer.borderWidth = self.borderWidth
         self.layer.borderColor = self.borderColor.cgColor
     }
     
-    fileprivate func setup(_ isRenewLayout: Bool = true) {
-        if self.attributedTitle != nil {
-            self.titleLabel.attributedText = self.attributedTitle
-        } else {
-            self.titleLabel.text = self.title
-            self.titleLabel.textColor = self.titleColor
-            self.titleLabel.font = self.font
-        }
-        
-        self.renewAppearance(isForce: true)
-        
-        if isRenewLayout {
-            self.relayoutContentView()
-            self.invalidateIntrinsicContentSize()
+    private func update(isUpdateAppearance: Bool = true, isUpdateLayout: Bool = true) {
+        self.updateAppearance(isForce: isUpdateAppearance)
+
+        if isUpdateLayout {
+            self.layoutContentView()
         }
     }
     
-    fileprivate func relayoutContentView() {
+    // MARK: - Layout
+    private func layoutContentView() {
         
         // - 设置Size
         var contentSize: CGSize = .zero
@@ -218,63 +223,61 @@ open class PKUIButton: UIControl {
         contentSize.width += self.titleLabel.frame.width
         contentSize.height += self.titleLabel.frame.height
         
-        self.leftImageView.bounds.size = .zero
-        if self.leftImageView.image != nil {
-            self.leftImageView.bounds.size = self.leftIcon.imageSize ?? self.leftImageView.image!.size
+        self.lImageView.bounds.size = .zero
+        if let image = self.leftIcon.image {
+            self.lImageView.bounds.size = self.leftIcon.imageSize ?? image.size
             
-            contentSize.height = max(self.leftImageView.bounds.height, contentSize.height)
-            contentSize.width += self.leftImageView.bounds.width + self.spaceingTitleImage
+            contentSize.height = max(self.lImageView.bounds.height, contentSize.height)
+            contentSize.width += self.lImageView.bounds.width + self.spaceingTitleImage
         }
         
-        self.topImageView.bounds.size = .zero
-        if self.topImageView.image != nil {
-            self.topImageView.bounds.size = self.topIcon.imageSize ?? self.topImageView.image!.size
+        self.tImageView.bounds.size = .zero
+        if let image = self.topIcon.image {
+            self.tImageView.bounds.size = self.topIcon.imageSize ?? image.size
             
-            contentSize.width = max(self.topImageView.bounds.width, contentSize.width)
-            contentSize.height += self.topImageView.bounds.height + self.spaceingTitleImage
+            contentSize.width = max(self.tImageView.bounds.width, contentSize.width)
+            contentSize.height += self.tImageView.bounds.height + self.spaceingTitleImage
         }
         
-        self.rightImageView.bounds.size = .zero
-        if self.rightImageView.image != nil {
-            self.rightImageView.bounds.size = self.rightIcon.imageSize ?? self.rightImageView.image!.size
+        self.rImageView.bounds.size = .zero
+        if let image = self.rightIcon.image {
+            self.rImageView.bounds.size = self.rightIcon.imageSize ?? image.size
             
-            contentSize.height = max(self.rightImageView.bounds.height, contentSize.height)
-            contentSize.width += self.rightImageView.bounds.width + self.spaceingTitleImage
+            contentSize.height = max(self.rImageView.bounds.height, contentSize.height)
+            contentSize.width += self.rImageView.bounds.width + self.spaceingTitleImage
         }
         
-        self.bottomImageView.bounds.size = .zero
-        if self.bottomImageView.image != nil {
-            self.bottomImageView.bounds.size = self.bottomIcon.imageSize ?? self.bottomImageView.image!.size
+        self.bImageView.bounds.size = .zero
+        if let image = self.bottomIcon.image {
+            self.bImageView.bounds.size = self.bottomIcon.imageSize ?? image.size
             
-            contentSize.width = max(self.bottomImageView.bounds.width, contentSize.width)
-            contentSize.height += self.rightImageView.bounds.height + self.spaceingTitleImage
+            contentSize.width = max(self.bImageView.bounds.width, contentSize.width)
+            contentSize.height += self.bImageView.bounds.height + self.spaceingTitleImage
         }
         
         if contentSize.equalTo(.zero) && self.backgroundImageView.image != nil {
             contentSize = self.backgroundImageView.sizeThatFits(.zero)
         }
         
-        self.contentSize = contentSize
-        self.contentView.frame.size = contentSize
         
         // - 设置origin
         var titleOrigin = CGPoint.zero
         
-        if self.leftImageView.image != nil && self.rightImageView.image != nil {
+        if self.leftIcon.image != nil && self.rightIcon.image != nil {
             titleOrigin.x = (contentSize.width - self.titleLabel.bounds.width) / 2
-        } else if self.leftImageView.image != nil {
+        } else if self.self.leftIcon.image != nil {
             titleOrigin.x = contentSize.width - self.titleLabel.bounds.width
-        } else if self.rightImageView.image != nil {
+        } else if self.self.rightIcon.image != nil {
             titleOrigin.x = 0
         } else {
             titleOrigin.x = (contentSize.width - self.titleLabel.bounds.width) / 2
         }
         
-        if self.topImageView.image != nil && self.bottomImageView.image != nil {
+        if self.topIcon.image != nil && self.bottomIcon.image != nil {
             titleOrigin.y = (contentSize.height - self.titleLabel.bounds.height) / 2
-        } else if self.topImageView.image != nil {
+        } else if self.topIcon.image != nil {
             titleOrigin.y = contentSize.height - self.titleLabel.bounds.height
-        } else if self.bottomImageView.image != nil {
+        } else if self.bottomIcon.image != nil {
             titleOrigin.y = 0
         } else {
             titleOrigin.y = (contentSize.height - self.titleLabel.bounds.height) / 2
@@ -282,32 +285,39 @@ open class PKUIButton: UIControl {
         
         self.titleLabel.frame.origin = titleOrigin
         
-        
         let titleRect = self.titleLabel.frame
-        if self.leftImageView.image != nil {
-            let rect = self.leftImageView.frame
+        if self.leftIcon.image != nil {
+            let rect = self.lImageView.frame
             let y = (contentSize.height - rect.height) / 2
-            self.leftImageView.frame.origin = .init(x: titleRect.minX - rect.width - self.spaceingTitleImage, y: y)
+            self.lImageView.frame.origin = .init(x: titleRect.minX - rect.width - self.spaceingTitleImage, y: y)
         }
         
         
-        if self.rightImageView.image != nil {
-            let rect = self.rightImageView.frame
+        if self.rightIcon.image != nil {
+            let rect = self.rImageView.frame
             let y = (contentSize.height - rect.height) / 2
-            self.rightImageView.frame.origin = .init(x: titleRect.maxX + self.spaceingTitleImage, y: y)
+            self.rImageView.frame.origin = .init(x: titleRect.maxX + self.spaceingTitleImage, y: y)
         }
         
-        if self.topImageView.image != nil {
-            let rect = self.topImageView.frame
+        if self.topIcon.image != nil {
+            let rect = self.tImageView.frame
             let x = (contentSize.width - rect.width) / 2
-            self.topImageView.frame.origin = .init(x: x, y: titleRect.minY - rect.height - self.spaceingTitleImage)
+            self.tImageView.frame.origin = .init(x: x, y: titleRect.minY - rect.height - self.spaceingTitleImage)
         }
         
-        if self.bottomImageView.image != nil {
-            let rect = self.bottomImageView.frame
+        if self.bottomIcon.image != nil {
+            let rect = self.bImageView.frame
             let x = (contentSize.width - rect.width) / 2
-            self.bottomImageView.frame.origin = .init(x: x, y: titleRect.maxY + self.spaceingTitleImage)
+            self.bImageView.frame.origin = .init(x: x, y: titleRect.maxY + self.spaceingTitleImage)
         }
+        
+        
+        if !self.contentSize.equalTo(contentSize) {
+            self.contentSize = contentSize
+            self.contentView.frame.size = contentSize
+            self.invalidateIntrinsicContentSize()
+        }
+        
     }
     
     open override func layoutSubviews() {
@@ -348,9 +358,52 @@ open class PKUIButton: UIControl {
 // MARK: - Public
 extension PKUIButton {
     
+    public func setTitle(_ title: String?, state: UIControl.State) {
+        if let title = title {
+            self.titleSet[state.rawValue] = title
+        } else {
+            self.titleSet.removeValue(forKey: state.rawValue)
+        }
+        self.update(isUpdateLayout: state == .normal)
+    }
+    
+    public func getTitle(_ state: UIControl.State) -> String? {
+        return self.titleSet[state.rawValue]
+    }
+    
+    public func setTitleColor(_ color: UIColor?, state: UIControl.State) {
+        if let color = color {
+            self.titleColorSet[state.rawValue] = color
+        } else {
+            self.titleColorSet.removeValue(forKey: state.rawValue)
+        }
+        self.update(isUpdateLayout: false)
+    }
+    
+    public func getTitleColor(_ state: UIControl.State) -> UIColor? {
+        return self.titleColorSet[state.rawValue]
+    }
+    
+    public func setAttributedTitle(_ title: NSAttributedString?, state: UIControl.State) {
+        if let title = title {
+            self.attributedTitleSet[state.rawValue] = title
+        } else {
+            self.attributedTitleSet.removeValue(forKey: state.rawValue)
+        }
+        self.update(isUpdateLayout: state == .normal)
+    }
+    
+    public func getAttributedTitle(_ state: UIControl.State) -> NSAttributedString? {
+        return self.attributedTitleSet[state.rawValue]
+    }
+    
     public func setBackgroundImage(_ image: UIImage?, state: UIControl.State) {
-        self.backgroundImageSet[state.rawValue] = image
-        self.renewAppearance(isForce: state == self.state)
+        if let image = image {
+            self.backgroundImageSet[state.rawValue] = image
+        } else {
+            self.backgroundImageSet.removeValue(forKey: state.rawValue)
+        }
+        self.update(isUpdateLayout: state == .normal)
     }
     
     public func getBackgroundImage(_ state: UIControl.State) -> UIImage? {
@@ -362,81 +415,35 @@ extension PKUIButton {
 // MARK: - Icon
 extension PKUIButton {
     
-    open class Icon: NSObject {
+    open class Icon {
+        
+        var imageChangedCallback: PKValueCallback<UIControl.State>?
+        var imageSizeCallback: PKVoidCallback?
+        var imageSet = [UIControl.State.RawValue: UIImage]()
+        
         open var image: UIImage? {
-            set {
-                
-                let oldValue = self.imageSet[UIControl.State.normal.rawValue]
-                self.setImage(newValue, state: .normal)
-                
-                if let o = oldValue, let n = newValue {
-                    self.button?.setup(!o.size.equalTo(n.size))
-                } else if oldValue != newValue {
-                    self.button?.setup(true)
-                } else {
-                    self.button?.setup(false)
-                }
-            }
-            
-            get {
-                return self.getImage(state: .normal)
-            }
+            set { self.setImage(newValue, state: .normal) }
+            get { return self.getImage(state: .normal) }
         }
         
         open var imageSize: CGSize? {
             didSet {
-                if let o = oldValue, let n = imageSize {
-                    self.button?.setup(!o.equalTo(n))
-                } else {
-                    self.button?.setup()
-                }
+                self.imageSizeCallback?()
             }
         }
         
-        private var imageSet = [UIControl.State.RawValue: UIImage]()
-        
-        fileprivate weak var button: PKUIButton?
-        fileprivate weak var relImageView: UIImageView?
-        
-        fileprivate init(button: PKUIButton?) {
-            super.init()
-            self.button = button
-        }
-        
-        fileprivate func renewImageViewImage() {
-            guard let imageView = self.relImageView else {
-                return
-            }
-            
-            guard let btn = self.button else {
-                return
-            }
-            
-            if let img = self.getImage(state: btn.state) {
-                imageView.image = img
+        // MARK: - Public
+        open func setImage(_ image: UIImage?, state: UIControl.State) {
+            if let image = image {
+                self.imageSet[state.rawValue] = image
             } else {
-                imageView.image = self.image
+                self.imageSet.removeValue(forKey: state.rawValue)
             }
+            self.imageChangedCallback?(state)
+        }
+        
+        open func getImage(state: UIControl.State) -> UIImage? {
+            return self.imageSet[state.rawValue]
         }
     }
 }
-
-
-
-// MARK: - Icon Public
-extension PKUIButton.Icon {
-    
-    open func setImage(_ image: UIImage?, state: UIControl.State) {
-        if image == nil {
-            self.imageSet.removeValue(forKey: state.rawValue)
-            self.button?.renewAppearance(isForce: state == self.button?.state)
-        } else {
-            self.imageSet[state.rawValue] = image
-        }
-    }
-    
-    open func getImage(state: UIControl.State) -> UIImage? {
-        return self.imageSet[state.rawValue]
-    }
-}
-

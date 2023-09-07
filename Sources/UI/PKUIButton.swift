@@ -12,7 +12,7 @@ import UIKit
 open class PKUIButton: UIControl {
     
     /// 状态改变回调
-    public var stateChangedCallback: PKValueCallback<UIControl.State>?
+    public var stateChangedCallback: ((_ state: UIControl.State) -> Void)?
     
     open var title: String? {
         set { self.setTitle(newValue, state: .normal) }
@@ -432,8 +432,8 @@ extension PKUIButton {
     
     open class Icon {
         
-        var imageChangedCallback: PKValueCallback<UIControl.State>?
-        var imageSizeCallback: PKVoidCallback?
+        var imageChangedCallback: ((_ state: UIControl.State) -> Void)?
+        var imageSizeCallback: (() -> Void)?
         var imageSet = [UIControl.State.RawValue: UIImage]()
         
         open var image: UIImage? {

@@ -137,14 +137,29 @@ open class PKUIButton: UIControl {
         self.leftIcon.imageChangedCallback = {[unowned self] in
             self.update(isUpdateLayout: $0 == .normal)
         }
+        self.leftIcon.imageSizeCallback = {[unowned self] in
+            self.update(isUpdateAppearance: false, isUpdateLayout: true)
+        }
+        
         self.topIcon.imageChangedCallback = {[unowned self] in
             self.update(isUpdateLayout: $0 == .normal)
         }
+        self.topIcon.imageSizeCallback = {[unowned self] in
+            self.update(isUpdateAppearance: false, isUpdateLayout: true)
+        }
+        
         self.rightIcon.imageChangedCallback = {[unowned self] in
             self.update(isUpdateLayout: $0 == .normal)
         }
+        self.rightIcon.imageSizeCallback = {[unowned self] in
+            self.update(isUpdateAppearance: false, isUpdateLayout: true)
+        }
+        
         self.bottomIcon.imageChangedCallback = {[unowned self] in
             self.update(isUpdateLayout: $0 == .normal)
+        }
+        self.bottomIcon.imageSizeCallback = {[unowned self] in
+            self.update(isUpdateAppearance: false, isUpdateLayout: true)
         }
         
         

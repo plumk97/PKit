@@ -180,6 +180,15 @@ open class PKUIButton: UIControl {
         CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
     }
     
+    private func getCurrentMainState() -> UIControl.State {
+        if !self.isEnabled {
+            return .disabled
+        } else if self.isSelected {
+            return .selected
+        } else {
+            return .normal
+        }
+    }
     
     // MARK: - Update
     private func updateAppearance(isForce: Bool = false) {
@@ -193,29 +202,31 @@ open class PKUIButton: UIControl {
         var isUpdate = false
         self.prevState = self.state
         
+        let mainState = self.getCurrentMainState()
+        
         /// - 更新左边的图标
-        let limage = self.leftIcon.getImage(for: self.state) ?? self.leftIcon.image
+        let limage = self.leftIcon.getImage(for: self.state) ?? self.leftIcon.getImage(for: mainState) ?? self.leftIcon.image
         if self.lImageView.image != limage {
             isUpdate = true
             self.lImageView.image = limage
         }
         
         /// - 更新上边的图标
-        let timage = self.topIcon.getImage(for: self.state) ?? self.topIcon.image
+        let timage = self.topIcon.getImage(for: self.state) ?? self.topIcon.getImage(for: mainState) ?? self.topIcon.image
         if self.tImageView.image != timage {
             isUpdate = true
             self.tImageView.image = timage
         }
         
         /// - 更新右边的图标
-        let rimage = self.rightIcon.getImage(for: self.state) ?? self.rightIcon.image
+        let rimage = self.rightIcon.getImage(for: self.state) ?? self.rightIcon.getImage(for: mainState) ?? self.rightIcon.image
         if self.rImageView.image != rimage {
             isUpdate = true
             self.rImageView.image = rimage
         }
         
         /// - 更新下边的图标
-        let bimage = self.bottomIcon.getImage(for: self.state) ?? self.bottomIcon.image
+        let bimage = self.bottomIcon.getImage(for: self.state) ?? self.bottomIcon.getImage(for: mainState) ?? self.bottomIcon.image
         if self.bImageView.image != bimage {
             isUpdate = true
             self.bImageView.image = bimage
@@ -223,7 +234,7 @@ open class PKUIButton: UIControl {
         
         
         /// - 更新背景图
-        let backgroundImage = self.backgroundImageSet[self.state.rawValue] ?? self.backgroundImage
+        let backgroundImage = self.backgroundImageSet[self.state.rawValue] ?? self.backgroundImageSet[mainState.rawValue] ?? self.backgroundImage
         if self.backgroundImageView.image != backgroundImage {
             if self.contentView.bounds.size.equalTo(.zero) {
                 /// - 如果内部没有内容则使用背景图填充
@@ -234,7 +245,7 @@ open class PKUIButton: UIControl {
         
         
         /// - 更新标题
-        if let attributedTitle = self.attributedTitleSet[self.state.rawValue] ?? self.attributedTitle {
+        if let attributedTitle = self.attributedTitleSet[self.state.rawValue] ?? self.attributedTitleSet[mainState.rawValue] ?? self.attributedTitle {
             /// 富文本
             if self.titleLabel.attributedText != attributedTitle {
                 isUpdate = true
@@ -243,9 +254,9 @@ open class PKUIButton: UIControl {
             
         } else {
             /// 普通标题
-            self.titleLabel.textColor = self.titleColorSet[self.state.rawValue] ?? self.titleColor
+            self.titleLabel.textColor = self.titleColorSet[self.state.rawValue] ?? self.titleColorSet[mainState.rawValue] ?? self.titleColor
             
-            let title = self.titleSet[self.state.rawValue] ?? self.title
+            let title = self.titleSet[self.state.rawValue] ?? self.titleSet[mainState.rawValue] ?? self.title
             if self.titleLabel.text != title {
                 isUpdate = true
                 self.titleLabel.text = title

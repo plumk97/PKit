@@ -19,9 +19,9 @@ class ButtonViewController: UIViewController {
         
         let btn = PKUIButton()
         btn.title = "123123123"
-        btn.setTitle("333", state: .highlighted)
+        btn.setTitle("333", for: .highlighted)
         btn.rightIcon.image = UIImage.init(named: "arrow_bottom_small")
-        btn.rightIcon.setImage(UIImage.init(named: "icon_close"), state: .highlighted)
+        btn.rightIcon.setImage(UIImage(), for: .highlighted)
         btn.leftIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.topIcon.image = UIImage.init(named: "arrow_bottom_small")
         btn.bottomIcon.image = UIImage.init(named: "arrow_bottom_small")

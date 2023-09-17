@@ -44,7 +44,6 @@ class AudioRecorderViewController: UIViewController {
         self.model.completeCallback = {
             print($0, $1)
         }
-        print(self.model.path!)
         
     }
     

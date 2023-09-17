@@ -37,6 +37,13 @@ extension NSObjectProtocol where Self: UIViewController {
     }
 }
 
+extension NSObjectProtocol where Self: UIBarButtonItem {
+    
+    public var pk: PK<Self> {
+        return PK(self)
+    }
+}
+
 
 struct PKUI {
     

@@ -9,14 +9,8 @@ target 'Example' do
 pod 'PKit/Core', :path => '../'
 pod 'PKit/UI', :path => '../'
 pod 'PKit/Util', :path => '../'
-pod 'PKit/JSON', :path => '../'
 
 pod 'MJRefresh', '~> 3.7.5'
 pod 'SnapKit', '~> 5.6.0'
 
-end
-
-target 'Example-Command' do
-  platform :osx, '11.0'
-  pod 'PKit/JSON_Rx', :path => '../'
 end

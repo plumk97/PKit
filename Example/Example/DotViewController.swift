@@ -23,6 +23,11 @@ class DotViewController: UIViewController {
         self.btn1.pk.dot.isHidden = false
         
         self.btn2.layer.pk.dot.isHidden = false
+        
+        self.navigationItem.rightBarButtonItem = .init(title: "AAA", style: .plain, target: nil, action: nil)
+        DispatchQueue.main.async {
+            self.navigationItem.rightBarButtonItem?.pk.dot?.isHidden = false
+        }
     }
     
 }

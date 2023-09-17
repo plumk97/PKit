@@ -9,6 +9,7 @@
 import UIKit
 
 open class PKUIDot: UIImageView {
+    
     public enum Position {
         case leftTop
         case leftMiddle
@@ -24,31 +25,36 @@ open class PKUIDot: UIImageView {
     }
     
     
-    private var oldSize: CGSize = .zero
-    private var oldSuperViewFrame: CGRect = .zero
     
     open override var image: UIImage? {
         didSet {
-            self.backgroundColor = .clear
-            self.holdRound = false
             self.sizeToFit()
         }
     }
     
-    open var holdRound = true { didSet { self.setNeedsLayout() } }
+    open var alwayHalfRadius = true {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
     open var offset: CGPoint = .zero{
         didSet {
-            self.oldSize = .zero
-            self.reposition()
+            self.updatePosition(force: true)
         }
     }
     
     open var position = Position.rightTop {
         didSet {
-            self.oldSize = .zero
-            self.reposition()
+            self.updatePosition(force: true)
         }
     }
+    
+    ///
+    var lastSuperlayerBounds: CGRect = .zero
+    
+    ///
+    var lastBounds: CGRect = .zero
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -81,7 +87,7 @@ open class PKUIDot: UIImageView {
                     CFRunLoopObserverInvalidate(observer)
                     CFRunLoopRemoveObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
                 } else {
-                    self?.reposition()
+                    self?.updatePosition()
                 }
             }
         }
@@ -89,42 +95,42 @@ open class PKUIDot: UIImageView {
     }
   
     
-    fileprivate func reposition() {
-        guard let sv = self.layer.superlayer else {
+    func updatePosition(force: Bool = false) {
+        guard let superlayer = self.superview?.layer ?? self.layer.superlayer else {
             return
         }
         
-        
-        guard !(self.oldSize.equalTo(self.frame.size) && self.oldSuperViewFrame.equalTo(sv.frame)) else {
-            return
+        if !force {
+            guard !self.lastSuperlayerBounds.equalTo(superlayer.bounds) || !self.lastBounds.equalTo(self.bounds) else {
+                return
+            }
         }
-
-        self.oldSize = self.frame.size
-        self.oldSuperViewFrame = sv.frame
+        self.lastSuperlayerBounds = superlayer.bounds
+        self.lastBounds = self.bounds
         
-        let svSize = sv.bounds.size
+        let superBounds = superlayer.bounds
         var frame = self.frame
         switch position {
         case .leftTop:
             frame.origin = .zero
         case .leftMiddle:
-            frame.origin = .init(x: 0, y: (svSize.height - frame.height) / 2)
+            frame.origin = .init(x: 0, y: (superBounds.height - frame.height) / 2)
         case .leftBottom:
-            frame.origin = .init(x: 0, y: svSize.height - frame.height)
+            frame.origin = .init(x: 0, y: superBounds.height - frame.height)
             
         case .middleTop:
-            frame.origin = .init(x: (svSize.width - frame.width) / 2, y: 0)
+            frame.origin = .init(x: (superBounds.width - frame.width) / 2, y: 0)
         case .middle:
-            frame.origin = .init(x: (svSize.width - frame.width) / 2, y: (svSize.height - frame.height) / 2)
+            frame.origin = .init(x: (superBounds.width - frame.width) / 2, y: (superBounds.height - frame.height) / 2)
         case .middleBottom:
-            frame.origin = .init(x: (svSize.width - frame.width) / 2, y: svSize.height - frame.height)
+            frame.origin = .init(x: (superBounds.width - frame.width) / 2, y: superBounds.height - frame.height)
             
         case .rightTop:
-            frame.origin = .init(x: svSize.width - frame.width, y: 0)
+            frame.origin = .init(x: superBounds.width - frame.width, y: 0)
         case .rightMiddle:
-            frame.origin = .init(x: svSize.width - frame.width, y: (svSize.height - frame.height) / 2)
+            frame.origin = .init(x: superBounds.width - frame.width, y: (superBounds.height - frame.height) / 2)
         case .rightBottom:
-            frame.origin = .init(x: svSize.width - frame.width, y: svSize.height - frame.height)
+            frame.origin = .init(x: superBounds.width - frame.width, y: superBounds.height - frame.height)
         }
         
         frame.origin.x += offset.x
@@ -135,13 +141,13 @@ open class PKUIDot: UIImageView {
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        if self.holdRound {
-            layer.cornerRadius = bounds.height / 2
+        if self.alwayHalfRadius {
+            self.layer.cornerRadius = self.bounds.height / 2
         }
     }
 }
 
-
+// MARK: -
 fileprivate var kPKUIDot = "kPKUIDot"
 extension PK where Base: UIView {
     public var dot: PKUIDot {
@@ -157,11 +163,19 @@ extension PK where Base: CALayer {
         if obj == nil {
             obj = PKUIDot.init(frame: .init(x: 0, y: 0, width: 8, height: 8))
             obj?.backgroundColor = .red
-            obj?.holdRound = true
+            obj?.alwayHalfRadius = true
             self.base.addSublayer(obj!.layer)
-            obj?.reposition()
             objc_setAssociatedObject(self.base, &kPKUIDot, obj, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         return obj!
+    }
+}
+
+extension PK where Base: UIBarButtonItem {
+    public var dot: PKUIDot? {
+        if let view = self.base.value(forKey: "view") as? UIView {
+            return view.pk.dot
+        }
+        return nil
     }
 }

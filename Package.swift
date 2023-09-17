@@ -7,7 +7,6 @@ func products() -> [Product] {
     var products: [Product] = [
         .library(name: "PKCore", targets: ["PKCore"]),
         .library(name: "PKWebServer", targets: ["PKWebServer"]),
-        .library(name: "PKJSON", targets: ["PKJSON"])
     ]
     
 #if os(iOS)
@@ -33,17 +32,6 @@ func targets() -> [Target] {
             path: "Sources/WebServer",
             resources: [.process("Resources")]
         ),
-        .target(
-            name: "PKJSON",
-            dependencies: [
-                .productItem(name: "RxSwift", package: "RxSwift"),
-                .productItem(name: "RxRelay", package: "RxSwift")
-            ],
-            path: "Sources/JSON"),
-        .testTarget(name: "JSONTests",
-                    dependencies: [
-                        "PKJSON",
-                    ]),
         .testTarget(name: "WebServerTests",
                     dependencies: ["PKCore", "PKWebServer"])
     ]

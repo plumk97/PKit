@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "PKit"
-  spec.version      = "0.3.0"
+  spec.version      = "0.3.1"
   spec.summary      = "A short description of PKit."
 
   spec.homepage     = "https://github.com/zx1262111739/PKit"
@@ -34,15 +34,6 @@ Pod::Spec.new do |spec|
   
   spec.subspec 'Util' do |s|
     s.source_files  = "Classes", "Sources/Util/**/*.swift"
-  end
-
-  spec.subspec 'JSON' do |s|
-    s.source_files = "JSON", "Sources/JSON/**/*.swift"
-  end
-
-  spec.subspec 'JSON_Rx' do |s|
-    s.source_files = "JSON_Rx", "Sources/JSON/**/*.swift"
-    s.dependency "RxRelay"
   end
   
   

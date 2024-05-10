@@ -1,17 +1,14 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.7.1
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 import PackageDescription
 
 
 func products() -> [Product] {
-    var products: [Product] = [
+    let products: [Product] = [
         .library(name: "PKCore", targets: ["PKCore"]),
         .library(name: "PKWebServer", targets: ["PKWebServer"]),
+        .library(name: "PKUI", targets: ["PKUITarget"])
     ]
-    
-#if os(iOS)
-    products.append(.library(name: "PKUI", targets: ["PKUI"]))
-#endif
     
     return products
 }
@@ -19,15 +16,22 @@ func products() -> [Product] {
 
 func targets() -> [Target] {
     
-    var targets: [Target] = [
+    let targets: [Target] = [
         .target(name: "PKCore", path: "Sources/Core"),
+        
+        .target(name: "PKUI", path: "Sources/UI"),
+        .target(name: "PKUITarget", dependencies: [
+            .target(name: "PKUI", condition: .when(platforms: [.iOS]))
+        ], path: "Sources/UITarget"),
+        
+        
         .target(
             name: "PKWebServer",
             dependencies: [
                 .target(name: "PKCore", condition: nil),
-                .productItem(name: "NIO", package: "swift-nio", condition: nil),
-                .productItem(name: "NIOHTTP1", package: "swift-nio", condition: nil),
-                .productItem(name: "NIOWebSocket", package: "swift-nio", condition: nil),
+                .product(name: "NIO", package: "swift-nio"),
+                .product(name: "NIOHTTP1", package: "swift-nio"),
+                .product(name: "NIOWebSocket", package: "swift-nio"),
             ],
             path: "Sources/WebServer",
             resources: [.process("Resources")]
@@ -36,10 +40,7 @@ func targets() -> [Target] {
                     dependencies: ["PKCore", "PKWebServer"])
     ]
     
-#if os(iOS)
-    targets.append(.target(name: "PKUI", path: "Sources/UI"))
-#endif
-    
+
     return targets
 }
 
@@ -47,12 +48,13 @@ func targets() -> [Target] {
 let package = Package(
     name: "PKit",
     platforms: [
-        .iOS(.v11)
+        .iOS(.v11),
+        .macOS(.v11)
     ],
     products: products(),
     dependencies: [
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .exact("6.6.0"))
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.0.0"),
     ],
     targets: targets(),
     swiftLanguageVersions: [

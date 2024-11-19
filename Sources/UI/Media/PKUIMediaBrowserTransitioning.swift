@@ -1,14 +1,13 @@
 //
-//  PKUIMediaBrowserAnimatedTransitioning.swift
+//  PKUIMediaBrowserTransitioning.swift
 //  PKit
 //
-//  Created by Plumk on 2023/8/15.
+//  Created by Plumk on 2023/12/11.
 //
 
-import UIKit
+import Foundation
 
-
-open class PKUIMediaBrowserAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
+class PKUIMediaBrowserTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
 
     let isDismiss: Bool
     
@@ -62,17 +61,24 @@ open class PKUIMediaBrowserAnimatedTransitioning: NSObject, UIViewControllerAnim
         }
     }
     
-    func fitSize(_ size: CGSize, targetSize: CGSize) -> CGSize {
-        let ratio = min(targetSize.width / size.width, targetSize.height / size.height)
-        let newSize = CGSize.init(width: Int(size.width * ratio), height: Int(size.height * ratio))
-        return newSize
+    
+    func createViewThumbImage(view: UIView) -> UIImage? {
+        
+        if let imageView = view as? UIImageView {
+            return imageView.image
+        }
+        
+        let render = UIGraphicsImageRenderer(size: view.bounds.size)
+        return  render.image { ctx in
+            view.layer.render(in: ctx.cgContext)
+        }
     }
     
     
     func executePresentAnimation(browser: PKUIMediaBrowser, containerView: UIView, complete: @escaping () -> Void) {
         let duration = self.transitionDuration(using: nil)
         
-        guard let fromImageView = browser.fromImageView, fromImageView.image != nil else {
+        guard let fromView = browser.transitioningView?(browser), let fromImage = self.createViewThumbImage(view: fromView) else {
             browser.view.alpha = 0
             UIView.animate(withDuration: duration, animations: {
                 browser.view.alpha = 1
@@ -81,21 +87,23 @@ open class PKUIMediaBrowserAnimatedTransitioning: NSObject, UIViewControllerAnim
             }
             return
         }
+        
 
-        let snapshotView = UIImageView.init(image: fromImageView.image)
-        snapshotView.contentMode = fromImageView.contentMode
+        let snapshotView = UIImageView.init(image: fromImage)
+        snapshotView.contentMode = fromView.contentMode
         snapshotView.clipsToBounds = true
 
-        let fromRect = fromImageView.superview?.convert(fromImageView.frame, to: browser.view) ?? snapshotView.frame
+        let fromRect = fromView.superview?.convert(fromView.frame, to: browser.view) ?? snapshotView.frame
         snapshotView.frame = fromRect
         containerView.addSubview(snapshotView)
 
 
-        let imageSize = fromImageView.image!.size
+        let imageSize = fromImage.size
         let targetSize = browser.view.frame.size
         var toRect = snapshotView.frame
 
-        toRect.size = self.fitSize(imageSize, targetSize: targetSize)
+        
+        toRect.size = imageSize.fitSize(targetSize: targetSize)
 
         toRect.origin.x = (targetSize.width - toRect.width) / 2
         toRect.origin.y = (targetSize.height - toRect.height) / 2
@@ -117,34 +125,35 @@ open class PKUIMediaBrowserAnimatedTransitioning: NSObject, UIViewControllerAnim
     func executeDismissAnimation(browser: PKUIMediaBrowser, containerView: UIView, complete: @escaping () -> Void) {
         let duration = self.transitionDuration(using: nil)
         
-        guard let transitioningView = browser.currentBrowserPage()?.transitioningView,
-              let fromView = browser.fromImageView else {
+        
+        guard let cell = browser.collectionView.cellForItem(at: .init(row: browser.currentPageIndex, section: 0)) as? PKUIMediaBrowserCell,
+              let transitioningView = cell.page?.transitioningView,
+              let snapshotView = transitioningView.snapshotView(afterScreenUpdates: true),
+              let toView = browser.transitioningView?(browser) else {
+            
             UIView.animate(withDuration: duration) {
                 browser.view.alpha = 0
             } completion: { _ in
                 complete()
             }
-
             return
         }
         
-        transitioningView.frame = containerView.convert(transitioningView.frame, from: transitioningView.superview)
-        containerView.addSubview(transitioningView)
         
-        transitioningView.clipsToBounds = fromView.clipsToBounds
-        transitioningView.contentMode = fromView.contentMode
-        transitioningView.layer.cornerRadius = fromView.layer.cornerRadius
+        snapshotView.frame = containerView.convert(transitioningView.frame, from: transitioningView.superview)
+        containerView.addSubview(snapshotView)
+        
+        snapshotView.clipsToBounds = toView.clipsToBounds
+        snapshotView.contentMode = toView.contentMode
+        snapshotView.layer.cornerRadius = toView.layer.cornerRadius
         
         
-        let toRect = containerView.convert(fromView.frame, from: fromView.superview)
-        
+        let toRect = containerView.convert(toView.frame, from: toView.superview)
+        browser.collectionView.isHidden = true
         UIView.animate(withDuration: duration) {
             
             browser.view.backgroundColor = UIColor.black.withAlphaComponent(0)
-            browser.pageTipsLabel.alpha = 0
-            browser.currentBrowserPage()?.dismissTransitioningAnimation()
-            
-            transitioningView.frame = toRect
+            snapshotView.frame = toRect
             
         } completion: { _ in
             complete()

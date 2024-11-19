@@ -2,7 +2,7 @@
 //  PKUIBannerCell.swift
 //  PKit-Core-JSON-UI-Util
 //
-//  Created by 李铁柱 on 2023/9/5.
+//  Created by Plumk on 2023/9/5.
 //
 
 import UIKit

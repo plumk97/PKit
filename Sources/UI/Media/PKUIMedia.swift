@@ -82,7 +82,7 @@ extension PKUIMedia {
         }
         
         self.pk_downloadImage(url) { obj in
-            complete(obj as? UIImage)
+            complete(obj)
         }
     }
 }

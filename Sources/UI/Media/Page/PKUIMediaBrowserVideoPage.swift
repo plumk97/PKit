@@ -74,7 +74,7 @@ open class PKUIMediaBrowserVideoPage: PKUIMediaBrowserPage {
             complete(AVPlayerItem(url: url))
             
         case let asset as PHAsset:
-            PHImageManager.default().requestAVAsset(forVideo: asset, options: nil) {[weak self] (asset, _, _) in
+            PHImageManager.default().requestAVAsset(forVideo: asset, options: nil) { (asset, _, _) in
                 guard let asset = asset as? AVURLAsset else {
                     DispatchQueue.main.async {
                         complete(nil)
@@ -193,7 +193,9 @@ extension PKUIMediaBrowserVideoPage {
         }
         
         deinit {
-            self.player.removeTimeObserver(self.timeObserver)
+            if let timeObserver = self.timeObserver {
+                self.player.removeTimeObserver(timeObserver)
+            }
             self.playerItem?.removeObserver(self, forKeyPath: "status")
         }
         

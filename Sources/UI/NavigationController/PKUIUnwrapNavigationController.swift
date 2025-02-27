@@ -156,7 +156,7 @@ extension UINavigationController {
     /// - Parameter viewController:
     /// - Returns:
     @discardableResult
-    open func removeViewController(_ viewController: UIViewController?) -> UIViewController?  {
+    public func removeViewController(_ viewController: UIViewController?) -> UIViewController?  {
 
         func _removeViewController(_ navigationController: UINavigationController, viewController: UIViewController) -> UIViewController? {
             if let idx = navigationController.viewControllers.firstIndex(of: viewController) {
@@ -174,7 +174,7 @@ extension UINavigationController {
     }
 
 
-    open func pushViewController(_ viewController: UIViewController, animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) {
+    public func pushViewController(_ viewController: UIViewController, animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) {
         
         if let nav = self.pk.navigationController {
             nav.transitionCompleteCallback = complete
@@ -184,7 +184,7 @@ extension UINavigationController {
         }
     }
 
-    open func popViewController(animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) -> UIViewController? {
+    public func popViewController(animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) -> UIViewController? {
         if let nav = self.pk.navigationController {
             nav.transitionCompleteCallback = complete
             return nav.popViewController(animated: animated)?.pk.containerContentViewController
@@ -193,7 +193,7 @@ extension UINavigationController {
         }
     }
 
-    open func popToRootViewController(animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) -> [UIViewController]? {
+    public func popToRootViewController(animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) -> [UIViewController]? {
         if let nav = self.pk.navigationController {
             nav.transitionCompleteCallback = complete
             return nav.popToRootViewController(animated: animated)?.map({ $0.pk.containerContentViewController })
@@ -202,7 +202,7 @@ extension UINavigationController {
         }
     }
 
-    open func popToViewController(_ viewController: UIViewController, animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) -> [UIViewController]? {
+    public func popToViewController(_ viewController: UIViewController, animated: Bool, complete: PKUINavigationController.TransitionCompleteCallback?) -> [UIViewController]? {
         if let nav = self.pk.navigationController, let vc = viewController.navigationController?.parent {
             nav.transitionCompleteCallback = complete
             return nav.popToViewController(vc, animated: animated)?.map({ $0.pk.containerContentViewController })

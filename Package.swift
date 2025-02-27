@@ -7,7 +7,8 @@ func products() -> [Product] {
     let products: [Product] = [
         .library(name: "PKCore", targets: ["PKCore"]),
         .library(name: "PKWebServer", targets: ["PKWebServer"]),
-        .library(name: "PKUI", targets: ["PKUITarget"])
+        .library(name: "PKUI", targets: ["PKUITarget"]),
+        .library(name: "PKUtil", targets: ["PKUtil"])
     ]
     
     return products
@@ -20,11 +21,14 @@ func targets() -> [Target] {
         .target(name: "PKCore", path: "Sources/Core"),
         
         .target(name: "PKUI", path: "Sources/UI"),
+        .target(name: "PKUIExtension", path: "Sources/UIExtension"),
         .target(name: "PKUITarget", dependencies: [
-            .target(name: "PKUI", condition: .when(platforms: [.iOS]))
+            .target(name: "PKUI", condition: .when(platforms: [.iOS])),
+            .target(name: "PKUIExtension", condition: .when(platforms: [.iOS]))
         ], path: "Sources/UITarget"),
         
         
+        .target(name: "PKUtil", path: "Sources/Util"),
         .target(
             name: "PKWebServer",
             dependencies: [
@@ -37,7 +41,9 @@ func targets() -> [Target] {
             resources: [.process("Resources")]
         ),
         .testTarget(name: "WebServerTests",
-                    dependencies: ["PKCore", "PKWebServer"])
+                    dependencies: ["PKCore", "PKWebServer"]),
+        .testTarget(name: "UITests",
+                    dependencies: ["PKCore", "PKUI", "PKUIExtension"])
     ]
     
 

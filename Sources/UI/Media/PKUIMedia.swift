@@ -59,7 +59,6 @@ extension PKUIMedia {
             
         case let asset as PHAsset:
             let options = PHImageRequestOptions()
-            options.deliveryMode = .highQualityFormat
             PHImageManager.default().requestImage(for: asset, targetSize: .zero, contentMode: .default, options: options) { image, _ in
                 DispatchQueue.main.async {
                     complete(image)

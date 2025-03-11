@@ -2,7 +2,7 @@
 //  PKUIMediaBrowserZoomPage.swift
 //  PKit
 //
-//  Created by Plumk on 2023/8/15.
+//  Created by Plumk on 2023/12/11.
 //
 
 import UIKit
@@ -64,9 +64,7 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        guard !self.isClosed else {
-            return
-        }
+        
         self.scrollView.frame = self.bounds
         
         guard let zoomView = self.viewForZooming(in: self.scrollView) else {
@@ -77,7 +75,8 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
             return
         }
         
-        var zoomSize = self.fitSize(self.zoomViewInitialSize, targetSize: self.bounds.size)
+        
+        var zoomSize = self.zoomViewInitialSize.fitSize(targetSize: self.bounds.size)
         zoomSize.width *= self.scrollView.zoomScale
         zoomSize.height *= self.scrollView.zoomScale
         
@@ -88,12 +87,6 @@ open class PKUIMediaBrowserZoomPage: PKUIMediaBrowserPage, UIScrollViewDelegate 
                                     y: (max(self.scrollView.contentSize.height, self.bounds.height) - zoomSize.height) / 2)
         
         zoomView.frame = .init(origin: origin, size: zoomSize)
-    }
-    
-    func fitSize(_ size: CGSize, targetSize: CGSize) -> CGSize {
-        let ratio = min(targetSize.width / size.width, targetSize.height / size.height)
-        let newSize = CGSize.init(width: Int(size.width * ratio), height: Int(size.height * ratio))
-        return newSize
     }
     
     func isCanZoom() -> Bool {

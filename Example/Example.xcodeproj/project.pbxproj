@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		1047C88886DC375ED941B52F /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73706DE4584587D4C0EDE969 /* Pods_Example.framework */; };
+		5179C6BF2B272B94008FEBD3 /* RecycleScrollViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5179C6BE2B272B94008FEBD3 /* RecycleScrollViewController.swift */; };
+		51EFFB3C2B285C6700331860 /* VideoPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EFFB3B2B285C6700331860 /* VideoPlayerViewController.swift */; };
 		9868F0DE26CBB94C001F7ED5 /* PhotoBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9868F08526CBB94B001F7ED5 /* PhotoBrowserViewController.swift */; };
 		9868F0DF26CBB94C001F7ED5 /* ToastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9868F08626CBB94B001F7ED5 /* ToastViewController.swift */; };
 		9868F0E026CBB94C001F7ED5 /* ArrangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9868F08726CBB94B001F7ED5 /* ArrangeViewController.swift */; };
@@ -36,6 +38,8 @@
 
 /* Begin PBXFileReference section */
 		3FC83A1A70565C045C8755CD /* Pods-Example-Command.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-Command.debug.xcconfig"; path = "Target Support Files/Pods-Example-Command/Pods-Example-Command.debug.xcconfig"; sourceTree = "<group>"; };
+		5179C6BE2B272B94008FEBD3 /* RecycleScrollViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecycleScrollViewController.swift; sourceTree = "<group>"; };
+		51EFFB3B2B285C6700331860 /* VideoPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewController.swift; sourceTree = "<group>"; };
 		637AD77AFDFCE91611DE97E5 /* Pods-Example-Command.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example-Command.release.xcconfig"; path = "Target Support Files/Pods-Example-Command/Pods-Example-Command.release.xcconfig"; sourceTree = "<group>"; };
 		645BEFDAB8557647F2128B4C /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		7184B0CBCBB3F954E038013C /* libPods-Example-Command.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Example-Command.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,9 +126,9 @@
 		9868F03A26CBB8CD001F7ED5 /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				9868F09726CBB94C001F7ED5 /* Info.plist */,
 				986B890527607E6700AAAF30 /* LaunchScreen.storyboard */,
 				986B890627607E6700AAAF30 /* Main.storyboard */,
-				9868F09726CBB94C001F7ED5 /* Info.plist */,
 				9868F08F26CBB94B001F7ED5 /* AppDelegate.swift */,
 				9868F08726CBB94B001F7ED5 /* ArrangeViewController.swift */,
 				9868F0DD26CBB94C001F7ED5 /* AudioRecorderViewController.swift */,
@@ -134,17 +138,19 @@
 				9868F08C26CBB94B001F7ED5 /* ButtonViewController.swift */,
 				9868F08E26CBB94B001F7ED5 /* DotViewController.swift */,
 				9868F09E26CBB94C001F7ED5 /* GridViewController.swift */,
-				9868F08626CBB94B001F7ED5 /* ToastViewController.swift */,
 				9868F08D26CBB94B001F7ED5 /* MultiMenuTableViewViewController.swift */,
 				9868F09526CBB94C001F7ED5 /* NavigationController.swift */,
 				9868F09226CBB94B001F7ED5 /* PageScrollViewController.swift */,
 				9868F08526CBB94B001F7ED5 /* PhotoBrowserViewController.swift */,
+				5179C6BE2B272B94008FEBD3 /* RecycleScrollViewController.swift */,
 				9868F08B26CBB94B001F7ED5 /* RippleAnimateViewController.swift */,
 				9868F09126CBB94B001F7ED5 /* StackCardViewController.swift */,
 				9868F08A26CBB94B001F7ED5 /* StackViewController.swift */,
 				9868F0DB26CBB94C001F7ED5 /* TabBarViewController.swift */,
 				9868F0DC26CBB94C001F7ED5 /* TabControlViewController.swift */,
 				9868F08826CBB94B001F7ED5 /* TableViewController.swift */,
+				9868F08626CBB94B001F7ED5 /* ToastViewController.swift */,
+				51EFFB3B2B285C6700331860 /* VideoPlayerViewController.swift */,
 				9868F09D26CBB94C001F7ED5 /* imagesrc.text */,
 				9868F09326CBB94C001F7ED5 /* Assets.xcassets */,
 			);
@@ -276,12 +282,14 @@
 				9868F0E626CBB94C001F7ED5 /* MultiMenuTableViewViewController.swift in Sources */,
 				9868F0E226CBB94C001F7ED5 /* BannerViewController.swift in Sources */,
 				9868F0EB26CBB94C001F7ED5 /* PageScrollViewController.swift in Sources */,
+				51EFFB3C2B285C6700331860 /* VideoPlayerViewController.swift in Sources */,
 				9868F13026CBB94C001F7ED5 /* TabBarViewController.swift in Sources */,
 				9868F0E926CBB94C001F7ED5 /* BubbleViewController.swift in Sources */,
 				9868F13226CBB94C001F7ED5 /* AudioRecorderViewController.swift in Sources */,
 				9868F0F426CBB94C001F7ED5 /* GridViewController.swift in Sources */,
 				9868F0DF26CBB94C001F7ED5 /* ToastViewController.swift in Sources */,
 				9868F0E026CBB94C001F7ED5 /* ArrangeViewController.swift in Sources */,
+				5179C6BF2B272B94008FEBD3 /* RecycleScrollViewController.swift in Sources */,
 				9868F0EE26CBB94C001F7ED5 /* NavigationController.swift in Sources */,
 				9868F0E326CBB94C001F7ED5 /* StackViewController.swift in Sources */,
 				9868F0DE26CBB94C001F7ED5 /* PhotoBrowserViewController.swift in Sources */,

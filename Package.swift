@@ -8,7 +8,8 @@ func products() -> [Product] {
         .library(name: "PKCore", targets: ["PKCore"]),
         .library(name: "PKWebServer", targets: ["PKWebServer"]),
         .library(name: "PKUI", targets: ["PKUITarget"]),
-        .library(name: "PKUtil", targets: ["PKUtil"])
+        .library(name: "PKUtil", targets: ["PKUtil"]),
+        .library(name: "PKNetwork", targets: ["PKNetwork"])
     ]
     
     return products
@@ -33,6 +34,11 @@ func targets() -> [Target] {
                     .target(name: "PKCore", condition: nil),
                 ],
                 path: "Sources/Util"),
+        .target(name: "PKNetwork",
+                dependencies: [
+                    .target(name: "PKCore"),
+                ],
+                path: "Sources/Network"),
         .target(
             name: "PKWebServer",
             dependencies: [

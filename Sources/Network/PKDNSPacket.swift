@@ -233,6 +233,12 @@ public extension PKDNSPacket {
         public let domain: String
         public let qtype: QueryType
         public let qclass: UInt16
+        
+        public init(domain: String, qtype: QueryType, qclass: UInt16) {
+            self.domain = domain
+            self.qtype = qtype
+            self.qclass = qclass
+        }
     }
     
     /// 资源记录
@@ -246,6 +252,16 @@ public extension PKDNSPacket {
         
         /// 资源内容
         public var content: Content
+        
+        public init(domain: String, qtype: QueryType, qclass: UInt16, ttl: UInt32, rdlength: UInt16, rdata: Data, content: Content) {
+            self.domain = domain
+            self.qtype = qtype
+            self.qclass = qclass
+            self.ttl = ttl
+            self.rdlength = rdlength
+            self.rdata = rdata
+            self.content = content
+        }
     }
 }
 

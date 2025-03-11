@@ -28,7 +28,11 @@ func targets() -> [Target] {
         ], path: "Sources/UITarget"),
         
         
-        .target(name: "PKUtil", path: "Sources/Util"),
+        .target(name: "PKUtil",
+                dependencies: [
+                    .target(name: "PKCore", condition: nil),
+                ],
+                path: "Sources/Util"),
         .target(
             name: "PKWebServer",
             dependencies: [
@@ -54,7 +58,7 @@ func targets() -> [Target] {
 let package = Package(
     name: "PKit",
     platforms: [
-        .iOS(.v11),
+        .iOS(.v13),
         .macOS(.v11)
     ],
     products: products(),

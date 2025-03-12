@@ -26,6 +26,7 @@ final public actor PKDNSResolver {
     
     public func connect() {
         if let connection = self.connection {
+            connection.stateUpdateHandler = nil
             connection.cancel()
         }
         

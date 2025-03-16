@@ -6,92 +6,76 @@
 //
 
 import Foundation
-import Network
 import PKCore
+import NIO
 
-final public actor PKDNSResolver {
+public actor PKDNSResolver {
    
     public static let shared = PKDNSResolver()
-    private let queue = DispatchQueue(label: "dns_resolver")
-    private var connection: NWConnection!
+    
+    private var servers: [String] = []
+    private var channel: Channel?
     private var completes = [UInt16: PKValueCallback<Data>]()
-    private var host: String = "223.5.5.5"
-    private var port: UInt16 = 0
-
-    public func initConnect(host: String, port: UInt16) {
-        self.host = host
-        self.port = port
-        self.connect()
-    }
     
-    public func connect() {
-        if let connection = self.connection {
-            connection.stateUpdateHandler = nil
-            connection.cancel()
-        }
-        
-        self.connection = NWConnection(to: .hostPort(host: .init(self.host), port: .init(rawValue: self.port)!), using: .udp)
-        self.connection.start(queue: self.queue)
-        self.listenStateChanged()
-    }
-    
-    private func listenStateChanged() {
-        self.connection.stateUpdateHandler = {@Sendable state in
-            switch state {
-            case .ready:
-                Task {
-                    await self.read()
-                }
-                
-            case .cancelled:
-                fallthrough
-            case .failed:
-                Task {
-                    await self.connect()
-                }
-                
-            default:
-                break
+    public func bind(servers: [String], group: EventLoopGroup) async throws {
+        self.servers = servers
+        let bootstrap = DatagramBootstrap(group: group)
+            .channelOption(ChannelOptions.socketOption(.so_reuseaddr), value: 1)
+            .channelInitializer { channel in
+                channel.pipeline.addHandler(PKDNSResolverHandler(onReceived: { data in
+                    Task {
+                        await self.handleReceivedData(data)
+                    }
+                }))
             }
-        }
-    }
-    
-    private func read() {
-        guard self.connection.state == .ready else {
-            return
-        }
         
-        self.connection.receiveMessage { content, contentContext, isComplete, error in
+        let channel = try await bootstrap.bind(host: "0.0.0.0", port: 0).get()
+        self.channel = channel
+        
+        channel.closeFuture.whenComplete { _ in
             Task {
-                if let content {
-                    await self.didReceived(content)
-                }
-                
-                await self.read()
+                await self.rebind()
             }
         }
     }
     
-    private func didReceived(_ content: Data) {
-        let id = UInt16(content[content.startIndex ..< content.startIndex+2])
+    
+    private func rebind() async {
+        while true {
+            do {
+                if let channel = self.channel {
+                    try await self.bind(servers: self.servers, group: channel.eventLoop)
+                }
+                return
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    private func handleReceivedData(_ data: Data) {
+        let id = UInt16(data[data.startIndex ..< data.startIndex+2])
         if let complete = self.completes.removeValue(forKey: id) {
-            complete(content)
+            complete(data)
         }
     }
     
     private func didWritten(id: UInt16, continuation: CheckedContinuation<Data, Error>) {
-        let timeoutTask = DispatchWorkItem {
-            self.removeComplete(id: id)
-            continuation.resume(throwing: PKStringError(msg: "timeout"))
+        guard let channel = self.channel else {
+            return
+        }
+        
+        let task = channel.eventLoop.scheduleTask(in: .seconds(5)) {
+            Task {
+                await self.removeComplete(id: id)
+                continuation.resume(throwing: PKStringError(msg: "timeout"))
+            }
         }
         
         self.completes[id] = { data in
+            task.cancel()
             continuation.resume(returning: data)
-            timeoutTask.cancel()
         }
-        
-        /// 超时检测
-        self.queue.asyncAfter(deadline: .now() + .seconds(5), execute: timeoutTask)
     }
     
     private func removeComplete(id: UInt16) {
@@ -109,24 +93,37 @@ final public actor PKDNSResolver {
     }
     
     public func resolve(_ data: Data) async throws -> Data {
+
         let id = UInt16(data[data.startIndex ..< data.startIndex+2])
         
-        guard let connection = self.connection else {
-            throw PKStringError(msg: "not connection")
+        guard let server = self.servers.randomElement() else {
+            throw PKStringError(msg: "no dns server")
+        }
+        
+        guard let channel = self.channel else {
+            throw PKStringError(msg: "no dns channel")
         }
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            connection.send(content: data, completion: .contentProcessed({ error in
-                if let error {
-                    continuation.resume(throwing: error)
-                    return
-                }
+            do {
+                let address = try SocketAddress(ipAddress: server, port: 53)
+                let envelope = AddressedEnvelope<ByteBuffer>(remoteAddress: address, data: channel.allocator.buffer(bytes: data))
                 
-                Task {
-                    await self.didWritten(id: id, continuation: continuation)
-                }
-            }))
+                self.channel?.writeAndFlush(envelope).whenComplete({ result in
+                    switch result {
+                    case .success:
+                        Task {
+                            await self.didWritten(id: id, continuation: continuation)
+                        }
+                        
+                    case .failure(let failure):
+                        continuation.resume(throwing: failure)
+                    }
+                })
+            } catch {
+                continuation.resume(throwing: error)
+            }
         }
     }
 

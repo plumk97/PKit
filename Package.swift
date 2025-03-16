@@ -37,6 +37,7 @@ func targets() -> [Target] {
         .target(name: "PKNetwork",
                 dependencies: [
                     .target(name: "PKCore"),
+                    .product(name: "NIO", package: "swift-nio"),
                 ],
                 path: "Sources/Network"),
         .target(

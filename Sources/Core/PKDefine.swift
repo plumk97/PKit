@@ -8,13 +8,13 @@
 import Foundation
 
 /// 无参数回调
-public typealias PKVoidCallback = () -> Void
+public typealias PKVoidCallback = @Sendable () -> Void
 
 /// 一个参数回调
-public typealias PKValueCallback<A> = (A) -> Void
+public typealias PKValueCallback<A> = @Sendable (A) -> Void
 
 /// 两个参数回调
-public typealias PKValue2Callback<A, B> = (A, B) -> Void
+public typealias PKValue2Callback<A, B> = @Sendable (A, B) -> Void
 
 /// 三个参数回调
-public typealias PKValue3Callback<A, B, C> = (A, B, C) -> Void
+public typealias PKValue3Callback<A, B, C> = @Sendable (A, B, C) -> Void

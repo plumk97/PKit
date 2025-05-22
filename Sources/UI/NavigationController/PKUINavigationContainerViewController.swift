@@ -100,7 +100,7 @@ open class PKUINavigationContainerViewController: UIViewController {
                 let backButton = BackItemButton(type: .system)
 
                 if let image = self.config.backItemImage {
-                    backButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+                    backButton.setImage(image, for: .normal)
                     backButton.frame.size = .init(width: image.size.width + 19, height: 44)
                 } else {
                     backButton.setTitle("Back", for: .normal)

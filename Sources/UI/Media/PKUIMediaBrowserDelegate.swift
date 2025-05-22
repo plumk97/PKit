@@ -5,8 +5,7 @@
 //  Created by Plumk on 2023/12/11.
 //
 
-import Foundation
-
+import UIKit
 
 public protocol PKUIMediaBrowserDelegate: AnyObject {
     func mediaBrowserNumberOfMedia(_ mediaBrowser: PKUIMediaBrowser) -> Int

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+#if !os(macOS)
 import AVFoundation
 
 open class PKAudioRecorder: NSObject, AVAudioRecorderDelegate {
@@ -319,3 +320,4 @@ extension PKAudioRecorder {
         }
     }
 }
+#endif

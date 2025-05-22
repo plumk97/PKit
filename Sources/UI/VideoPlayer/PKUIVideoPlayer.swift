@@ -53,7 +53,9 @@ open class PKUIVideoPlayer: NSObject {
         if let currentItem = self.player.currentItem {
             self.removeItemObserver(currentItem)
         }
-        self.player.removeTimeObserver(timeObserver)
+        if let timeObserver {
+            self.player.removeTimeObserver(timeObserver)
+        }
     }
     
     open func setResource(_ resource: Resource?) {
@@ -164,6 +166,9 @@ open class PKUIVideoPlayer: NSObject {
                 case .failed:
                     self.stop()
                     self.delegate?.videoPlayer(self, loadFailed: item.error)
+                    
+                @unknown default:
+                    break
                 }
                 
             default:

@@ -7,7 +7,9 @@ func products() -> [Product] {
     let products: [Product] = [
         .library(name: "PKCore", targets: ["PKCore"]),
         .library(name: "PKWebServer", targets: ["PKWebServer"]),
-        .library(name: "PKUI", targets: ["PKUITarget"])
+        .library(name: "PKUI", targets: ["PKUITarget"]),
+        .library(name: "PKUtil", targets: ["PKUtil"]),
+        .library(name: "PKNetwork", targets: ["PKNetwork"])
     ]
     
     return products
@@ -20,11 +22,24 @@ func targets() -> [Target] {
         .target(name: "PKCore", path: "Sources/Core"),
         
         .target(name: "PKUI", path: "Sources/UI"),
+        .target(name: "PKUIExtension", path: "Sources/UIExtension"),
         .target(name: "PKUITarget", dependencies: [
-            .target(name: "PKUI", condition: .when(platforms: [.iOS]))
+            .target(name: "PKUI", condition: .when(platforms: [.iOS])),
+            .target(name: "PKUIExtension", condition: .when(platforms: [.iOS]))
         ], path: "Sources/UITarget"),
         
         
+        .target(name: "PKUtil",
+                dependencies: [
+                    .target(name: "PKCore", condition: nil),
+                ],
+                path: "Sources/Util"),
+        .target(name: "PKNetwork",
+                dependencies: [
+                    .target(name: "PKCore"),
+                    .product(name: "NIO", package: "swift-nio"),
+                ],
+                path: "Sources/Network"),
         .target(
             name: "PKWebServer",
             dependencies: [
@@ -37,7 +52,9 @@ func targets() -> [Target] {
             resources: [.process("Resources")]
         ),
         .testTarget(name: "WebServerTests",
-                    dependencies: ["PKCore", "PKWebServer"])
+                    dependencies: ["PKCore", "PKWebServer"]),
+        .testTarget(name: "UITests",
+                    dependencies: ["PKCore", "PKUI", "PKUIExtension"])
     ]
     
 
@@ -48,7 +65,7 @@ func targets() -> [Target] {
 let package = Package(
     name: "PKit",
     platforms: [
-        .iOS(.v11),
+        .iOS(.v13),
         .macOS(.v11)
     ],
     products: products(),

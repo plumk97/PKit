@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct PKDNSPacket {
+public struct PKDNSPacket: Sendable {
     
     enum ParseError: Error {
         case invaliedData
@@ -227,7 +227,7 @@ public struct PKDNSPacket {
 public extension PKDNSPacket {
     
     /// 查询问题
-    struct Question {
+    struct Question: Sendable {
         public let domain: String
         public let qtype: QueryType
         public let qclass: UInt16
@@ -240,7 +240,7 @@ public extension PKDNSPacket {
     }
     
     /// 资源记录
-    struct ResourceRecord {
+    struct ResourceRecord: Sendable {
         public let domain: String
         public let qtype: QueryType
         public let qclass: UInt16
@@ -267,7 +267,7 @@ public extension PKDNSPacket {
 // MARK: - ResourceRecord Content
 public extension PKDNSPacket.ResourceRecord {
     
-    struct SOA {
+    struct SOA: Sendable {
         public let mname: String
         public let rname: String
         public let serial: UInt32
@@ -297,7 +297,7 @@ public extension PKDNSPacket.ResourceRecord {
         }
     }
     
-    struct MX {
+    struct MX: Sendable {
         public let priority: UInt16
         public let host: String
         init(data: Data, offset: inout Int) throws {
@@ -308,7 +308,7 @@ public extension PKDNSPacket.ResourceRecord {
         }
     }
     
-    struct SRV {
+    struct SRV: Sendable {
         public let priority: UInt16
         public let weight: UInt16
         public let port: UInt16
@@ -327,7 +327,7 @@ public extension PKDNSPacket.ResourceRecord {
         }
     }
     
-    enum Content {
+    enum Content: Sendable {
         case none
         case A(address: String)
         case NS(msdname: String)
@@ -386,7 +386,7 @@ public extension PKDNSPacket {
      TXT    16    RFC 1035    文本记录    最初是为任意可读的文本 DNS 记录。自1990年起，些记录更经常地带有机读数据，以 RFC 1464 指定：机会性加密（opportunistic encryption）、Sender Policy Framework（虽然这个临时使用的 TXT 记录在 SPF 记录推出后不被推荐）、DomainKeys、DNS-SD等。
      URI    256    RFC 7553    统一资源标识符    可用于发布从主机名到URI的映射。
      */
-    enum QueryType: UInt16 {
+    enum QueryType: UInt16, Sendable {
         case none = 0
         case A = 1
         case NS = 2

@@ -53,6 +53,8 @@ func targets() -> [Target] {
         ),
         .testTarget(name: "WebServerTests",
                     dependencies: ["PKCore", "PKWebServer"]),
+        .testTarget(name: "NetworkTests",
+                    dependencies: ["PKCore", "PKNetwork"]),
         .testTarget(name: "UITests",
                     dependencies: ["PKCore", "PKUI", "PKUIExtension"])
     ]
@@ -70,8 +72,7 @@ let package = Package(
     ],
     products: products(),
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.0.0"),
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0")
     ],
     targets: targets(),
     swiftLanguageVersions: [

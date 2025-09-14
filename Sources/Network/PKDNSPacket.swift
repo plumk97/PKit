@@ -113,7 +113,7 @@ public struct PKDNSPacket {
         var questions = [Question]()
         for _ in 0 ..< QDCOUNT {
             
-            let domain = try readString(data: data, offset: &offset)
+            let domain = try readDomainName(data: data, offset: &offset)
             
             let qtype = UInt16(try data.sub(start: offset, end: offset+2))
             offset += 2
@@ -142,27 +142,25 @@ public struct PKDNSPacket {
         /// - Returns:
         func encodeDomain(_ domain: String, data: inout Data, domainOffset: inout [String: UInt16]) {
             
-            let coms = domain.components(separatedBy: ".")
-            for i in coms.startIndex ..< coms.endIndex {
+            let labels = domain.lowercased().split(separator: ".").map(String.init)
+            
+            for i in labels.startIndex ..< labels.endIndex {
+                let label = labels[i]
+                let subdomain = labels[i...].joined(separator: ".")
                 
-                let com = coms[i]
-                let domain = coms[i...].joined(separator: ".")
-                
-                if let offset = domainOffset[domain] {
+                if let offset = domainOffset[subdomain] {
                     data.append(contentsOf: (UInt16(0xC000) | UInt16(offset)).bytes)
-                    break
+                    return
                     
                 } else {
-                    domainOffset[domain] = UInt16(data.count)
+                    domainOffset[subdomain] = UInt16(data.count)
 
-                    data.append(UInt8(com.count))
-                    data.append(com.data(using: .utf8)!)
-                    
-                    if i == coms.endIndex - 1 {
-                        data.append(0x00)
-                    }
+                    data.append(UInt8(label.count))
+                    data.append(label.data(using: .utf8)!)
                 }
             }
+            
+            data.append(0x00)
         }
         
         
@@ -279,8 +277,8 @@ public extension PKDNSPacket.ResourceRecord {
         public let minimum: UInt32
         
         init(data: Data, offset: inout Int) throws {
-            self.mname = try readString(data: data, offset: &offset)
-            self.rname = try readString(data: data, offset: &offset)
+            self.mname = try readDomainName(data: data, offset: &offset)
+            self.rname = try readDomainName(data: data, offset: &offset)
             
             self.serial = UInt32(try data.sub(start: offset, end: offset+4))
             offset += 4
@@ -306,7 +304,7 @@ public extension PKDNSPacket.ResourceRecord {
             self.priority = UInt16(try data.sub(start: offset, end: offset+2))
             offset += 2
             
-            self.host = try readString(data: data, offset: &offset)
+            self.host = try readDomainName(data: data, offset: &offset)
         }
     }
     
@@ -325,7 +323,7 @@ public extension PKDNSPacket.ResourceRecord {
             self.port = UInt16(try data.sub(start: offset, end: offset+2))
             offset += 2
             
-            self.target = try readString(data: data, offset: &offset)
+            self.target = try readDomainName(data: data, offset: &offset)
         }
     }
     
@@ -470,7 +468,7 @@ public extension PKDNSPacket {
 fileprivate func parseRecords(data: Data, count: Int, offset: inout Int) throws -> [PKDNSPacket.ResourceRecord] {
     var records = [PKDNSPacket.ResourceRecord]()
     for _ in 0 ..< count {
-        let domain = try readString(data: data, offset: &offset)
+        let domain = try readDomainName(data: data, offset: &offset)
         
         let qtype = UInt16(try data.sub(start: offset, end: offset+2))
         let type = PKDNSPacket.QueryType(rawValue: qtype) ?? .none
@@ -496,17 +494,17 @@ fileprivate func parseRecords(data: Data, count: Int, offset: inout Int) throws 
         case .A:
             content = .A(address: String(fromIP4: rddata.reversed()) ?? "")
         case .NS:
-            content = .NS(msdname: try readString(data: data, offset: &dataOffset))
+            content = .NS(msdname: try readDomainName(data: data, offset: &dataOffset))
         case .CNAME:
-            content = .CNAME(cname: try readString(data: data, offset: &dataOffset))
+            content = .CNAME(cname: try readDomainName(data: data, offset: &dataOffset))
         case .SOA:
             content = .SOA(soa: try .init(data: data, offset: &dataOffset))
         case .WKS:
             break
         case .PTR:
-            content = .PTR(ptrdname: try readString(data: data, offset: &dataOffset))
+            content = .PTR(ptrdname: try readDomainName(data: data, offset: &dataOffset))
         case .HINFO:
-            content = .HINFO(cpu: try readString(data: data, offset: &dataOffset), os: try readString(data: data, offset: &offset))
+            content = .HINFO(cpu: try readDomainName(data: data, offset: &dataOffset), os: try readDomainName(data: data, offset: &offset))
         case .MX:
             content = .MX(mx: try .init(data: data, offset: &dataOffset))
         case .TXT:
@@ -536,9 +534,9 @@ fileprivate func parseRecords(data: Data, count: Int, offset: inout Int) throws 
 ///   - data:
 ///   - offset:
 /// - Returns:
-fileprivate func readString(data: Data, offset: inout Int) throws -> String {
+fileprivate func readDomainName(data: Data, offset: inout Int) throws -> String {
     
-    var domain = ""
+    var labels: [String] = []
     while true {
         
         let len = try data.at(offset)
@@ -548,33 +546,28 @@ fileprivate func readString(data: Data, offset: inout Int) throws -> String {
             offset += 2
             
             var suboffset = data.startIndex + Int(n & 0x3FFF)
-            domain = domain + (try readString(data: data, offset: &suboffset)) + "."
+            labels.append(try readDomainName(data: data, offset: &suboffset))
             break
             
         } else if len > 0 {
             /// 正常读取
-            ///
             offset += 1
             
             let end = offset + Int(len)
-            if let segment = String(data: try data.sub(start: offset, end: end), encoding: .utf8) {
-                domain = domain + segment + "."
+            if let label = String(data: try data.sub(start: offset, end: end), encoding: .utf8) {
+                labels.append(label)
             }
             
             offset = end
             
         } else {
             /// 结束
-            ///
             offset += 1
             break
         }
     }
     
-    if domain.count > 0 {
-        domain.removeLast()
-    }
-    return domain
+    return labels.joined(separator: ".")
 }
 
 

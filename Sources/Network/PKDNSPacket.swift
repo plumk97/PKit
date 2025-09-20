@@ -175,7 +175,43 @@ public struct PKDNSPacket: Sendable {
             data.append(contentsOf: record.qclass.bytes)
             data.append(contentsOf: record.ttl.bytes)
             data.append(contentsOf: record.rdlength.bytes)
-            data.append(record.rdata)
+            
+            switch record.content {
+            case let .NS(msdname):
+                encodeDomain(msdname, data: &data, domainOffset: &domainOffset)
+                
+            case let .CNAME(cname):
+                encodeDomain(cname, data: &data, domainOffset: &domainOffset)
+            
+            case let .SOA(soa):
+                encodeDomain(soa.mname, data: &data, domainOffset: &domainOffset)
+                encodeDomain(soa.rname, data: &data, domainOffset: &domainOffset)
+                data.append(contentsOf: soa.serial.bytes)
+                data.append(contentsOf: soa.refresh.bytes)
+                data.append(contentsOf: soa.retry.bytes)
+                data.append(contentsOf: soa.expire.bytes)
+                data.append(contentsOf: soa.minimum.bytes)
+                
+            case let .PTR(ptrdname):
+                encodeDomain(ptrdname, data: &data, domainOffset: &domainOffset)
+                
+            case let .HINFO(cpu, os):
+                encodeDomain(cpu, data: &data, domainOffset: &domainOffset)
+                encodeDomain(os, data: &data, domainOffset: &domainOffset)
+                
+            case let .MX(mx):
+                data.append(contentsOf: mx.priority.bytes)
+                encodeDomain(mx.host, data: &data, domainOffset: &domainOffset)
+                
+            case let .SRV(srv):
+                data.append(contentsOf: srv.priority.bytes)
+                data.append(contentsOf: srv.weight.bytes)
+                data.append(contentsOf: srv.port.bytes)
+                encodeDomain(srv.target, data: &data, domainOffset: &domainOffset)
+                
+            default:
+                data.append(record.rdata)
+            }
         }
         
         var data = Data()

@@ -171,7 +171,7 @@ public struct PKDNSPacket: Sendable {
         ///   - domainOffset:
         func encodeResourceRecord(_ record: ResourceRecord, data: inout Data, domainOffset: inout [String: UInt16]) {
             encodeDomain(record.domain, data: &data, domainOffset: &domainOffset)
-            data.append(contentsOf: record.qtype.rawValue.bytes)
+            data.append(contentsOf: record.qtype.bytes)
             data.append(contentsOf: record.qclass.bytes)
             data.append(contentsOf: record.ttl.bytes)
             data.append(contentsOf: record.rdlength.bytes)
@@ -297,7 +297,7 @@ public extension PKDNSPacket {
     /// 资源记录
     struct ResourceRecord: Sendable {
         public let domain: String
-        public let qtype: QueryType
+        public let qtype: UInt16
         public let qclass: UInt16
         public let ttl: UInt32
         public let rdlength: UInt16
@@ -306,7 +306,7 @@ public extension PKDNSPacket {
         /// 资源内容
         public var content: Content
         
-        public init(domain: String, qtype: QueryType, qclass: UInt16, ttl: UInt32, rdlength: UInt16, rdata: Data, content: Content) {
+        public init(domain: String, qtype: UInt16, qclass: UInt16, ttl: UInt32, rdlength: UInt16, rdata: Data, content: Content) {
             self.domain = domain
             self.qtype = qtype
             self.qclass = qclass
@@ -675,7 +675,7 @@ fileprivate func parseRecords(data: Data, count: Int, offset: inout Int) throws 
 
         
         records.append(.init(domain: domain,
-                             qtype: type,
+                             qtype: qtype,
                              qclass: qclass,
                              ttl: ttl,
                              rdlength: rdlength,

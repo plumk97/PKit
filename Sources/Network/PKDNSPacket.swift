@@ -208,6 +208,25 @@ public struct PKDNSPacket: Sendable {
                 data.append(contentsOf: srv.weight.bytes)
                 data.append(contentsOf: srv.port.bytes)
                 encodeDomain(srv.target, data: &data, domainOffset: &domainOffset)
+            
+            case let .RRSIG(rrsig):
+                data.append(contentsOf: rrsig.typeCovered.bytes)
+                data.append(contentsOf: [rrsig.algorithm, rrsig.labels])
+                data.append(contentsOf: rrsig.originalTTL.bytes)
+                data.append(contentsOf: rrsig.sigExpiration.bytes)
+                data.append(contentsOf: rrsig.sigInception.bytes)
+                data.append(contentsOf: rrsig.keyTag.bytes)
+                encodeDomain(rrsig.signerName, data: &data, domainOffset: &domainOffset)
+                data.append(contentsOf: rrsig.signature)
+                
+            case let .NSEC(nsec):
+                encodeDomain(nsec.nextDomainName, data: &data, domainOffset: &domainOffset)
+                data.append(contentsOf: nsec.typeBitMaps)
+                
+            case let .SVCB(svcb):
+                data.append(contentsOf: svcb.priority.bytes)
+                encodeDomain(svcb.targetName, data: &data, domainOffset: &domainOffset)
+                data.append(contentsOf: svcb.params)
                 
             default:
                 data.append(record.rdata)
@@ -363,6 +382,76 @@ public extension PKDNSPacket.ResourceRecord {
         }
     }
     
+    
+    struct RRSIG: Sendable {
+        let typeCovered: UInt16
+        let algorithm: UInt8
+        let labels: UInt8
+        let originalTTL: UInt32
+        let sigExpiration: UInt32
+        let sigInception: UInt32
+        let keyTag: UInt16
+        let signerName: String
+        let signature: Data
+
+        init(data: Data, rdataStart: Int, rdataEnd: Int) throws {
+            var offset = rdataStart
+            self.typeCovered = UInt16(try data.sub(start: offset, end: offset+2))
+            offset += 2
+
+            self.algorithm = data[offset]
+            offset += 1
+
+            self.labels =  data[offset]
+            offset += 1
+
+            self.originalTTL = UInt32(try data.sub(start: offset, end: offset+4))
+            offset += 4
+
+            self.sigExpiration = UInt32(try data.sub(start: offset, end: offset+4))
+            offset += 4
+
+            self.sigInception = UInt32(try data.sub(start: offset, end: offset+4))
+            offset += 4
+
+            self.keyTag = UInt16(try data.sub(start: offset, end: offset+2))
+            offset += 2
+
+            self.signerName = try readDomainName(data: data, offset: &offset)
+
+            self.signature = data[offset ..< rdataEnd]
+        }
+    }
+    
+    struct NSEC: Sendable {
+        let nextDomainName: String
+        let typeBitMaps: Data
+
+        init(data: Data, rdataStart: Int, rdataEnd: Int) throws {
+            var offset = rdataStart
+            self.nextDomainName = try readDomainName(data: data, offset: &offset)
+            self.typeBitMaps = data[offset ..< rdataEnd]
+        }
+    }
+    
+    struct SVCB: Sendable {
+        public let priority: UInt16
+        public let targetName: String
+        public let params: Data
+
+        init(data: Data, rdataStart:Int, rdataEnd: Int) throws {
+            var offset = rdataStart
+            self.priority = UInt16(try data.sub(start: offset, end: offset+2))
+            offset += 2
+            
+            self.targetName = try readDomainName(data: data, offset: &offset)
+
+            self.params = data[offset ..< rdataEnd]
+            offset = rdataEnd
+        }
+    }
+    
+    
     enum Content: Sendable {
         case none
         case A(address: String)
@@ -375,6 +464,9 @@ public extension PKDNSPacket.ResourceRecord {
         case TEXT(txt: String)
         case AAAA(address: String)
         case SRV(srv: SRV)
+        case RRSIG(rrsig: RRSIG)
+        case NSEC(nsec: NSEC)
+        case SVCB(svcb: SVCB)
     }
 }
 
@@ -437,7 +529,13 @@ public extension PKDNSPacket {
         case SRV = 33
         case OPT = 41
         case DS = 43
+        case RRSIG = 46
+        case NSEC = 47
         case DNSKYE = 48
+        case NSEC3 = 50
+        case NSEC3PARAM = 51
+        case SVCB = 64
+        case HTTPS = 65
         case AXFR = 252
         case ANY = 255
         case CAA = 257
@@ -483,8 +581,20 @@ public extension PKDNSPacket {
                 return "OPT"
             case .DS:
                 return "DS"
+            case .RRSIG:
+                return "RRSIG"
+            case .NSEC:
+                return "NSEC"
             case .DNSKYE:
                 return "DNSKYE"
+            case .NSEC3:
+                return "NSEC3"
+            case .NSEC3PARAM:
+                return "NSEC3PARAM"
+            case .SVCB:
+                return "SVCB"
+            case .HTTPS:
+                return "HTTPS"
             case .AXFR:
                 return "AXFR"
             case .ANY:
@@ -552,6 +662,13 @@ fileprivate func parseRecords(data: Data, count: Int, offset: inout Int) throws 
             content = .AAAA(address: String(fromIP6: [UInt8](rddata)) ?? "")
         case .SRV:
             content = .SRV(srv: try .init(data: data, offset: &dataOffset))
+        case .RRSIG:
+            content = .RRSIG(rrsig: try .init(data: data, rdataStart: dataOffset, rdataEnd: offset))
+        case .NSEC:
+            content = .NSEC(nsec: try .init(data: data, rdataStart: dataOffset, rdataEnd: offset))
+        case .SVCB:
+            content = .SVCB(svcb: try .init(data: data, rdataStart: dataOffset, rdataEnd: offset))
+            
         default:
             break
         }

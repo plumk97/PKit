@@ -435,6 +435,7 @@ public extension PKDNSPacket {
         case TXT = 16
         case AAAA = 28
         case SRV = 33
+        case OPT = 41
         case DS = 43
         case DNSKYE = 48
         case AXFR = 252
@@ -478,6 +479,8 @@ public extension PKDNSPacket {
                 return "AAAA"
             case .SRV:
                 return "SRV"
+            case .OPT:
+                return "OPT"
             case .DS:
                 return "DS"
             case .DNSKYE:
